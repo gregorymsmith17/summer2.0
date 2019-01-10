@@ -632,6 +632,10 @@ handleBtnClick = () => {
 
 
 
+exportPDF = () => {
+  this.resume.save();
+}
+
 rawMarkup(){
   var rawMarkup = this.props.content
   return { __html: rawMarkup };
@@ -677,156 +681,7 @@ deleteRow(row, isSelected, e, id) {
 
 
 
-filter = (url) => {
 
-
-
-  domtoimage.toBlob(document.getElementById('my-node'))
-      .then((blob) => {
-          console.log(blob);
-          const blobUrl = URL.createObjectURL(blob);
-          console.log(blobUrl);
-          this.setState({
-            blobUrl: blobUrl,
-          })
-      });
-}
-
-toggleNitrogen(event) {
-    this.setState({
-      checkboxState: !this.state.checkboxState
-    });
-    const checkboxState = this.state.checkboxState;
-    if (checkboxState) {
-      this.setState({
-        nitrogenPlot: '',
-      })
-    } else {
-      this.setState({
-        nitrogenPlot: 'nitrogen',
-      })
-    }
-  }
-  togglePhosphorus(event) {
-      this.setState({
-        checkboxStatephosphorus: !this.state.checkboxStatephosphorus
-      });
-      const checkboxState = this.state.checkboxStatephosphorus;
-      if (checkboxState) {
-        this.setState({
-          phosphorusPlot: '',
-        })
-      } else {
-        this.setState({
-          phosphorusPlot: 'phosphorus',
-        })
-      }
-    }
-    toggleTemp(event) {
-        this.setState({
-          checkboxState2: !this.state.checkboxState2
-        });
-        const checkboxState = this.state.checkboxState2;
-        if (checkboxState) {
-          this.setState({
-            tempPlot: '',
-          })
-        } else {
-          this.setState({
-            tempPlot: 'temp',
-          })
-        }
-      }
-      toggleTDS(event) {
-          this.setState({
-            checkboxStatetds: !this.state.checkboxStatetds
-          });
-          const checkboxState = this.state.checkboxStatetds;
-          if (checkboxState) {
-            this.setState({
-              tdsPlot: '',
-            })
-          } else {
-            this.setState({
-              tdsPlot: 'tds',
-            })
-          }
-        }
-        togglepH(event) {
-            this.setState({
-              checkboxStatepH: !this.state.checkboxStatepH
-            });
-            const checkboxState = this.state.checkboxStatepH;
-            if (checkboxState) {
-              this.setState({
-                pHPlot: '',
-              })
-            } else {
-              this.setState({
-                pHPlot: 'pH',
-              })
-            }
-          }
-          toggletss(event) {
-              this.setState({
-                checkboxStatetss: !this.state.checkboxStatetss
-              });
-              const checkboxState = this.state.checkboxStatetss;
-              if (checkboxState) {
-                this.setState({
-                  tssPlot: '',
-                })
-              } else {
-                this.setState({
-                  tssPlot: 'tss',
-                })
-              }
-            }
-            togglesalinity(event) {
-                this.setState({
-                  checkboxStatesalinity: !this.state.checkboxStatesalinity
-                });
-                const checkboxState = this.state.checkboxStatesalinity;
-                if (checkboxState) {
-                  this.setState({
-                    salinityPlot: '',
-                  })
-                } else {
-                  this.setState({
-                    salinityPlot: 'salinity',
-                  })
-                }
-              }
-              toggleHardness(event) {
-                  this.setState({
-                    checkboxStatehardness: !this.state.checkboxStatehardness
-                  });
-                  const checkboxState = this.state.checkboxStatehardness;
-                  if (checkboxState) {
-                    this.setState({
-                      totalHardnessPlot: '',
-                    })
-                  } else {
-                    this.setState({
-                      totalHardnessPlot: 'totalHardness',
-                    })
-                  }
-                }
-                toggleTurbidity(event) {
-                    this.setState({
-                      checkboxStateturbidity: !this.state.checkboxStateturbidity
-                    });
-                    const checkboxState = this.state.checkboxStateturbidity;
-                    if (checkboxState) {
-                      this.setState({
-                        turbidityPlot: '',
-                      })
-                    } else {
-                      this.setState({
-                        turbidityPlot: 'turbidity',
-                      })
-                    }
-                  }
 
 
 
@@ -869,56 +724,7 @@ const options = {
   exportCSVBtn: this.createCustomExportCSVButton
 };
 
-   const nitrogenCheckbox = (
-     <span>
-       <input
-       type="checkbox"
-       defaultChecked='true'
-       onClick={this.toggleNitrogen.bind(this)}
-       />
-     <label>Nitrogen</label>
-     </span>
-   );
-   const phosphorusCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.togglePhosphorus.bind(this)}/>
-     <label>Phosphorus</label>
-     </span>
-   );
-   const tempCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTemp.bind(this)}/>
-     <label>Temperature</label>
-     </span>
-   );
-   const tdsCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTDS.bind(this)}/>
-     <label>TDS</label>
-     </span>
-   );
-   const pHCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.togglepH.bind(this)}/>
-     <label>pH</label>
-     </span>
-   );
-   const tssCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggletss.bind(this)}/>
-     <label>TSS</label>
-     </span>
-   );
-   const salinityCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.togglesalinity.bind(this)}/>
-     <label>Salinity</label>
-     </span>
-   );
-   const hardnessCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleHardness.bind(this)}/>
-     <label>Total Hardness</label>
-     </span>
-   );
-   const turbidityCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTurbidity.bind(this)}/>
-     <label>Turbidity</label>
-     </span>
-   );
+
 
 
         return (
@@ -928,12 +734,12 @@ const options = {
         <Row>
           <Row>
             <Col xs={6} md={6}>
-          <h3>Monthly Sample Logs</h3>
+          <h3>Maintenance Reports</h3>
 
           </Col>
           <Col xs={6} md={6}>
             <ButtonToolbar style={styles.topPad}>
-          <Button  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create New Sample Log</Button>
+          <Button  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Maintenance Report</Button>
         </ButtonToolbar>
           </Col>
           </Row>
@@ -942,62 +748,9 @@ const options = {
 
       <Tabs activeKey={this.state.key} onSelect={this.handleSelect} defaultActiveKey={1} id="uncontrolled-tab-example">
 
-        <Tab eventKey={1} title="+ Graphs">
-
-          <Row style={styles.topPad}>
-
-          <Col xs={7} sm={7} md={7} lg={7}>
 
 
-          <div id="my-node">
-          <LineChart
-            width={750} height={400} data={this.state.orders2} syncId="anyId"
-            margin={{top: 10, right: 30, left: 0, bottom: 0}}>
-        <CartesianGrid strokeDasharray="3 3"/>
-        <XAxis dataKey="sampleDate"/>
-        <YAxis/>
-        <Tooltip/>
-
-          <Line type="monotone" dataKey={this.state.nitrogenPlot} stroke="#8884d8" activeDot={{r: 8}}/>
-        <Line type="monotone" dataKey={this.state.phosphorusPlot} stroke="#82ca9d" />
-         <Line type="monotone" dataKey={this.state.tdsPlot} stroke="#8884d8" activeDot={{r: 8}}/>
-        <Line type="monotone" dataKey={this.state.pHPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.tempPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.tssPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.salinityPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.totalHardnessPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.turbidityPlot} stroke="#82ca9d" />
-        <Brush />
-        <Legend />
-        </LineChart>
-
-        </div>
-      </Col>
-        <Col smOffset={2} xs={2} sm={2} md={2} lg={2}>
-
-
-      <form onSubmit={this.onSubmit.bind(this)}>{nitrogenCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{phosphorusCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{tempCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{tdsCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{pHCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{tssCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{salinityCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{hardnessCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{turbidityCheckbox}</form>
-
-        </Col>
-
-
-
-        </Row>
-
-
-
-
-        </Tab>
-
-        <Tab eventKey={2} title="+ Monthly Samples">
+        <Tab eventKey={1} title="+ Maintenance Reports">
           <Grid>
 
           <Row style={styles.topPad}>
@@ -1161,71 +914,7 @@ const options = {
                 <Row>
                   <Col xs={8} sm={8} md={8}>
 
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Description</th>
-  <th>Results</th>
-
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Date</td>
-  <td><input type="date" name="sampleDate" placeholder="Date of Sample" onChange={this.handleChange} value={this.state.sampleDate} /></td>
-  </tr>
-  <tr>
-  <td>Name</td>
-  <td><input type="text" name="sampleTaker" placeholder="Your Name" onChange={this.handleChange} value={this.state.sampleTaker} /></td>
-  </tr>
-  <tr>
-  <td>Water Temperature</td>
-  <td><input type="number" name="temp" placeholder="Temp of Sample" onChange={this.handleChange} value={this.state.temp} /></td>
-  </tr>
-  <tr>
-  <td>DO</td>
-  <td><input type="number" name="do" placeholder="Dissolved Oxygen" onChange={this.handleChange} value={this.state.do} /></td>
-  </tr>
-  <tr>
-  <td>Conductivity</td>
-  <td><input type="number" name="conductivity" placeholder="Conductivity" onChange={this.handleChange} value={this.state.conductivity} /></td>
-  </tr>
-  <tr>
-  <td>Total Dissolved Solids</td>
-  <td><input type="number" name="tds" placeholder="Total Dissolved Solids" onChange={this.handleChange} value={this.state.tds} /></td>
-  </tr>
-  <tr>
-  <td>Salinity</td>
-  <td><input type="number" name="salinity" placeholder="Salinity" onChange={this.handleChange} value={this.state.salinity} /></td>
-  </tr>
-  <tr>
-  <td>pH</td>
-  <td><input type="number" name="pH" placeholder="pH" onChange={this.handleChange} value={this.state.pH} /></td>
-  </tr>
-  <tr>
-  <td>Turbidity</td>
-  <td><input type="number" name="turbidity" placeholder="Turbidity" onChange={this.handleChange} value={this.state.turbidity} /></td>
-  </tr>
-  <tr>
-  <td>Total Nitrogen</td>
-  <td><input type="number" name="nitrogen" placeholder="Total Nitrogen" onChange={this.handleChange} value={this.state.nitrogen} /></td>
-  </tr>
-  <tr>
-  <td>Total Phosphorus</td>
-  <td><input type="number" name="phosphorus" placeholder="Total Phosphorus" onChange={this.handleChange} value={this.state.phosphorus} /></td>
-  </tr>
-  <tr>
-  <td>Total Hardness</td>
-  <td><input type="number" name="totalHardness" placeholder="Total Hardness" onChange={this.handleChange} value={this.state.totalHardness} /></td>
-  </tr>
-  <tr>
-  <td>Total Suspended Solids</td>
-  <td><input type="number" name="tss" placeholder="Total Suspended Solids" onChange={this.handleChange} value={this.state.tss} /></td>
-  </tr>
-
-
-  </tbody>
-  </Table>
+  
 
 </Col>
                   </Row>
