@@ -706,7 +706,7 @@ const options = {
 
                       <Row>
                       <Col xs={10} sm={10} md={10}>
-                <Button bsStyle="primary">Add sample</Button>
+                <Button onClick={this.handleSubmit} bsStyle="primary">Add sample</Button>
                 </Col></Row>
                 <hr></hr>
               </form>
@@ -781,7 +781,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-                      <Button bsStyle="primary">Overwrite Data</Button>
+                      <Button onClick={this.writeData} bsStyle="primary">Overwrite Data</Button>
                       </Col>
                     </Row>
                     <hr></hr>

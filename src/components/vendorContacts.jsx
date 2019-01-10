@@ -53,21 +53,15 @@ export default class vendorContacts extends Component {
         this.state = {
 
 
+          //Contact Form Inputs
+          vendorName: '',
+          vendorCompany: '',
+          vendorCompanyDescription: '',
+          vendorEmail: '',
+          vendorPhone: '',
+          vendorNotes: '',
 
-          sampleDate: '',
-          sampleTaker: '',
-          temp: '',
-          do: '',
-          conductivity: '',
-          tds: '',
-          salinity: '',
-          pH: '',
-          turbidity: '',
-          nitrogen: '',
-          phosphorus: '',
-          totalHardness: '',
-          tss: '',
-
+          //Random things for changing tabs
           id: '',
           key: 1,
           idKey: '',
@@ -75,17 +69,13 @@ export default class vendorContacts extends Component {
           area: '',
 
 
-
+          //put data into tables with these
           samples: [],
           orders: [],
           orders2: [],
           dataList: [],
           filter: "",
           blobUrl: null,
-
-          ammoniaPlot: 'ammoniaResult',
-
-
 
 
 
@@ -132,25 +122,18 @@ export default class vendorContacts extends Component {
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
-        const orderID = fire.database().ref(`/monthlySamples/${user.uid}/${orderID}`);
+        const samplesRef = fire.database().ref(`vendorContacts/${user.uid}`);
+        const orderID = fire.database().ref(`/vendorContacts/${user.uid}/${orderID}`);
 
 
-        const sample = {
+        const vendorContact = {
 
-          sampleDate: this.state.sampleDate,
-          sampleTaker: this.state.sampleTaker,
-          temp: this.state.temp,
-          do: this.state.do,
-          conductivity: this.state.conductivity,
-          tds: this.state.tds,
-          salinity: this.state.salinity,
-          pH: this.state.pH,
-          turbidity: this.state.turbidity,
-          nitrogen: this.state.nitrogen,
-          phosphorus: this.state.phosphorus,
-          totalHardness: this.state.totalHardness,
-          tss: this.state.tss,
+          vendorName: this.state.vendorName,
+          vendorCompany: this.state.vendorCompany,
+          vendorCompanyDescription: this.state.vendorCompanyDescription,
+          vendorEmail: this.state.vendorEmail,
+          vendorPhone: this.state.vendorPhone,
+          vendorNotes: this.state.vendorNotes,
 
           id: this.state.id,
         }
@@ -158,50 +141,29 @@ export default class vendorContacts extends Component {
 
 
 
-        samplesRef.push(sample);
+        samplesRef.push(vendorContact);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
-          sampleDate: '',
-          sampleTaker: '',
-          temp: '',
-          do: '',
-          conductivity: '',
-          tds: '',
-          salinity: '',
-          pH: '',
-          turbidity: '',
-          nitrogen: '',
-          phosphorus: '',
-          totalHardness: '',
-          tss: '',
-
-
+          vendorName: '',
+          vendorCompany: '',
+          vendorCompanyDescription: '',
+          vendorEmail: '',
+          vendorPhone: '',
+          vendorNotes: '',
 
         });
       });
+      console.log("test");
     }
-
-
-
-
-
-      //this function is constantly running after the initial render.  Snapshot is used to look into the database.
-      //[] indicates an array value
-      //.map(Number) changes an array of strings to an array of integers
-      //snapshot.foreach(ss => {...}) **this looks in each "Sample" for the child of "user"**
-      //child of user can be child of BOD or child of tss or whatever.  It finds the value that is a child to that label.
 
       componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
+          const samplesRef = fire.database().ref(`vendorContacts/${user.uid}`);
           samplesRef.on('value', (snapshot) => {
 
 
-            let dataList = snapshot.val();
-            let filter = [];
-
-
-
+          let dataList = snapshot.val();
+          let filter = [];
           let orders = snapshot.val();
           let orders2 = snapshot.val();
 
@@ -212,72 +174,45 @@ export default class vendorContacts extends Component {
           for (let order in orders) {
             newState.push({
               id: order,
-              sampleDate: orders[order].sampleDate,
-              sampleTaker: orders[order].sampleTaker,
-              temp: orders[order].temp,
-              do: orders[order].do,
-              conductivity: orders[order].conductivity,
-              tds: orders[order].tds,
-              salinity: orders[order].salinity,
-              pH: orders[order].pH,
-              turbidity: orders[order].turbidity,
-              nitrogen: orders[order].nitrogen,
-              phosphorus: orders[order].phosphorus,
-              totalHardness: orders[order].totalHardness,
-              tss: orders[order].tss,
+              vendorName: orders[order].vendorName,
+              vendorCompany: orders[order].vendorCompany,
+              vendorCompanyDescription: orders[order].vendorCompanyDescription,
+              vendorEmail: orders[order].vendorEmail,
+              vendorPhone: orders[order].vendorPhone,
+              vendorNotes: orders[order].vendorNotes,
             });
             newState2.push({
               id: order,
-              sampleDate: orders[order].sampleDate,
-              sampleTaker: orders[order].sampleTaker,
-              temp: orders[order].temp,
-              do: orders[order].do,
-              conductivity: orders[order].conductivity,
-              tds: orders[order].tds,
-              salinity: orders[order].salinity,
-              pH: orders[order].pH,
-              turbidity: orders[order].turbidity,
-              nitrogen: orders[order].nitrogen,
-              phosphorus: orders[order].phosphorus,
-              totalHardness: orders[order].totalHardness,
-              tss: orders[order].tss,
+              vendorName: orders[order].vendorName,
+              vendorCompany: orders[order].vendorCompany,
+              vendorCompanyDescription: orders[order].vendorCompanyDescription,
+              vendorEmail: orders[order].vendorEmail,
+              vendorPhone: orders[order].vendorPhone,
+              vendorNotes: orders[order].vendorNotes,
             });
-
-
-
 
           }
 
           newState2.sort(function(a, b) {
 
-            if (a.sampleDate === b.sampleDate) {
+            if (a.vendorName === b.vendorName) {
               return 0;
             }
-            return a.sampleDate > b.sampleDate ? 1 : -1;
+            return a.vendorName > b.vendorName ? 1 : -1;
         });
         newState.sort(function(a, b) {
 
-          if (b.sampleDate === a.sampleDate) {
+          if (b.vendorName === a.vendorName) {
             return 0;
           }
-          return b.sampleDate > a.sampleDate ? 1 : -1;
+          return b.vendorName > a.vendorName ? 1 : -1;
       });
-
-
 
           this.setState({
             orders: newState,
             orders2: newState2,
             dataList: newState,
           });
-
-
-
-
-          console.log(this.state.dataList);
-
-
-
 
 
         });
@@ -292,48 +227,34 @@ export default class vendorContacts extends Component {
     fillStates(itemId) {
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
         this.setState({
-          sampleDate: '',
-          sampleTaker: '',
-          temp: '',
-          do: '',
-          conductivity: '',
-          tds: '',
-          salinity: '',
-          pH: '',
-          turbidity: '',
-          nitrogen: '',
-          phosphorus: '',
-          totalHardness: '',
-          tss: '',
+          vendorName: '',
+          vendorCompany: '',
+          vendorCompanyDescription: '',
+          vendorEmail: '',
+          vendorPhone: '',
+          vendorNotes: '',
 
         });
 
       let orders = snapshot.val();
-      let id = fire.database().ref().child(`/monthlySamples/${user.uid}/${itemId}`).key;
+      let id = fire.database().ref().child(`/vendorContacts/${user.uid}/${itemId}`).key;
 
       let newState = [];
       for (let order in orders) {
         newState.push({
           id: order,
 
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
+          vendorName: orders[order].vendorName,
+          vendorCompany: orders[order].vendorCompany,
+          vendorCompanyDescription: orders[order].vendorCompanyDescription,
+          vendorEmail: orders[order].vendorEmail,
+          vendorPhone: orders[order].vendorPhone,
+          vendorNotes: orders[order].vendorNotes,
 
         });
       }
@@ -342,29 +263,14 @@ export default class vendorContacts extends Component {
         id: id,
         key: 4,
 
-        sampleDate: snapshot.child('sampleDate').val(),
-        sampleTaker: snapshot.child('sampleTaker').val(),
-        temp: snapshot.child('temp').val(),
-        do: snapshot.child('do').val(),
-        conductivity: snapshot.child('conductivity').val(),
-        tds: snapshot.child('tds').val(),
-        salinity: snapshot.child('salinity').val(),
-        pH: snapshot.child('pH').val(),
-        turbidity: snapshot.child('turbidity').val(),
-        nitrogen: snapshot.child('nitrogen').val(),
-        phosphorus: snapshot.child('phosphorus').val(),
-        totalHardness: snapshot.child('totalHardness').val(),
-        tss: snapshot.child('tss').val(),
-
-
-
-
-
+        vendorName: snapshot.child('vendorName').val(),
+        vendorCompany: snapshot.child('vendorCompany').val(),
+        vendorCompanyDescription: snapshot.child('vendorCompanyDescription').val(),
+        vendorEmail: snapshot.child('vendorEmail').val(),
+        vendorPhone: snapshot.child('vendorPhone').val(),
+        vendorNotes: snapshot.child('vendorNotes').val(),
 
       })
-
-
-
 
 });
 
@@ -375,27 +281,17 @@ export default class vendorContacts extends Component {
   writeStates = (itemId) => {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${this.state.id}`);
+    const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${this.state.id}`);
 
 
     sampleRef.child("id").set(this.state.id);
 
-
-    sampleRef.child("sampleDate").set(this.state.sampleDate);
-    sampleRef.child("sampleTaker").set(this.state.sampleTaker);
-    sampleRef.child("temp").set(this.state.temp);
-    sampleRef.child("do").set(this.state.do);
-    sampleRef.child("conductivity").set(this.state.conductivity);
-    sampleRef.child("tds").set(this.state.tds);
-    sampleRef.child("salinity").set(this.state.salinity);
-    sampleRef.child("pH").set(this.state.pH);
-    sampleRef.child("turbidity").set(this.state.turbidity);
-    sampleRef.child("nitrogen").set(this.state.nitrogen);
-    sampleRef.child("phosphorus").set(this.state.phosphorus);
-    sampleRef.child("totalHardness").set(this.state.totalHardness);
-    sampleRef.child("tss").set(this.state.tss);
-
-
+    sampleRef.child("vendorName").set(this.state.vendorName);
+    sampleRef.child("vendorCompany").set(this.state.vendorCompany);
+    sampleRef.child("vendorCompanyDescription").set(this.state.vendorCompanyDescription);
+    sampleRef.child("vendorEmail").set(this.state.vendorEmail);
+    sampleRef.child("vendorPhone").set(this.state.vendorPhone);
+    sampleRef.child("vendorNotes").set(this.state.vendorNotes);
 
   });
 
@@ -407,7 +303,7 @@ export default class vendorContacts extends Component {
   fillEmpty(itemId) {
     let area = '';
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+    const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
 
 
     sampleRef.on('value', (snapshot) => {
@@ -419,19 +315,12 @@ export default class vendorContacts extends Component {
       newState.push({
         id: order,
 
-        sampleDate: orders[order].sampleDate,
-        sampleTaker: orders[order].sampleTaker,
-        temp: orders[order].temp,
-        do: orders[order].do,
-        conductivity: orders[order].conductivity,
-        tds: orders[order].tds,
-        salinity: orders[order].salinity,
-        pH: orders[order].pH,
-        turbidity: orders[order].turbidity,
-        nitrogen: orders[order].nitrogen,
-        phosphorus: orders[order].phosphorus,
-        totalHardness: orders[order].totalHardness,
-        tss: orders[order].tss,
+        vendorName: orders[order].vendorName,
+        vendorCompany: orders[order].vendorCompany,
+        vendorCompanyDescription: orders[order].vendorCompanyDescription,
+        vendorEmail: orders[order].vendorEmail,
+        vendorPhone: orders[order].vendorPhone,
+        vendorNotes: orders[order].vendorNotes,
 
       });
     }
@@ -439,19 +328,12 @@ export default class vendorContacts extends Component {
 
       id: '',
       key: 3,
-      sampleDate: '',
-      sampleTaker: '',
-      temp: '',
-      do: '',
-      conductivity: '',
-      tds: '',
-      salinity: '',
-      pH: '',
-      turbidity: '',
-      nitrogen: '',
-      phosphorus: '',
-      totalHardness: '',
-      tss: '',
+      vendorName: '',
+      vendorCompany: '',
+      vendorCompanyDescription: '',
+      vendorEmail: '',
+      vendorPhone: '',
+      vendorNotes: '',
 
 
     })
@@ -465,7 +347,7 @@ export default class vendorContacts extends Component {
 
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
@@ -476,19 +358,12 @@ export default class vendorContacts extends Component {
         newState.push({
           id: order,
 
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
+          vendorName: orders[order].vendorName,
+          vendorCompany: orders[order].vendorCompany,
+          vendorCompanyDescription: orders[order].vendorCompanyDescription,
+          vendorEmail: orders[order].vendorEmail,
+          vendorPhone: orders[order].vendorPhone,
+          vendorNotes: orders[order].vendorNotes,
 
         });
       }
@@ -497,36 +372,23 @@ export default class vendorContacts extends Component {
         id: snapshot.child('id').val(),
         key: 3,
 
-        sampleDate: snapshot.child('sampleDate').val(),
-        sampleTaker: snapshot.child('sampleTaker').val(),
-        temp: snapshot.child('temp').val(),
-        do: snapshot.child('do').val(),
-        conductivity: snapshot.child('conductivity').val(),
-        tds: snapshot.child('tds').val(),
-        salinity: snapshot.child('salinity').val(),
-        pH: snapshot.child('pH').val(),
-        turbidity: snapshot.child('turbidity').val(),
-        nitrogen: snapshot.child('nitrogen').val(),
-        phosphorus: snapshot.child('phosphorus').val(),
-        totalHardness: snapshot.child('totalHardness').val(),
-        tss: snapshot.child('tss').val(),
-
-
+        vendorName: snapshot.child('vendorName').val(),
+        vendorCompany: snapshot.child('vendorCompany').val(),
+        vendorCompanyDescription: snapshot.child('vendorCompanyDescription').val(),
+        vendorEmail: snapshot.child('vendorEmail').val(),
+        vendorPhone: snapshot.child('vendorPhone').val(),
+        vendorNotes: snapshot.child('vendorNotes').val(),
 
       })
 
 
-});
+      });
     });
-
-
-
-
   }
 
     removesample(itemId) {
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
       sampleRef.remove();
     });
     }
@@ -541,40 +403,27 @@ writeData (e) {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
-  const orderID = fire.database().ref(`/monthlySamples/${user.uid}/${this.state.id}`);
+  const samplesRef = fire.database().ref(`vendorContacts/${user.uid}`);
+  const orderID = fire.database().ref(`/vendorContacts/${user.uid}/${this.state.id}`);
   const newCheckboxKey = firebase.database().ref().child('checkbox').push().key;
 
   let id = newCheckboxKey;
   let box = id;
 
 
-  const sample = {
+  const vendorContact = {
 
     id: this.state.id,
-    sampleDate: this.state.sampleDate,
-    sampleTaker: this.state.sampleTaker,
-    temp: this.state.temp,
-    do: this.state.do,
-    conductivity: this.state.conductivity,
-    tds: this.state.tds,
-    salinity: this.state.salinity,
-    pH: this.state.pH,
-    turbidity: this.state.turbidity,
-    nitrogen: this.state.nitrogen,
-    phosphorus: this.state.phosphorus,
-    totalHardness: this.state.totalHardness,
-    tss: this.state.tss,
+    vendorName: this.state.vendorName,
+    vendorCompany: this.state.vendorCompany,
+    vendorCompanyDescription: this.state.vendorCompanyDescription,
+    vendorEmail: this.state.vendorEmail,
+    vendorPhone: this.state.vendorPhone,
+    vendorNotes: this.state.vendorNotes,
   }
 
-  samplesRef.child(this.state.id).set(sample);
+  samplesRef.child(this.state.id).set(vendorContact);
 
-
-
-
-
-
-  //this.setState is used to clear the text boxes after the form has been submitted.
 
 });
 }
@@ -594,20 +443,6 @@ handleBtnClick = () => {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 exportPDF = () => {
   this.resume.save();
 }
@@ -619,25 +454,10 @@ rawMarkup(){
 
 
 
-
-
-
-
- DOSort = (a, b, order) => {
-   let dataList = this.state.dataList;   // order is desc or asc
-  if (order === 'desc') {
-    return a.DOResult - b.DOResult;
-  } else {
-    return b.DOResult - a.DOResult;
-  }
-}
-
-
-
 editRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiPencil type="button"
+    <TiPencil size={20} type="button"
     onClick={() => this.fillStates(`${isSelected.id}`)}>
       Click me
     </TiPencil>
@@ -647,17 +467,12 @@ editRow(row, isSelected, e, id) {
 deleteRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiTrash type="button"
+    <TiTrash size={20} type="button"
     onClick={() => this.removesample(`${isSelected.id}`)}>
       Click me
     </TiTrash>
   )
 }
-
-
-
-
-
 
 
 
@@ -679,7 +494,7 @@ createCustomExportCSVButton = (onClick) => {
       onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
   );
 }
-//...
+
 
 
 
@@ -710,12 +525,12 @@ const options = {
         <Row>
           <Row>
             <Col xs={6} md={6}>
-          <h3>Maintenance Reports</h3>
+          <h3>Vendor Contacts</h3>
 
           </Col>
           <Col xs={6} md={6}>
             <ButtonToolbar style={styles.topPad}>
-          <Button  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Maintenance Report</Button>
+          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Contact</Button>
         </ButtonToolbar>
           </Col>
           </Row>
@@ -726,7 +541,7 @@ const options = {
 
 
 
-        <Tab eventKey={1} title="+ Maintenance Reports">
+        <Tab eventKey={1} title="+ Vendor Contacts">
           <Grid>
 
           <Row style={styles.topPad}>
@@ -745,26 +560,24 @@ const options = {
 
               >
 
-              <TableHeaderColumn width='110px' dataField='sampleDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Sample Date</TableHeaderColumn>
-              <TableHeaderColumn dataField='temp' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Temperature</TableHeaderColumn>
-              <TableHeaderColumn dataField='do' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Dissolved Oxygen</TableHeaderColumn>
-              <TableHeaderColumn dataField='conductivity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Conductivity</TableHeaderColumn>
-              <TableHeaderColumn dataField='tds' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Total Dissolved Solids</TableHeaderColumn>
-              <TableHeaderColumn dataField='salinity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Salinity</TableHeaderColumn>
-                <TableHeaderColumn dataField='nitrogen' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Total Nitrogen</TableHeaderColumn>
-                  <TableHeaderColumn dataField='phosphorus' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Total Phosphorus</TableHeaderColumn>
-                    <TableHeaderColumn dataField='totalHardness' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Hardness</TableHeaderColumn>
-                      <TableHeaderColumn dataField='tss' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>TSS</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Name</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorCompany' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Company</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorCompanyDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorEmail' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Email</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorPhone' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Phone</TableHeaderColumn>
+
 
         <TableHeaderColumn
               dataField='button'
+              width={45}
               dataFormat={this.editRow.bind(this)}
-              >Edit</TableHeaderColumn>
+              ></TableHeaderColumn>
 
           <TableHeaderColumn
                 dataField='button'
+                  width={45}
                 dataFormat={this.deleteRow.bind(this)}
-                >Delete</TableHeaderColumn>
+                ></TableHeaderColumn>
 
 
               </BootstrapTable>
@@ -787,7 +600,7 @@ const options = {
           <form onSubmit={this.handleSubmit}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Monthly Sample Log</h2>
+                <h2>Vendor Contact</h2>
                 </Col>
 
                 </Row>
@@ -806,60 +619,29 @@ const options = {
   </thead>
   <tbody>
   <tr>
-  <td>Date</td>
-  <td><input type="date" name="sampleDate" placeholder="Date of Sample" onChange={this.handleChange} value={this.state.sampleDate} /></td>
+  <td>Vendor Name</td>
+  <td><input type="text" name="vendorName" placeholder="Vendor Name" onChange={this.handleChange} value={this.state.vendorName} /></td>
   </tr>
   <tr>
-  <td>Name</td>
-  <td><input type="text" name="sampleTaker" placeholder="Your Name" onChange={this.handleChange} value={this.state.sampleTaker} /></td>
+  <td>Vendor Company</td>
+  <td><input type="text" name="vendorCompany" placeholder="Vendor Company" onChange={this.handleChange} value={this.state.vendorCompany} /></td>
   </tr>
   <tr>
-  <td>Water Temperature</td>
-  <td><input type="number" name="temp" placeholder="Temp of Sample" onChange={this.handleChange} value={this.state.temp} /></td>
+  <td>Vendor Company Description</td>
+  <td><input type="text" name="vendorCompanyDescription" placeholder="Vendor Company Description" onChange={this.handleChange} value={this.state.vendorCompanyDescription} /></td>
   </tr>
   <tr>
-  <td>DO</td>
-  <td><input type="number" name="do" placeholder="Dissolved Oxygen" onChange={this.handleChange} value={this.state.do} /></td>
+  <td>Vendor Email</td>
+  <td><input type="text" name="vendorEmail" placeholder="Vendor Email" onChange={this.handleChange} value={this.state.vendorEmail} /></td>
   </tr>
   <tr>
-  <td>Conductivity</td>
-  <td><input type="number" name="conductivity" placeholder="Conductivity" onChange={this.handleChange} value={this.state.conductivity} /></td>
+  <td>Vendor Phone</td>
+  <td><input type="text" name="vendorPhone" placeholder="Vendor Phone" onChange={this.handleChange} value={this.state.vendorPhone} /></td>
   </tr>
+
   <tr>
-  <td>Total Dissolved Solids</td>
-  <td><input type="number" name="tds" placeholder="Total Dissolved Solids" onChange={this.handleChange} value={this.state.tds} /></td>
-  </tr>
-  <tr>
-  <td>Salinity</td>
-  <td><input type="number" name="salinity" placeholder="Salinity" onChange={this.handleChange} value={this.state.salinity} /></td>
-  </tr>
-  <tr>
-  <td>pH</td>
-  <td><input type="number" name="pH" placeholder="pH" onChange={this.handleChange} value={this.state.pH} /></td>
-  </tr>
-  <tr>
-  <td>Turbidity</td>
-  <td><input type="number" name="turbidity" placeholder="Turbidity" onChange={this.handleChange} value={this.state.turbidity} /></td>
-  </tr>
-  <tr>
-  <td>Total Nitrogen</td>
-  <td><input type="number" name="nitrogen" placeholder="Total Nitrogen" onChange={this.handleChange} value={this.state.nitrogen} /></td>
-  </tr>
-  <tr>
-  <td>Total Phosphorus</td>
-  <td><input type="number" name="phosphorus" placeholder="Total Phosphorus" onChange={this.handleChange} value={this.state.phosphorus} /></td>
-  </tr>
-  <tr>
-  <td>Total Hardness</td>
-  <td><input type="number" name="totalHardness" placeholder="Total Hardness" onChange={this.handleChange} value={this.state.totalHardness} /></td>
-  </tr>
-  <tr>
-  <td>Total Suspended Solids</td>
-  <td><input type="number" name="tss" placeholder="Total Suspended Solids" onChange={this.handleChange} value={this.state.tss} /></td>
-  </tr>
-  <tr>
-  <td>Sample Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
+  <td>Vendor Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="vendorNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.vendorNotes} /></td>
   </tr>
 
 
@@ -869,9 +651,12 @@ const options = {
 </Col>
                   </Row>
 
-                      <hr></hr>
-                <button>Add sample</button>
-              </form>
+                  <Row>
+                  <Col xs={10} sm={10} md={10}>
+            <Button onClick={this.handleSubmit} bsStyle="primary">Add Contact</Button>
+            </Col></Row>
+            <hr></hr>
+          </form>
         </section>
 
         </Col>
@@ -887,7 +672,7 @@ const options = {
           <form onSubmit={this.writeData}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Monthly Sample Log</h2>
+                <h2>Vendor Contact</h2>
                 </Col>
 
                 </Row>
@@ -895,15 +680,55 @@ const options = {
                 <Row>
                   <Col xs={8} sm={8} md={8}>
 
+  <Table striped bordered condensed hover>
+  <thead>
+  <tr>
+  <th>Item</th>
+  <th>Description</th>
 
+
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td>Vendor Name</td>
+  <td><input type="text" name="vendorName" placeholder="Vendor Name" onChange={this.handleChange} value={this.state.vendorName} /></td>
+  </tr>
+  <tr>
+  <td>Vendor Company</td>
+  <td><input type="text" name="vendorCompany" placeholder="Vendor Company" onChange={this.handleChange} value={this.state.vendorCompany} /></td>
+  </tr>
+  <tr>
+  <td>Vendor Company Description</td>
+  <td><input type="text" name="vendorCompanyDescription" placeholder="Vendor Company Description" onChange={this.handleChange} value={this.state.vendorCompanyDescription} /></td>
+  </tr>
+  <tr>
+  <td>Vendor Email</td>
+  <td><input type="text" name="vendorEmail" placeholder="Vendor Email" onChange={this.handleChange} value={this.state.vendorEmail} /></td>
+  </tr>
+  <tr>
+  <td>Vendor Phone</td>
+  <td><input type="text" name="vendorPhone" placeholder="Vendor Phone" onChange={this.handleChange} value={this.state.vendorPhone} /></td>
+  </tr>
+
+  <tr>
+  <td>Vendor Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="vendorNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.vendorNotes} /></td>
+  </tr>
+
+
+  </tbody>
+  </Table>
 
 </Col>
                   </Row>
 
-                      <hr></hr>
-                      <button>Overwrite Data</button>
-
-              </form>
+                  <Row>
+                  <Col xs={10} sm={10} md={10}>
+            <Button onClick={this.writeData} bsStyle="primary">Overwrite Contact</Button>
+            </Col></Row>
+            <hr></hr>
+          </form>
 
         </section>
 

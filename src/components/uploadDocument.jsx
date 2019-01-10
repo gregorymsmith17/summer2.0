@@ -280,10 +280,11 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
 
 
-            <div style={{ height: 80, width: 500, border: '1px dashed black'}}><strong>Drag a file here!</strong>
+            <div style={{ height: 80, width: 500, textAlign: 'center', border: '1px dashed black'}}>
+              <strong>Drag a file here!</strong>
             <FileUploader
               name="avatar"
-              style={{ height: 80, width: 500}}
+              style={{ height: 80, width: 500, dataAlign: 'center',}}
 
               filename={file => file.name.split('.')[0] }
               storageRef={firebase.storage().ref(this.state.documentType)}

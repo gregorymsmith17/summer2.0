@@ -7,9 +7,10 @@ import { PDFExport } from '@progress/kendo-react-pdf';
 import { fire } from '../fire';
 
 import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
-import { TiArrowSortedDown, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
+import { TiArrowSortedDown, TiBrush, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
 
 import domtoimage from 'dom-to-image';
+import { ChromePicker } from 'react-color';
 import fileDownload from "js-file-download";
 
 
@@ -89,6 +90,9 @@ export default class monthlySamples extends Component {
           idKey: '',
           page: '',
           area: '',
+          displayColorPicker: false,
+          color: '#9E4444',
+          tempColor: '',
 
 
           //this is the object array for the table
@@ -296,11 +300,25 @@ export default class monthlySamples extends Component {
             orders: newState,
             orders2: newState2,
             dataList: newState,
+            color: this.state.color,
           });
+
+        });
+        const colorsRef = fire.database().ref(`colors/${user.uid}`);
+
+        colorsRef.on('value', (snapshot) => {
+          let colorList = snapshot.val();
+          console.log(colorList);
+          this.setState({
+            tempColor: snapshot.child('tempColor').val(),
+
+          });
+
 
         });
 
       });
+      console.log(this.state.color);
 
 
     }
@@ -828,7 +846,46 @@ createCustomExportCSVButton = (onClick) => {
       onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
   );
 }
-//...
+
+
+handleClick = () => {
+  this.setState({ displayColorPicker: !this.state.displayColorPicker })
+};
+
+handleClose = () => {
+  this.setState({ displayColorPicker: false })
+};
+
+handleChangeComplete = (color) => {
+
+    console.log(this.state.color);
+
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const samplesRef = fire.database().ref(`colors/${user.uid}`);
+    const orderID = fire.database().ref(`/colors/${user.uid}/${orderID}`);
+
+
+    const sample = {
+
+      tempColor: color.hex
+
+    }
+
+    samplesRef.set(sample);
+    this.setState({
+      tempColor: color.hex,
+
+     });
+    //this.setState is used to clear the text boxes after the form has been submitted.
+
+
+
+    });
+
+}
+
+
+
 
 
 
@@ -899,6 +956,17 @@ const options = {
      <label>Turbidity</label>
      </span>
    );
+   const popover = {
+      position: 'absolute',
+      zIndex: '2',
+    }
+    const cover = {
+      position: 'fixed',
+      top: '0px',
+      right: '0px',
+      bottom: '0px',
+      left: '0px',
+    }
 
 
         return (
@@ -939,10 +1007,10 @@ const options = {
         <Tooltip/>
 
           <Line type="monotone" dataKey={this.state.nitrogenPlot}  stroke="#8884d8" activeDot={{r: 8}}/>
-        <Line type="monotone" dataKey={this.state.phosphorusPlot} stroke="#82ca9d" />
+        <Line type="monotone" dataKey={this.state.phosphorusPlot}  stroke="#82ca9d, 3px" />
          <Line type="monotone" dataKey={this.state.tdsPlot} stroke="#8884d8" activeDot={{r: 8}}/>
         <Line type="monotone" dataKey={this.state.pHPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.tempPlot} stroke="#82ca9d" />
+        <Line type="monotone" dataKey={this.state.tempPlot}  stroke={this.state.tempColor} />
         <Line type="monotone" dataKey={this.state.tssPlot} stroke="#82ca9d" />
         <Line type="monotone" dataKey={this.state.salinityPlot} stroke="#82ca9d" />
         <Line type="monotone" dataKey={this.state.totalHardnessPlot} stroke="#82ca9d" />
@@ -955,8 +1023,15 @@ const options = {
       </Col>
         <Col smOffset={2} xs={2} sm={2} md={2} lg={2}>
 
-
+<Row>
       <form onSubmit={this.onSubmit.bind(this)}>{nitrogenCheckbox}</form>
+
+          <TiBrush size={20}  onClick={ this.handleClick }>Color</TiBrush>
+          { this.state.displayColorPicker ? <div style={ popover }>
+            <div style={ cover } onClick={ this.handleClose }/>
+            <ChromePicker color={ this.state.tempColor } onChangeComplete={ this.handleChangeComplete } />
+          </div> : null }
+        </Row>
       <form onSubmit={this.onSubmit.bind(this)}>{phosphorusCheckbox}</form>
       <form onSubmit={this.onSubmit.bind(this)}>{tempCheckbox}</form>
       <form onSubmit={this.onSubmit.bind(this)}>{tdsCheckbox}</form>
@@ -992,29 +1067,32 @@ const options = {
               options={options}
               exportCSV
               pagination
+              containerStyle={{width: '1000px',overflowX: 'scroll'}}
 
 
               >
 
   <TableHeaderColumn width='110px' dataField='sampleDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Sample Date</TableHeaderColumn>
-  <TableHeaderColumn dataField='temp' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tempSort }>Temperature</TableHeaderColumn>
-  <TableHeaderColumn dataField='do' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.doSort }>Dissolved Oxygen</TableHeaderColumn>
-  <TableHeaderColumn dataField='conductivity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.conductivitySort }>Conductivity</TableHeaderColumn>
-  <TableHeaderColumn dataField='tds' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tdsSort }>Total Dissolved Solids</TableHeaderColumn>
-  <TableHeaderColumn dataField='salinity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.salinitySort }>Salinity</TableHeaderColumn>
-    <TableHeaderColumn dataField='nitrogen' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.nitrogenSort }>Total Nitrogen</TableHeaderColumn>
-      <TableHeaderColumn dataField='phosphorus' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.phosphorusSort }>Total Phosphorus</TableHeaderColumn>
-        <TableHeaderColumn dataField='totalHardness' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.hardnessSort }>Hardness</TableHeaderColumn>
-          <TableHeaderColumn dataField='tss' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tssSort }>TSS</TableHeaderColumn>
+  <TableHeaderColumn width='110px' dataField='temp' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tempSort }>Temperature</TableHeaderColumn>
+  <TableHeaderColumn width='110px' dataField='do' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.doSort }>Dissolved Oxygen</TableHeaderColumn>
+  <TableHeaderColumn width='110px' dataField='conductivity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.conductivitySort }>Conductivity</TableHeaderColumn>
+  <TableHeaderColumn width='110px' dataField='tds' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tdsSort }>Total Dissolved Solids</TableHeaderColumn>
+  <TableHeaderColumn width='110px' dataField='salinity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.salinitySort }>Salinity</TableHeaderColumn>
+    <TableHeaderColumn width='110px' dataField='nitrogen' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.nitrogenSort }>Total Nitrogen</TableHeaderColumn>
+      <TableHeaderColumn width='110px' dataField='phosphorus' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.phosphorusSort }>Total Phosphorus</TableHeaderColumn>
+        <TableHeaderColumn width='110px' dataField='totalHardness' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.hardnessSort }>Hardness</TableHeaderColumn>
+          <TableHeaderColumn width='110px' dataField='tss' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tssSort }>TSS</TableHeaderColumn>
 
         <TableHeaderColumn
               dataField='button'
               dataFormat={this.editRow.bind(this)}
+              width='110px'
               >Edit</TableHeaderColumn>
 
           <TableHeaderColumn
                 dataField='button'
                 dataFormat={this.deleteRow.bind(this)}
+                width='110px'
                 >Delete</TableHeaderColumn>
 
 
@@ -1120,7 +1198,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button bsStyle="primary">Add sample</Button>
+            <Button onClick={this.handleSubmit} bsStyle="primary">Add sample</Button>
             </Col></Row>
             <hr></hr>
           </form>
@@ -1222,7 +1300,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button bsStyle="primary">Overwrite sample</Button>
+            <Button onClick={this.writeData} bsStyle="primary">Overwrite sample</Button>
             </Col></Row>
             <hr></hr>
           </form>

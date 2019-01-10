@@ -85,15 +85,10 @@ const popoverRightAsset = (
     <NavItem componentClass={Link} href="/maintenanceReports" to="/maintenanceReports">
       Maintenance Reports
     </NavItem>
-    <NavItem componentClass={Link} href="/data" to="/data">
-      Maintenance Schedule
-    </NavItem>
     <NavItem componentClass={Link} href="/vendorContacts" to="/vendorContacts">
       Vendor Contacts
     </NavItem>
-    <NavItem componentClass={Link} href="/data" to="/data">
-      Equipment List
-    </NavItem>
+
 
 
 
@@ -107,16 +102,15 @@ const popoverRightDocuments = (
       Upload Document
     </NavItem>
     <NavItem componentClass={Link} href="/data" to="/data">
-      Equipment Manual
+      Equipment Manuals
     </NavItem>
-
     <NavItem componentClass={Link} href="/data" to="/data">
       Reports
     </NavItem>
     <NavItem componentClass={Link} href="/data" to="/data">
       Drawings
     </NavItem>
-    
+
 
 
 
