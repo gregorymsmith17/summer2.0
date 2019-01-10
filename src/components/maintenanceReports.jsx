@@ -31,6 +31,9 @@ const styles = {
   topPad: {
     paddingTop: "20px"
   },
+  bottomPad: {
+    paddingBottom: "40px"
+  },
 };
 
 const ColoredLine = ({ color }) => (
@@ -53,29 +56,23 @@ export default class maintenanceReports extends Component {
         this.state = {
 
 
+          //Inputs for Maintenance Report
+          maintenanceDate: '',
+          maintenanceWorker: '',
+          mechanicalEquipmentNotes: '',
+          electricalEquipmentNotes: '',
+          aquaticVegetationNotes: '',
+          shorelineNotes: '',
+          miscNotes: '',
 
-          sampleDate: '',
-          sampleTaker: '',
-          temp: '',
-          do: '',
-          conductivity: '',
-          tds: '',
-          salinity: '',
-          pH: '',
-          turbidity: '',
-          nitrogen: '',
-          phosphorus: '',
-          totalHardness: '',
-          tss: '',
-
+          //Misc. for chaing taps and id's
           id: '',
           key: 1,
           idKey: '',
           page: '',
           area: '',
 
-
-
+          //used for table data
           samples: [],
           orders: [],
           orders2: [],
@@ -83,7 +80,7 @@ export default class maintenanceReports extends Component {
           filter: "",
           blobUrl: null,
 
-          ammoniaPlot: 'ammoniaResult',
+
 
 
 
@@ -132,25 +129,19 @@ export default class maintenanceReports extends Component {
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
-        const orderID = fire.database().ref(`/monthlySamples/${user.uid}/${orderID}`);
+        const samplesRef = fire.database().ref(`maintenanceReport/${user.uid}`);
+        const orderID = fire.database().ref(`/maintenanceReport/${user.uid}/${orderID}`);
 
 
-        const sample = {
+        const maintenanceReport = {
 
-          sampleDate: this.state.sampleDate,
-          sampleTaker: this.state.sampleTaker,
-          temp: this.state.temp,
-          do: this.state.do,
-          conductivity: this.state.conductivity,
-          tds: this.state.tds,
-          salinity: this.state.salinity,
-          pH: this.state.pH,
-          turbidity: this.state.turbidity,
-          nitrogen: this.state.nitrogen,
-          phosphorus: this.state.phosphorus,
-          totalHardness: this.state.totalHardness,
-          tss: this.state.tss,
+          maintenanceDate: this.state.maintenanceDate,
+          maintenanceWorker: this.state.maintenanceWorker,
+          mechanicalEquipmentNotes: this.state.mechanicalEquipmentNotes,
+          electricalEquipmentNotes: this.state.electricalEquipmentNotes,
+          aquaticVegetationNotes: this.state.aquaticVegetationNotes,
+          shorelineNotes: this.state.shorelineNotes,
+          miscNotes: this.state.miscNotes,
 
           id: this.state.id,
         }
@@ -158,22 +149,16 @@ export default class maintenanceReports extends Component {
 
 
 
-        samplesRef.push(sample);
+        samplesRef.push(maintenanceReport);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
-          sampleDate: '',
-          sampleTaker: '',
-          temp: '',
-          do: '',
-          conductivity: '',
-          tds: '',
-          salinity: '',
-          pH: '',
-          turbidity: '',
-          nitrogen: '',
-          phosphorus: '',
-          totalHardness: '',
-          tss: '',
+          maintenanceDate: '',
+          maintenanceWorker: '',
+          mechanicalEquipmentNotes: '',
+          electricalEquipmentNotes: '',
+          aquaticVegetationNotes: '',
+          shorelineNotes: '',
+          miscNotes: '',
 
 
 
@@ -193,55 +178,31 @@ export default class maintenanceReports extends Component {
 
       componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
+          const samplesRef = fire.database().ref(`maintenanceReport/${user.uid}`);
           samplesRef.on('value', (snapshot) => {
 
 
             let dataList = snapshot.val();
             let filter = [];
+            let orders = snapshot.val();
+            let orders2 = snapshot.val();
 
-
-
-          let orders = snapshot.val();
-          let orders2 = snapshot.val();
-
-          let newState = [];
-          let newState2 = [];
-          let newState3 = [];
+            let newState = [];
+            let newState2 = [];
+            let newState3 = [];
 
           for (let order in orders) {
             newState.push({
               id: order,
-              sampleDate: orders[order].sampleDate,
-              sampleTaker: orders[order].sampleTaker,
-              temp: orders[order].temp,
-              do: orders[order].do,
-              conductivity: orders[order].conductivity,
-              tds: orders[order].tds,
-              salinity: orders[order].salinity,
-              pH: orders[order].pH,
-              turbidity: orders[order].turbidity,
-              nitrogen: orders[order].nitrogen,
-              phosphorus: orders[order].phosphorus,
-              totalHardness: orders[order].totalHardness,
-              tss: orders[order].tss,
+              maintenanceDate: orders[order].maintenanceDate,
+              maintenanceWorker: orders[order].maintenanceWorker,
+              mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
+              electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
+              aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
+              shorelineNotes: orders[order].shorelineNotes,
+              miscNotes: orders[order].miscNotes,
             });
-            newState2.push({
-              id: order,
-              sampleDate: orders[order].sampleDate,
-              sampleTaker: orders[order].sampleTaker,
-              temp: orders[order].temp,
-              do: orders[order].do,
-              conductivity: orders[order].conductivity,
-              tds: orders[order].tds,
-              salinity: orders[order].salinity,
-              pH: orders[order].pH,
-              turbidity: orders[order].turbidity,
-              nitrogen: orders[order].nitrogen,
-              phosphorus: orders[order].phosphorus,
-              totalHardness: orders[order].totalHardness,
-              tss: orders[order].tss,
-            });
+
 
 
 
@@ -257,10 +218,10 @@ export default class maintenanceReports extends Component {
         });
         newState.sort(function(a, b) {
 
-          if (b.sampleDate === a.sampleDate) {
+          if (b.maintenanceDate === a.maintenanceDate) {
             return 0;
           }
-          return b.sampleDate > a.sampleDate ? 1 : -1;
+          return b.maintenanceDate > a.maintenanceDate ? 1 : -1;
       });
 
 
@@ -292,48 +253,35 @@ export default class maintenanceReports extends Component {
     fillStates(itemId) {
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
         this.setState({
-          sampleDate: '',
-          sampleTaker: '',
-          temp: '',
-          do: '',
-          conductivity: '',
-          tds: '',
-          salinity: '',
-          pH: '',
-          turbidity: '',
-          nitrogen: '',
-          phosphorus: '',
-          totalHardness: '',
-          tss: '',
+          maintenanceDate: '',
+          maintenanceWorker: '',
+          mechanicalEquipmentNotes: '',
+          electricalEquipmentNotes: '',
+          aquaticVegetationNotes: '',
+          shorelineNotes: '',
+          miscNotes: '',
 
         });
 
       let orders = snapshot.val();
-      let id = fire.database().ref().child(`/monthlySamples/${user.uid}/${itemId}`).key;
+      let id = fire.database().ref().child(`/maintenanceReport/${user.uid}/${itemId}`).key;
 
       let newState = [];
       for (let order in orders) {
         newState.push({
           id: order,
-
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
+          maintenanceDate: orders[order].maintenanceDate,
+          maintenanceWorker: orders[order].maintenanceWorker,
+          mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
+          electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
+          aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
+          shorelineNotes: orders[order].shorelineNotes,
+          miscNotes: orders[order].miscNotes,
 
         });
       }
@@ -342,29 +290,17 @@ export default class maintenanceReports extends Component {
         id: id,
         key: 4,
 
-        sampleDate: snapshot.child('sampleDate').val(),
-        sampleTaker: snapshot.child('sampleTaker').val(),
-        temp: snapshot.child('temp').val(),
-        do: snapshot.child('do').val(),
-        conductivity: snapshot.child('conductivity').val(),
-        tds: snapshot.child('tds').val(),
-        salinity: snapshot.child('salinity').val(),
-        pH: snapshot.child('pH').val(),
-        turbidity: snapshot.child('turbidity').val(),
-        nitrogen: snapshot.child('nitrogen').val(),
-        phosphorus: snapshot.child('phosphorus').val(),
-        totalHardness: snapshot.child('totalHardness').val(),
-        tss: snapshot.child('tss').val(),
 
-
-
-
+        maintenanceDate: snapshot.child('maintenanceDate').val(),
+        maintenanceWorker: snapshot.child('maintenanceWorker').val(),
+        mechanicalEquipmentNotes: snapshot.child('mechanicalEquipmentNotes').val(),
+        electricalEquipmentNotes: snapshot.child('electricalEquipmentNotes').val(),
+        aquaticVegetationNotes: snapshot.child('aquaticVegetationNotes').val(),
+        shorelineNotes: snapshot.child('shorelineNotes').val(),
+        miscNotes: snapshot.child('miscNotes').val(),
 
 
       })
-
-
-
 
 });
 
@@ -375,31 +311,22 @@ export default class maintenanceReports extends Component {
   writeStates = (itemId) => {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${this.state.id}`);
+    const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${this.state.id}`);
 
 
     sampleRef.child("id").set(this.state.id);
 
 
-    sampleRef.child("sampleDate").set(this.state.sampleDate);
-    sampleRef.child("sampleTaker").set(this.state.sampleTaker);
-    sampleRef.child("temp").set(this.state.temp);
-    sampleRef.child("do").set(this.state.do);
-    sampleRef.child("conductivity").set(this.state.conductivity);
-    sampleRef.child("tds").set(this.state.tds);
-    sampleRef.child("salinity").set(this.state.salinity);
-    sampleRef.child("pH").set(this.state.pH);
-    sampleRef.child("turbidity").set(this.state.turbidity);
-    sampleRef.child("nitrogen").set(this.state.nitrogen);
-    sampleRef.child("phosphorus").set(this.state.phosphorus);
-    sampleRef.child("totalHardness").set(this.state.totalHardness);
-    sampleRef.child("tss").set(this.state.tss);
 
+    sampleRef.child("maintenanceDate").set(this.state.sampleDate);
+    sampleRef.child("maintenanceWorker").set(this.state.sampleDate);
+    sampleRef.child("mechanicalEquipmentNotes").set(this.state.sampleDate);
+    sampleRef.child("electricalEquipmentNotes").set(this.state.sampleDate);
+    sampleRef.child("aquaticVegetationNotes").set(this.state.sampleDate);
+    sampleRef.child("shorelineNotes").set(this.state.sampleDate);
+    sampleRef.child("miscNotes").set(this.state.sampleDate);
 
-
-  });
-
-
+    });
   }
 
 
@@ -407,7 +334,7 @@ export default class maintenanceReports extends Component {
   fillEmpty(itemId) {
     let area = '';
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+    const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
 
 
     sampleRef.on('value', (snapshot) => {
@@ -419,45 +346,29 @@ export default class maintenanceReports extends Component {
       newState.push({
         id: order,
 
-        sampleDate: orders[order].sampleDate,
-        sampleTaker: orders[order].sampleTaker,
-        temp: orders[order].temp,
-        do: orders[order].do,
-        conductivity: orders[order].conductivity,
-        tds: orders[order].tds,
-        salinity: orders[order].salinity,
-        pH: orders[order].pH,
-        turbidity: orders[order].turbidity,
-        nitrogen: orders[order].nitrogen,
-        phosphorus: orders[order].phosphorus,
-        totalHardness: orders[order].totalHardness,
-        tss: orders[order].tss,
+        maintenanceDate: orders[order].maintenanceDate,
+        maintenanceWorker: orders[order].maintenanceWorker,
+        mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
+        electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
+        aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
+        shorelineNotes: orders[order].shorelineNotes,
+        miscNotes: orders[order].miscNotes,
 
       });
     }
-    this.setState({
+            this.setState({
 
-      id: '',
-      key: 3,
-      sampleDate: '',
-      sampleTaker: '',
-      temp: '',
-      do: '',
-      conductivity: '',
-      tds: '',
-      salinity: '',
-      pH: '',
-      turbidity: '',
-      nitrogen: '',
-      phosphorus: '',
-      totalHardness: '',
-      tss: '',
-
-
-    })
-
-
-});
+              id: '',
+              key: 3,
+              maintenanceDate: '',
+              maintenanceWorker: '',
+              mechanicalEquipmentNotes: '',
+              electricalEquipmentNotes: '',
+              aquaticVegetationNotes: '',
+              shorelineNotes: '',
+              miscNotes: '',
+            })
+        });
   });
 }
 
@@ -465,7 +376,7 @@ export default class maintenanceReports extends Component {
 
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
@@ -476,19 +387,13 @@ export default class maintenanceReports extends Component {
         newState.push({
           id: order,
 
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
+          maintenanceDate: orders[order].maintenanceDate,
+          maintenanceWorker: orders[order].maintenanceWorker,
+          mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
+          electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
+          aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
+          shorelineNotes: orders[order].shorelineNotes,
+          miscNotes: orders[order].miscNotes,
 
         });
       }
@@ -497,24 +402,15 @@ export default class maintenanceReports extends Component {
         id: snapshot.child('id').val(),
         key: 3,
 
-        sampleDate: snapshot.child('sampleDate').val(),
-        sampleTaker: snapshot.child('sampleTaker').val(),
-        temp: snapshot.child('temp').val(),
-        do: snapshot.child('do').val(),
-        conductivity: snapshot.child('conductivity').val(),
-        tds: snapshot.child('tds').val(),
-        salinity: snapshot.child('salinity').val(),
-        pH: snapshot.child('pH').val(),
-        turbidity: snapshot.child('turbidity').val(),
-        nitrogen: snapshot.child('nitrogen').val(),
-        phosphorus: snapshot.child('phosphorus').val(),
-        totalHardness: snapshot.child('totalHardness').val(),
-        tss: snapshot.child('tss').val(),
-
-
+        maintenanceDate: snapshot.child('maintenanceDate').val(),
+        maintenanceWorker: snapshot.child('maintenanceWorker').val(),
+        mechanicalEquipmentNotes: snapshot.child('mechanicalEquipmentNotes').val(),
+        electricalEquipmentNotes: snapshot.child('electricalEquipmentNotes').val(),
+        aquaticVegetationNotes: snapshot.child('aquaticVegetationNotes').val(),
+        shorelineNotes: snapshot.child('shorelineNotes').val(),
+        miscNotes: snapshot.child('miscNotes').val(),
 
       })
-
 
 });
     });
@@ -526,7 +422,7 @@ export default class maintenanceReports extends Component {
 
     removesample(itemId) {
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
       sampleRef.remove();
     });
     }
@@ -541,33 +437,26 @@ writeData (e) {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
-  const orderID = fire.database().ref(`/monthlySamples/${user.uid}/${this.state.id}`);
+  const samplesRef = fire.database().ref(`maintenanceReport/${user.uid}`);
+  const orderID = fire.database().ref(`/maintenanceReport/${user.uid}/${this.state.id}`);
   const newCheckboxKey = firebase.database().ref().child('checkbox').push().key;
 
   let id = newCheckboxKey;
   let box = id;
 
 
-  const sample = {
+  const maintenanceReport = {
 
-    id: this.state.id,
-    sampleDate: this.state.sampleDate,
-    sampleTaker: this.state.sampleTaker,
-    temp: this.state.temp,
-    do: this.state.do,
-    conductivity: this.state.conductivity,
-    tds: this.state.tds,
-    salinity: this.state.salinity,
-    pH: this.state.pH,
-    turbidity: this.state.turbidity,
-    nitrogen: this.state.nitrogen,
-    phosphorus: this.state.phosphorus,
-    totalHardness: this.state.totalHardness,
-    tss: this.state.tss,
+    maintenanceDate: this.state.maintenanceDate,
+    maintenanceWorker: this.state.maintenanceWorker,
+    mechanicalEquipmentNotes: this.state.mechanicalEquipmentNotes,
+    electricalEquipmentNotes: this.state.electricalEquipmentNotes,
+    aquaticVegetationNotes: this.state.aquaticVegetationNotes,
+    shorelineNotes: this.state.shorelineNotes,
+    miscNotes: this.state.miscNotes,
   }
 
-  samplesRef.child(this.state.id).set(sample);
+  samplesRef.child(this.state.id).set(maintenanceReport);
 
 
 
@@ -592,17 +481,6 @@ handleBtnClick = () => {
     order = 'desc';
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -637,7 +515,7 @@ rawMarkup(){
 editRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiPencil type="button"
+    <TiPencil size={20} type="button"
     onClick={() => this.fillStates(`${isSelected.id}`)}>
       Click me
     </TiPencil>
@@ -647,19 +525,12 @@ editRow(row, isSelected, e, id) {
 deleteRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiTrash type="button"
+    <TiTrash size={20} type="button"
     onClick={() => this.removesample(`${isSelected.id}`)}>
       Click me
     </TiTrash>
   )
 }
-
-
-
-
-
-
-
 
 
   onSubmit(event) {
@@ -679,14 +550,6 @@ createCustomExportCSVButton = (onClick) => {
       onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
   );
 }
-//...
-
-
-
-
-
-
-
 
 
 
@@ -715,7 +578,7 @@ const options = {
           </Col>
           <Col xs={6} md={6}>
             <ButtonToolbar style={styles.topPad}>
-          <Button  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Maintenance Report</Button>
+          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Maintenance Report</Button>
         </ButtonToolbar>
           </Col>
           </Row>
@@ -737,7 +600,7 @@ const options = {
 
 
               <BootstrapTable
-              data={ this.state.dataList }
+              data={ this.state.orders }
               options={options}
               exportCSV
               pagination
@@ -745,23 +608,22 @@ const options = {
 
               >
 
-              <TableHeaderColumn width='110px' dataField='sampleDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Sample Date</TableHeaderColumn>
-              <TableHeaderColumn dataField='temp' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Temperature</TableHeaderColumn>
-              <TableHeaderColumn dataField='do' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Dissolved Oxygen</TableHeaderColumn>
-              <TableHeaderColumn dataField='conductivity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Conductivity</TableHeaderColumn>
-              <TableHeaderColumn dataField='tds' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Total Dissolved Solids</TableHeaderColumn>
-              <TableHeaderColumn dataField='salinity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Salinity</TableHeaderColumn>
-                <TableHeaderColumn dataField='nitrogen' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Total Nitrogen</TableHeaderColumn>
-                  <TableHeaderColumn dataField='phosphorus' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Total Phosphorus</TableHeaderColumn>
-                    <TableHeaderColumn dataField='totalHardness' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Hardness</TableHeaderColumn>
-                      <TableHeaderColumn dataField='tss' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>TSS</TableHeaderColumn>
+              <TableHeaderColumn dataField='maintenanceDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Maintenance Date</TableHeaderColumn>
+
+              <TableHeaderColumn dataField='mechanicalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Mechanical Notes</TableHeaderColumn>
+              <TableHeaderColumn dataField='electricalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Electrical Notes</TableHeaderColumn>
+              <TableHeaderColumn dataField='aquaticVegetationNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Aquatic Vegetation Notes</TableHeaderColumn>
+              <TableHeaderColumn dataField='shorelineNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Shoreline Notes</TableHeaderColumn>
+              <TableHeaderColumn dataField='miscNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Miscellaneous Notes</TableHeaderColumn>
 
         <TableHeaderColumn
+              width={45}
               dataField='button'
               dataFormat={this.editRow.bind(this)}
               >Edit</TableHeaderColumn>
 
           <TableHeaderColumn
+                width={45}
                 dataField='button'
                 dataFormat={this.deleteRow.bind(this)}
                 >Delete</TableHeaderColumn>
@@ -787,13 +649,13 @@ const options = {
           <form onSubmit={this.handleSubmit}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Monthly Sample Log</h2>
+                <h2>Maintenance Report</h2>
                 </Col>
 
                 </Row>
                 <hr></hr>
                 <Row>
-                  <Col xs={8} sm={8} md={8}>
+                  <Col xs={10} sm={10} md={10}>
 
   <Table striped bordered condensed hover>
   <thead>
@@ -807,59 +669,31 @@ const options = {
   <tbody>
   <tr>
   <td>Date</td>
-  <td><input type="date" name="sampleDate" placeholder="Date of Sample" onChange={this.handleChange} value={this.state.sampleDate} /></td>
+  <td><input type="date" name="maintenanceDate" placeholder="Date of Maintenance" onChange={this.handleChange} value={this.state.maintenanceDate} /></td>
   </tr>
   <tr>
   <td>Name</td>
-  <td><input type="text" name="sampleTaker" placeholder="Your Name" onChange={this.handleChange} value={this.state.sampleTaker} /></td>
+  <td><input type="text" name="maintenanceWorker" placeholder="Your Name" onChange={this.handleChange} value={this.state.maintenanceWorker} /></td>
   </tr>
   <tr>
-  <td>Water Temperature</td>
-  <td><input type="number" name="temp" placeholder="Temp of Sample" onChange={this.handleChange} value={this.state.temp} /></td>
+  <td>Mechanical Equipment Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="mechanicalEquipmentNotes" placeholder="Mechanical Notes" onChange={this.handleChange} value={this.state.mechanicalEquipmentNotes} /></td>
   </tr>
   <tr>
-  <td>DO</td>
-  <td><input type="number" name="do" placeholder="Dissolved Oxygen" onChange={this.handleChange} value={this.state.do} /></td>
+  <td>Electrical Equipment Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="electricalEquipmentNotes" placeholder="Electrical Notes" onChange={this.handleChange} value={this.state.electricalEquipmentNotes} /></td>
   </tr>
   <tr>
-  <td>Conductivity</td>
-  <td><input type="number" name="conductivity" placeholder="Conductivity" onChange={this.handleChange} value={this.state.conductivity} /></td>
+  <td>Aquatic Vegetation Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="aquaticVegetationNotes" placeholder="Aquatic Vegetation Notes" onChange={this.handleChange} value={this.state.aquaticVegetationNotes} /></td>
   </tr>
   <tr>
-  <td>Total Dissolved Solids</td>
-  <td><input type="number" name="tds" placeholder="Total Dissolved Solids" onChange={this.handleChange} value={this.state.tds} /></td>
+  <td>Shoreline Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="shorelineNotes" placeholder="Shoreline Notes" onChange={this.handleChange} value={this.state.shorelineNotes} /></td>
   </tr>
   <tr>
-  <td>Salinity</td>
-  <td><input type="number" name="salinity" placeholder="Salinity" onChange={this.handleChange} value={this.state.salinity} /></td>
-  </tr>
-  <tr>
-  <td>pH</td>
-  <td><input type="number" name="pH" placeholder="pH" onChange={this.handleChange} value={this.state.pH} /></td>
-  </tr>
-  <tr>
-  <td>Turbidity</td>
-  <td><input type="number" name="turbidity" placeholder="Turbidity" onChange={this.handleChange} value={this.state.turbidity} /></td>
-  </tr>
-  <tr>
-  <td>Total Nitrogen</td>
-  <td><input type="number" name="nitrogen" placeholder="Total Nitrogen" onChange={this.handleChange} value={this.state.nitrogen} /></td>
-  </tr>
-  <tr>
-  <td>Total Phosphorus</td>
-  <td><input type="number" name="phosphorus" placeholder="Total Phosphorus" onChange={this.handleChange} value={this.state.phosphorus} /></td>
-  </tr>
-  <tr>
-  <td>Total Hardness</td>
-  <td><input type="number" name="totalHardness" placeholder="Total Hardness" onChange={this.handleChange} value={this.state.totalHardness} /></td>
-  </tr>
-  <tr>
-  <td>Total Suspended Solids</td>
-  <td><input type="number" name="tss" placeholder="Total Suspended Solids" onChange={this.handleChange} value={this.state.tss} /></td>
-  </tr>
-  <tr>
-  <td>Sample Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
+  <td>Miscellaneous Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="miscNotes" placeholder="Misc. Notes" onChange={this.handleChange} value={this.state.miscNotes} /></td>
   </tr>
 
 
@@ -869,8 +703,12 @@ const options = {
 </Col>
                   </Row>
 
-                      <hr></hr>
-                <button>Add sample</button>
+
+                      <Row>
+                      <Col xs={10} sm={10} md={10}>
+                <Button bsStyle="primary">Add sample</Button>
+                </Col></Row>
+                <hr></hr>
               </form>
         </section>
 
@@ -887,22 +725,66 @@ const options = {
           <form onSubmit={this.writeData}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Monthly Sample Log</h2>
+                <h2>Maintenance Report</h2>
                 </Col>
 
                 </Row>
                 <hr></hr>
                 <Row>
-                  <Col xs={8} sm={8} md={8}>
+                  <Col xs={10} sm={10} md={10}>
+
+  <Table striped bordered condensed hover>
+  <thead>
+  <tr>
+  <th>Item</th>
+  <th>Description</th>
 
 
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td>Date</td>
+  <td><input type="date" name="maintenanceDate" placeholder="Date of Maintenance" onChange={this.handleChange} value={this.state.maintenanceDate} /></td>
+  </tr>
+  <tr>
+  <td>Name</td>
+  <td><input type="text" name="maintenanceWorker" placeholder="Your Name" onChange={this.handleChange} value={this.state.maintenanceWorker} /></td>
+  </tr>
+  <tr>
+  <td>Mechanical Equipment Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="mechanicalEquipmentNotes" placeholder="Mechanical Notes" onChange={this.handleChange} value={this.state.mechanicalEquipmentNotes} /></td>
+  </tr>
+  <tr>
+  <td>Electrical Equipment Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="electricalEquipmentNotes" placeholder="Electrical Notes" onChange={this.handleChange} value={this.state.electricalEquipmentNotes} /></td>
+  </tr>
+  <tr>
+  <td>Aquatic Vegetation Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="aquaticVegetationNotes" placeholder="Aquatic Vegetation Notes" onChange={this.handleChange} value={this.state.aquaticVegetationNotes} /></td>
+  </tr>
+  <tr>
+  <td>Shoreline Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="shorelineNotes" placeholder="Shoreline Notes" onChange={this.handleChange} value={this.state.shorelineNotes} /></td>
+  </tr>
+  <tr>
+  <td>Miscellaneous Notes</td>
+  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="miscNotes" placeholder="Misc. Notes" onChange={this.handleChange} value={this.state.miscNotes} /></td>
+  </tr>
+
+
+  </tbody>
+  </Table>
 
 </Col>
                   </Row>
 
-                      <hr></hr>
-                      <button>Overwrite Data</button>
-
+                  <Row>
+                  <Col xs={10} sm={10} md={10}>
+                      <Button bsStyle="primary">Overwrite Data</Button>
+                      </Col>
+                    </Row>
+                    <hr></hr>
               </form>
 
         </section>

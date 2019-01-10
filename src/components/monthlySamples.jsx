@@ -646,20 +646,24 @@ conductivitySort = (a, b, order) => {
 editRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiPencil type="button"
+      <div style={{textAlign: 'center'}}>
+    <TiPencil size={20} type="button"
     onClick={() => this.fillStates(`${isSelected.id}`)}>
       Click me
     </TiPencil>
+    </div>
   )
 }
 
 deleteRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiTrash type="button"
+    <div style={{textAlign: 'center'}}>
+    <TiTrash  size={20} type="button"
     onClick={() => this.removesample(`${isSelected.id}`)}>
       Click me
     </TiTrash>
+    </div>
   )
 }
 
@@ -909,7 +913,7 @@ const options = {
           </Col>
           <Col xs={6} md={6}>
             <ButtonToolbar style={styles.topPad}>
-          <Button  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create New Sample Log</Button>
+          <Button bsStyle="primary" onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create New Sample Log</Button>
         </ButtonToolbar>
           </Col>
           </Row>
@@ -1114,9 +1118,12 @@ const options = {
 </Col>
                   </Row>
 
-                      <hr></hr>
-                <button>Add sample</button>
-              </form>
+                  <Row>
+                  <Col xs={10} sm={10} md={10}>
+            <Button bsStyle="primary">Add sample</Button>
+            </Col></Row>
+            <hr></hr>
+          </form>
         </section>
 
         </Col>
@@ -1213,10 +1220,12 @@ const options = {
 </Col>
                   </Row>
 
-                      <hr></hr>
-                      <button>Overwrite Data</button>
-
-              </form>
+                  <Row>
+                  <Col xs={10} sm={10} md={10}>
+            <Button bsStyle="primary">Overwrite sample</Button>
+            </Col></Row>
+            <hr></hr>
+          </form>
 
         </section>
 

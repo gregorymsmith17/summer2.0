@@ -11,10 +11,18 @@ import { compose, withHandlers, setPropTypes } from 'recompose';
 import { firebaseConnect } from 'react-redux-firebase';
 import Dropzone from 'react-dropzone';
 import { TiArrowSortedDown, TiPencil, TiTrash, TiDownload } from "react-icons/ti";
+import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
 
 
 
-
+const styles = {
+  topPad: {
+    paddingTop: "20px",
+  },
+  leftPad: {
+    paddingLeft: "20px",
+  },
+};
 
 
 
@@ -63,6 +71,7 @@ export default class uploadDocument extends Component {
 
   addPermit = () => {
     this.setState({
+      documentType: 'permit',
       avatarURL: this.state.avatarURL,
      });
      console.log(this.state.avatarURL);
@@ -78,6 +87,7 @@ export default class uploadDocument extends Component {
   }
   addReport = () => {
     this.setState({
+      documentType: 'reports',
       avatarURL: this.state.avatarURL,
      });
      console.log(this.state.avatarURL);
@@ -93,6 +103,7 @@ export default class uploadDocument extends Component {
   }
   addDrawings = () => {
     this.setState({
+      documentType: 'drawings',
       avatarURL: this.state.avatarURL,
      });
      console.log(this.state.avatarURL);
@@ -204,31 +215,46 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
   });
   }
 
-  documentTypeEquipmentManual = () => {
-    this.setState({
-      documentType: 'equipmentManual',
-    })
-
+  deleteDrawing(row, isSelected, e, id) {
+    console.log(`${isSelected.id}`);
+    return (
+      <TiTrash size={25} type="button"
+      onClick={() => this.removeDrawing(`${isSelected.id}`)}>
+        Click me
+      </TiTrash>
+    )
   }
-  documentTypePermit = () => {
-    this.setState({
-      documentType: 'permit',
-    })
-
-  }
-  documentTypeDrawings = () => {
-    this.setState({
-      documentType: 'drawings',
-    })
-
-  }
-  documentTypeReports = () => {
-    this.setState({
-      documentType: 'reports',
-    })
-
+  deleteReport(row, isSelected, e, id) {
+    console.log(`${isSelected.id}`);
+    return (
+      <TiTrash size={25} type="button"
+      onClick={() => this.removeReport(`${isSelected.id}`)}>
+        Click me
+      </TiTrash>
+    )
   }
 
+  editRow(row, isSelected, e, id) {
+    console.log(`${isSelected.downloadLink}`);
+    return (
+      <TiDownload size={25} onClick={()=> window.open(`${isSelected.downloadLink}`, "_blank")}><p>Download Page</p></TiDownload>
+    )
+  }
+
+
+
+
+
+  onDrag = event => {
+    event.preventDefault()
+  }
+
+  onDrop = event => {
+    event.preventDefault()
+    let file = event.dataTransfer.files[0]
+    this.setState({ file })
+
+  }
 
 
 
@@ -244,82 +270,97 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
         <form>
 
 
-        <label>File Name:</label>
+        <h1>Upload Documents</h1>
           {this.state.isUploading && <p>Progress: {this.state.progress}</p>}
           <h3>{this.state.filename}</h3>
 
 
 
 
-          <FileUploader
-            name="avatar"
-            filename={file => file.name.split('.')[0] }
-            storageRef={firebase.storage().ref(this.state.documentType)}
-            onUploadStart={this.handleUploadStart}
-            onUploadError={this.handleUploadError}
-            onUploadSuccess={this.handleUploadSuccess}
-            onProgress={this.handleProgress}
-          />
+
+
+
+            <div style={{ height: 80, width: 500, border: '1px dashed black'}}><strong>Drag a file here!</strong>
+            <FileUploader
+              name="avatar"
+              style={{ height: 80, width: 500}}
+
+              filename={file => file.name.split('.')[0] }
+              storageRef={firebase.storage().ref(this.state.documentType)}
+              onUploadStart={this.handleUploadStart}
+              onUploadError={this.handleUploadError}
+              onUploadSuccess={this.handleUploadSuccess}
+              onProgress={this.handleProgress}
+            />
+          </div>
+
+
 
         </form>
         </Row>
         <Row>
-          <Col xs={8} sm={8} md={8}>
-        <ButtonToolbar>
-          <DropdownButton label="Document Type" title={this.state.documentType} id="dropdown-size-medium">
-            <MenuItem eventKey="1" onSelect={this.documentTypePermit}>Permit</MenuItem>
-            <MenuItem eventKey="2" onSelect={this.documentTypeEquipmentManual}>Equipment Manual</MenuItem>
-            <MenuItem eventKey="3" onSelect={this.documentTypeDrawings}>Drawings</MenuItem>
-            <MenuItem eventKey="4" onSelect={this.documentTypeReports}>Reports</MenuItem>
-          </DropdownButton>
-        </ButtonToolbar>
 
-        <button onClick={this.addPermit}>Add Permit</button>
-        <button onClick={this.addReport}>Add Report</button>
-        <button onClick={this.addDrawings}>Add Drawing</button>
-
-
-
-          <h2>Permits</h2>
-      <Table>
-          {this.state.orders.map((order) => {
-
-            return (
-              <tr>
-                  <td>{order.filename}</td>
-                  <td><TiDownload size={25} onClick={()=> window.open(order.downloadLink, "_blank")}><p>Download Page</p></TiDownload></td>
-                  <td><TiTrash size={25} onClick={() => this.removesample(order.id)}><p>Remove sample</p></TiTrash></td>
-                  </tr>
-            )
-          })}
-          </Table>
-          <h2>Reports</h2>
-      <Table>
-          {this.state.reports.map((report) => {
-
-            return (
-              <tr>
-                  <td>{report.filename}</td>
-                  <td><TiDownload size={25} onClick={()=> window.open(report.downloadLink, "_blank")}><p>Download Page</p></TiDownload></td>
-                  <td><TiTrash size={25} onClick={() => this.removeReport(report.id)}><p>Remove sample</p></TiTrash></td>
-                  </tr>
-            )
-          })}
-          </Table>
-          <h2>Drawings</h2>
-      <Table>
-          {this.state.drawings.map((drawing) => {
-
-            return (
-              <tr>
-                  <td>{drawing.filename}</td>
-                  <td><TiDownload size={25} onClick={()=> window.open(drawing.downloadLink, "_blank")}><p>Download Page</p></TiDownload></td>
-                  <td><TiTrash size={25} onClick={() => this.removeDrawing(drawing.id)}><p>Remove sample</p></TiTrash></td>
-                  </tr>
-            )
-          })}
-          </Table>
+          <Col xs={2} sm={2} md={2} style={styles.topPad}>
+        <Button bsStyle="primary" onClick={this.addPermit}>Add Report</Button>
         </Col>
+        <Col smOffset={.1} xs={2} sm={2} md={2} style={styles.topPad}>
+      <Button bsStyle="primary" onClick={this.addDrawing}>Add Drawings</Button>
+      </Col>
+</Row>
+<Row>
+
+
+
+        <Col xs={8} sm={8} md={8} style={styles.topPad}>
+          <h3>Reports</h3>
+        <BootstrapTable
+        data={ this.state.reports}
+        pagination
+        >
+
+<TableHeaderColumn
+  dataField='filename' isKey
+
+  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort
+  >Sample Date</TableHeaderColumn>
+  <TableHeaderColumn
+        dataField='button'
+        dataFormat={this.editRow.bind(this)}
+        >Download File</TableHeaderColumn>
+  <TableHeaderColumn
+        dataField='button'
+        dataFormat={this.deleteReport.bind(this)}
+        >Delete File</TableHeaderColumn>
+        </BootstrapTable>
+      </Col>
+
+
+        <Col xs={8} sm={8} md={8} style={styles.topPad}>
+          <h3>Drawings</h3>
+        <BootstrapTable
+        data={ this.state.drawings}
+        pagination
+        >
+
+<TableHeaderColumn
+  dataField='filename' isKey
+  dataSort
+  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort
+  >Sample Date</TableHeaderColumn>
+  <TableHeaderColumn
+        dataField='button'
+        dataFormat={this.editRow.bind(this)}
+        >Download File</TableHeaderColumn>
+  <TableHeaderColumn
+        dataField='button'
+        dataFormat={this.deleteDrawing.bind(this)}
+        >Delete File</TableHeaderColumn>
+
+
+
+
+        </BootstrapTable>
+      </Col>
           </Row>
           </Grid>
       </div>
