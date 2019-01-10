@@ -28,6 +28,9 @@ import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, C
 
 
 const styles = {
+  pdfPage: {
+    padding: ".5in .5in"
+  },
   topPad: {
     paddingTop: "20px"
   },
@@ -551,6 +554,16 @@ createCustomExportCSVButton = (onClick) => {
   );
 }
 
+preview = () => {
+
+  this.setState({
+
+    key: 5,
+
+  })
+
+}
+
 
 
 
@@ -727,6 +740,9 @@ const options = {
               <Col xs={4} sm={4} md={4}>
                 <h2>Maintenance Report</h2>
                 </Col>
+                <Col smOffset={4} xs={2} sm={2} md={2} style={styles.topPad}>
+                  <Button  bsStyle="primary" onClick={this.preview}>Preview Download</Button>
+                  </Col>
 
                 </Row>
                 <hr></hr>
@@ -749,7 +765,7 @@ const options = {
   </tr>
   <tr>
   <td>Name</td>
-  <td><input type="text" name="maintenanceWorker" placeholder="Your Name" onChange={this.handleChange} value={this.state.maintenanceWorker} /></td>
+  <td tdStyle={ { whiteSpace: 'normal' } }><input type="text" name="maintenanceWorker" placeholder="Your Name" onChange={this.handleChange} value={this.state.maintenanceWorker} /></td>
   </tr>
   <tr>
   <td>Mechanical Equipment Notes</td>
@@ -792,6 +808,111 @@ const options = {
         </Col>
         </Row>
 
+        </Grid>
+      </Tab>
+
+      <Tab eventKey={5} >
+        <Grid>
+          <Row>
+            <Row>
+            <Col xs={4} sm={4} md={4} style={styles.topPad}>
+            <h3>Maintenance Report Preview</h3>
+            </Col>
+            <Col smOffset={2} xs={4} sm={4} md={4} style={styles.topPad}>
+
+            <Button bsStyle="primary" onClick={() => { this.pdfExportComponent.save(); }}>
+
+                        Export PDF
+                    </Button>
+                  </Col>
+                  </Row>
+                  <Row>
+                    <Col xs={10} sm={10} md={10}>
+                    <hr></hr>
+                    </Col>
+                    </Row>
+            <Col xs={10} sm={10} md={10}>
+              <PDFExport          fileName={this.state.maintenanceDate +' ' + 'Maintenance Report'}
+                            title=""
+                            style={{
+
+                                paddingTop: '100px'}}
+                            paperSize={'Letter'}
+                            forcePageBreak=".page-break"
+                            ref={(component) => this.pdfExportComponent = component}
+                        >
+                        <div style={styles.pdfPage}>
+        <Row>
+        <Col smOffset={1} xs={7} sm={7} md={7} >
+          <h3>Maintenance Report</h3>
+          <strong>Date: {this.state.maintenanceDate}</strong>
+        </Col>
+        <Col xs={4} sm={4} md={4}>
+          <h3>Winter Lake</h3>
+          <p>Winter Lake HOA</p>
+          <p>Sacramento, CA</p>
+
+        </Col>
+        </Row>
+        <Row>
+        <Col  smOffset={1} xs={10} sm={10} md={10}>
+          <hr></hr>
+          </Col>
+        </Row>
+        <Row>
+        <Col  smOffset={1} xs={10} sm={10} md={10}>
+
+        <Table striped bordered condensed hover>
+        <thead>
+        <tr>
+        <th>Item</th>
+        <th>Description</th>
+
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td><strong>Date</strong></td>
+        <td>{this.state.maintenanceDate}</td>
+        </tr>
+        <tr>
+        <td><strong>Staff Member</strong></td>
+        <td>{this.state.maintenanceWorker}</td>
+        </tr>
+        <tr>
+        <td><strong>Mechanical Equipment Notes</strong></td>
+        <td>{this.state.mechanicalEquipmentNotes}</td>
+        </tr>
+        <tr>
+        <td><strong>Electrical Equipment Notes</strong></td>
+        <td>{this.state.electricalEquipmentNotes}</td>
+        </tr>
+        <tr>
+        <td><strong>Aquatic Vegetation Notes</strong></td>
+        <td>{this.state.aquaticVegetationNotes}</td>
+        </tr>
+        <tr>
+        <td><strong>Shoreline Notes</strong></td>
+        <td>{this.state.shorelineNotes}</td>
+        </tr>
+        <tr>
+        <td><strong>Miscellaneous Notes</strong></td>
+        <td>{this.state.miscNotes}</td>
+        </tr>
+      </tbody>
+      </Table>
+        </Col></Row>
+
+        </div>
+        </PDFExport>
+
+
+
+
+
+          </Col>
+          </Row>
         </Grid>
       </Tab>
 

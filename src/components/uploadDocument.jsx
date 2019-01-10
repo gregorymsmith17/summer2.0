@@ -280,7 +280,7 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
 
 
-            <div style={{ height: 80, width: 500, textAlign: 'center', border: '1px dashed black'}}>
+            <div style={{ height: 80, width: 500, textAlign: 'center', border: '2px dashed black', borderRadius: '10px'}}>
               <strong>Drag a file here!</strong>
             <FileUploader
               name="avatar"
