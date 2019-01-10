@@ -8,6 +8,8 @@ import { fire, facebookProvider } from '../fire';
 import Dashboard from './dashboard';
 import monthlySamples from './monthlySamples';
 import maintenanceReports from './maintenanceReports';
+import vendorContacts from './vendorContacts';
+import uploadDocument from './uploadDocument';
 
 
 
@@ -101,22 +103,21 @@ const popoverRightAsset = (
 const popoverRightDocuments = (
   <Popover id="popover-trigger-focus" title="Popover bottom">
     <strong>Documents</strong>
-      <NavItem componentClass={Link} href="/files" to="/files">
+      <NavItem componentClass={Link} href="/uploadDocument" to="/uploadDocument">
       Upload Document
     </NavItem>
     <NavItem componentClass={Link} href="/data" to="/data">
       Equipment Manual
     </NavItem>
-    <NavItem componentClass={Link} href="/workOrders" to="/workOrders">
-      Permits
-    </NavItem>
+
     <NavItem componentClass={Link} href="/data" to="/data">
       Reports
     </NavItem>
-    <strong>Equipment Inventory</strong>
-    <NavItem componentClass={Link} href="/vendorContacts" to="/vendorContacts">
-      Vendor Contacts
+    <NavItem componentClass={Link} href="/data" to="/data">
+      Drawings
     </NavItem>
+    
+
 
 
 
@@ -240,8 +241,8 @@ class SignInScreen extends React.Component {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/monthlySamples" component={monthlySamples} />
             <Route path="/maintenanceReports" component={maintenanceReports} />
-
-
+            <Route path="/vendorContacts" component={vendorContacts} />
+            <Route path="/uploadDocument" component={uploadDocument} />
 
 
             </Col>

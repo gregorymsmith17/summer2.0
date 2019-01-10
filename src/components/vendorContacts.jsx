@@ -45,7 +45,7 @@ const ColoredLine = ({ color }) => (
 
 
 
-export default class maintenanceReports extends Component {
+export default class vendorContacts extends Component {
 
 
     constructor(props) {
