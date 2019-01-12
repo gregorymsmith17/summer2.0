@@ -6,6 +6,7 @@ import FileSaver from 'file-saver';
 import * as jsPDF from 'jspdf';
 import domtoimage from 'dom-to-image';
 import fileDownload from "js-file-download";
+import Request from 'superagent';
 
 import firebase from 'firebase';
 import { fire } from '../fire';
@@ -23,20 +24,8 @@ export default class Dashboard extends Component {
   constructor(props) {
       super(props);
       this.state = {
-        sampleDate: '',
-        sampleTime: '',
-        operator: '',
-        sampleLocation: '',
-        temperatureResult: '',
-        conductivityResult: '',
-        pHResult: '',
-        DOResult: '',
-        nitrateResult: '',
-        nitriteResult: '',
-        ammoniaResult: '',
-        totalInorganicNitrogen: '',
-        turbidityResult: '',
-        TSSResult: '',
+
+        weatherData: [],
 
         id: '',
         key: 1,
@@ -63,9 +52,9 @@ export default class Dashboard extends Component {
         file:null,
         blobUrl: null,
 
-        imageSource: '',
+        report: [],
 
-        ammoniaPlot: 'ammoniaResult',
+
 
 
 
@@ -82,8 +71,38 @@ export default class Dashboard extends Component {
     }
 
 
-  componentDidMount() {
+
+
+
+
+
+  async componentDidMount() {
+    let weatherData = [];
+
+
+
+    let api_call =  await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${'Oakland'}&units=${'imperial'}&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`);
+
+
+    let response = await api_call.json();
+
+    for (let i=0; i < response.list.length; i++) {
+
+      weatherData.push({temp: response.list[i].main.temp, date: new Date(Date.parse(response.list[i].dt_txt))});
+
+
+      console.log(weatherData);
+
+      this.setState({
+        weatherData: weatherData,
+      })
+    }
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+
+
+
+
       const samplesRef = fire.database().ref(`dailySamples/${user.uid}`);
       samplesRef.on('value', (snapshot) => {
 
@@ -225,9 +244,11 @@ onDrop = event => {
 
 
 
+
+
   render() {
     let { file } = this.state
-    console.log(this.state.file);
+
     let url = file && URL.createObjectURL(file)
 
 
@@ -245,6 +266,7 @@ onDrop = event => {
           <p>
             Homeowners Association
           </p>
+          <Button onClick={this.getWeather}>Get Weather</Button>
 
 
         </Jumbotron>
@@ -257,7 +279,28 @@ onDrop = event => {
 
 
 <Row style={{paddingTop: "50px"}}>
-  <Col xs={5} sm={5} md={5} >
+  <Col xs={8} sm={8} md={8} >
+
+    <BootstrapTable
+    data={ this.state.weatherData }
+    containerStyle={{width: '800px',overflowX: 'scroll'}}
+
+
+    pagination
+
+
+    >
+
+    <TableHeaderColumn dataField='date' isKey> Date</TableHeaderColumn>
+
+    <TableHeaderColumn dataField='temp' >Temp</TableHeaderColumn>
+
+
+
+
+
+    </BootstrapTable>
+
 
 </Col>
 

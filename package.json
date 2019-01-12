@@ -29,7 +29,8 @@
     "recharts": "^1.4.2",
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
-    "save-svg-as-png": "^1.4.6"
+    "save-svg-as-png": "^1.4.6",
+    "superagent": "^4.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
