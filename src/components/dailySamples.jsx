@@ -91,7 +91,7 @@ export default class dailySamples extends Component {
           filter: "",
           blobUrl: null,
 
-          ammoniaPlot: 'ammoniaResult',
+          
 
 
 
@@ -1064,7 +1064,7 @@ filter = (url) => {
 
               <TableHeaderColumn dataField='sampleDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Sample Date</TableHeaderColumn>
 
-              
+
               <TableHeaderColumn dataField='DOResult' filter={ { type: 'RegexFilter', delay: 1000 }  }dataSort sortFunc={ this.DOSort }>DO</TableHeaderColumn>
               <TableHeaderColumn dataField='pHResult' filter={ { type: 'RegexFilter', delay: 1000 }  }dataSort sortFunc={ this.pHSort }>pH</TableHeaderColumn>
               <TableHeaderColumn dataField='nitrateResult' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.nitrateSort }>Nitrate</TableHeaderColumn>

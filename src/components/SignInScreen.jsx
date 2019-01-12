@@ -10,6 +10,7 @@ import monthlySamples from './monthlySamples';
 import maintenanceReports from './maintenanceReports';
 import vendorContacts from './vendorContacts';
 import uploadDocument from './uploadDocument';
+import profilePage from './profilePage';
 
 
 
@@ -78,6 +79,18 @@ const popoverRightSampling = (
   </Popover>
 );
 
+const popoverRightProfile = (
+  <Popover id="popover-positioned-right" title="Profile">
+    <strong>Profile</strong>
+      <NavItem componentClass={Link} href="/profilePage" to="/profilePage">
+      Information
+    </NavItem>
+
+
+
+  </Popover>
+);
+
 const popoverRightAsset = (
   <Popover id="popover-trigger-focus" title="Asset Manager">
     <strong>Operations and Maintenance</strong>
@@ -99,17 +112,12 @@ const popoverRightDocuments = (
   <Popover id="popover-trigger-focus" title="Popover bottom">
     <strong>Documents</strong>
       <NavItem componentClass={Link} href="/uploadDocument" to="/uploadDocument">
-      Upload Document
+      Documents
     </NavItem>
     <NavItem componentClass={Link} href="/data" to="/data">
       Equipment Manuals
     </NavItem>
-    <NavItem componentClass={Link} href="/data" to="/data">
-      Reports
-    </NavItem>
-    <NavItem componentClass={Link} href="/data" to="/data">
-      Drawings
-    </NavItem>
+
 
 
 
@@ -210,6 +218,10 @@ class SignInScreen extends React.Component {
    <ListGroupItem>Documents</ListGroupItem>
    </OverlayTrigger>
 
+   <OverlayTrigger rootClose="true" trigger="click" placement="right" overlay={popoverRightProfile}>
+  <ListGroupItem>Profile</ListGroupItem>
+  </OverlayTrigger>
+
 
 
 
@@ -237,6 +249,7 @@ class SignInScreen extends React.Component {
             <Route path="/maintenanceReports" component={maintenanceReports} />
             <Route path="/vendorContacts" component={vendorContacts} />
             <Route path="/uploadDocument" component={uploadDocument} />
+            <Route path="/profilePage" component={profilePage} />
 
 
             </Col>

@@ -74,6 +74,7 @@ export default class maintenanceReports extends Component {
           idKey: '',
           page: '',
           area: '',
+          sampleSuccess: '',
 
           //used for table data
           samples: [],
@@ -155,6 +156,8 @@ export default class maintenanceReports extends Component {
         samplesRef.push(maintenanceReport);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
+
+          sampleSuccess: 'Sample Added Successfully!',
           maintenanceDate: '',
           maintenanceWorker: '',
           mechanicalEquipmentNotes: '',
@@ -555,14 +558,13 @@ createCustomExportCSVButton = (onClick) => {
 }
 
 preview = () => {
-
   this.setState({
-
     key: 5,
-
   })
-
 }
+
+
+
 
 
 
@@ -602,7 +604,7 @@ const options = {
 
 
 
-        <Tab eventKey={1} title="+ Maintenance Reports">
+        <Tab eventKey={1} title="+ Maintenance Reports" onClick={this.clearSuccess}>
           <Grid>
 
           <Row style={styles.topPad}>
@@ -664,6 +666,9 @@ const options = {
               <Col xs={4} sm={4} md={4}>
                 <h2>Maintenance Report</h2>
                 </Col>
+                <Col smOffset={2} xs={4} sm={4} md={4}>
+
+              </Col>
 
                 </Row>
                 <hr></hr>
@@ -676,10 +681,9 @@ const options = {
   <th>Item</th>
   <th>Description</th>
 
-
   </tr>
   </thead>
-  <tbody>
+  <tbody tdstyle={{flex: 1, flexWrap: 'wrap', overflowY: 'auto'}}>
   <tr>
   <td>Date</td>
   <td><input type="date" name="maintenanceDate" placeholder="Date of Maintenance" onChange={this.handleChange} value={this.state.maintenanceDate} /></td>
@@ -690,26 +694,28 @@ const options = {
   </tr>
   <tr>
   <td>Mechanical Equipment Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="mechanicalEquipmentNotes" placeholder="Mechanical Notes" onChange={this.handleChange} value={this.state.mechanicalEquipmentNotes} /></td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="mechanicalEquipmentNotes" placeholder="Mechanical Notes" onChange={this.handleChange} value={this.state.mechanicalEquipmentNotes}></textarea>
+  </td>
   </tr>
   <tr>
   <td>Electrical Equipment Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="electricalEquipmentNotes" placeholder="Electrical Notes" onChange={this.handleChange} value={this.state.electricalEquipmentNotes} /></td>
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="electricalEquipmentNotes" placeholder="Electrical Notes" onChange={this.handleChange} value={this.state.electricalEquipmentNotes}></textarea>
+    </td>
   </tr>
   <tr>
   <td>Aquatic Vegetation Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="aquaticVegetationNotes" placeholder="Aquatic Vegetation Notes" onChange={this.handleChange} value={this.state.aquaticVegetationNotes} /></td>
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="aquaticVegetationNotes" placeholder="Aquatic Vegetation Notes" onChange={this.handleChange} value={this.state.aquaticVegetationNotes}></textarea>
+    </td>
   </tr>
   <tr>
   <td>Shoreline Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="shorelineNotes" placeholder="Shoreline Notes" onChange={this.handleChange} value={this.state.shorelineNotes} /></td>
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="shorelineNotes" placeholder="Shoreline Vegetation Notes" onChange={this.handleChange} value={this.state.shorelineNotes}></textarea>
+    </td>
   </tr>
   <tr>
   <td>Miscellaneous Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="miscNotes" placeholder="Misc. Notes" onChange={this.handleChange} value={this.state.miscNotes} /></td>
-  </tr>
-
-
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="miscNotes" placeholder="Misc Vegetation Notes" onChange={this.handleChange} value={this.state.miscNotes}></textarea>
+    </td></tr>
   </tbody>
   </Table>
 
@@ -720,6 +726,7 @@ const options = {
                       <Row>
                       <Col xs={10} sm={10} md={10}>
                 <Button onClick={this.handleSubmit} bsStyle="primary">Add sample</Button>
+
                 </Col></Row>
                 <hr></hr>
               </form>
@@ -749,7 +756,7 @@ const options = {
                 <Row>
                   <Col xs={10} sm={10} md={10}>
 
-  <Table striped bordered condensed hover>
+  <Table striped bordered condensed hover tdstyle={{flex: 1, flexWrap: 'wrap', overflowY: 'auto'}}>
   <thead>
   <tr>
   <th>Item</th>
@@ -758,35 +765,39 @@ const options = {
 
   </tr>
   </thead>
-  <tbody>
+  <tbody tdstyle={{flex: 1, flexWrap: 'wrap', overflowY: 'auto'}}>
   <tr>
   <td>Date</td>
   <td><input type="date" name="maintenanceDate" placeholder="Date of Maintenance" onChange={this.handleChange} value={this.state.maintenanceDate} /></td>
   </tr>
   <tr>
   <td>Name</td>
-  <td tdStyle={ { whiteSpace: 'normal' } }><input type="text" name="maintenanceWorker" placeholder="Your Name" onChange={this.handleChange} value={this.state.maintenanceWorker} /></td>
+  <td><input type="text" name="maintenanceWorker" placeholder="Your Name" onChange={this.handleChange} value={this.state.maintenanceWorker} /></td>
   </tr>
   <tr>
   <td>Mechanical Equipment Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="mechanicalEquipmentNotes" placeholder="Mechanical Notes" onChange={this.handleChange} value={this.state.mechanicalEquipmentNotes} /></td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="mechanicalEquipmentNotes" placeholder="Mechanical Notes" onChange={this.handleChange} value={this.state.mechanicalEquipmentNotes}></textarea>
+  </td>
   </tr>
   <tr>
   <td>Electrical Equipment Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="electricalEquipmentNotes" placeholder="Electrical Notes" onChange={this.handleChange} value={this.state.electricalEquipmentNotes} /></td>
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="electricalEquipmentNotes" placeholder="Electrical Notes" onChange={this.handleChange} value={this.state.electricalEquipmentNotes}></textarea>
+    </td>
   </tr>
   <tr>
   <td>Aquatic Vegetation Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="aquaticVegetationNotes" placeholder="Aquatic Vegetation Notes" onChange={this.handleChange} value={this.state.aquaticVegetationNotes} /></td>
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="aquaticVegetationNotes" placeholder="Aquatic Vegetation Notes" onChange={this.handleChange} value={this.state.aquaticVegetationNotes}></textarea>
+    </td>
   </tr>
   <tr>
   <td>Shoreline Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="shorelineNotes" placeholder="Shoreline Notes" onChange={this.handleChange} value={this.state.shorelineNotes} /></td>
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="shorelineNotes" placeholder="Shoreline Vegetation Notes" onChange={this.handleChange} value={this.state.shorelineNotes}></textarea>
+    </td>
   </tr>
   <tr>
   <td>Miscellaneous Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 600 }}  name="miscNotes" placeholder="Misc. Notes" onChange={this.handleChange} value={this.state.miscNotes} /></td>
-  </tr>
+    <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="miscNotes" placeholder="Misc Vegetation Notes" onChange={this.handleChange} value={this.state.miscNotes}></textarea>
+    </td></tr>
 
 
   </tbody>

@@ -628,7 +628,7 @@ const options = {
   </tr>
   <tr>
   <td>Vendor Company Description</td>
-  <td><input type="text" name="vendorCompanyDescription" placeholder="Vendor Company Description" onChange={this.handleChange} value={this.state.vendorCompanyDescription} /></td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorCompanyDescription" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorCompanyDescription}></textarea></td>
   </tr>
   <tr>
   <td>Vendor Email</td>
@@ -641,7 +641,7 @@ const options = {
 
   <tr>
   <td>Vendor Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="vendorNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.vendorNotes} /></td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorNotes" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorNotes}></textarea></td>
   </tr>
 
 
@@ -700,7 +700,7 @@ const options = {
   </tr>
   <tr>
   <td>Vendor Company Description</td>
-  <td><input type="text" name="vendorCompanyDescription" placeholder="Vendor Company Description" onChange={this.handleChange} value={this.state.vendorCompanyDescription} /></td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorCompanyDescription" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorCompanyDescription}></textarea></td>
   </tr>
   <tr>
   <td>Vendor Email</td>
@@ -713,7 +713,7 @@ const options = {
 
   <tr>
   <td>Vendor Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="vendorNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.vendorNotes} /></td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorNotes" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorNotes}></textarea></td>
   </tr>
 
 

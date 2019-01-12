@@ -34,15 +34,7 @@ const styles = {
   },
 };
 
-const ColoredLine = ({ color }) => (
-    <hr
-        style={{
-            color: color,
-            backgroundColor: color,
-            height: .8
-        }}
-    />
-);
+
 
 
 
@@ -91,6 +83,8 @@ export default class monthlySamples extends Component {
           page: '',
           area: '',
           displayColorPicker: false,
+
+          //colors for graph lines
           color: '#9E4444',
           tempColor: '',
 
@@ -856,32 +850,24 @@ handleClose = () => {
   this.setState({ displayColorPicker: false })
 };
 
-handleChangeComplete = (color) => {
+tempColorChange = (color) => {
 
     console.log(this.state.color);
-
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     const samplesRef = fire.database().ref(`colors/${user.uid}`);
     const orderID = fire.database().ref(`/colors/${user.uid}/${orderID}`);
-
-
     const sample = {
-
       tempColor: color.hex
-
     }
-
     samplesRef.set(sample);
     this.setState({
       tempColor: color.hex,
-
      });
-    //this.setState is used to clear the text boxes after the form has been submitted.
-
-
-
     });
+}
 
+test = () => {
+  console.log("test")
 }
 
 
@@ -1021,19 +1007,21 @@ const options = {
 
         </div>
       </Col>
-        <Col smOffset={2} xs={2} sm={2} md={2} lg={2}>
+        <Col smOffset={2} xs={3} sm={3} md={3} lg={3}>
 
-<Row>
+
       <form onSubmit={this.onSubmit.bind(this)}>{nitrogenCheckbox}</form>
 
-          <TiBrush size={20}  onClick={ this.handleClick }>Color</TiBrush>
-          { this.state.displayColorPicker ? <div style={ popover }>
-            <div style={ cover } onClick={ this.handleClose }/>
-            <ChromePicker color={ this.state.tempColor } onChangeComplete={ this.handleChangeComplete } />
-          </div> : null }
-        </Row>
       <form onSubmit={this.onSubmit.bind(this)}>{phosphorusCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{tempCheckbox}</form>
+
+      <form onSubmit={this.onSubmit.bind(this)}>{tempCheckbox}
+        <TiBrush size={20}  onClick={ this.handleClick }>Color</TiBrush>
+      { this.state.displayColorPicker ? <div style={ popover }>
+        <div style={ cover } onClick={ this.handleClose }/>
+        <ChromePicker color={ this.state.tempColor } onChangeComplete={ this.tempColorChange } />
+      </div> : null }</form>
+
+
       <form onSubmit={this.onSubmit.bind(this)}>{tdsCheckbox}</form>
       <form onSubmit={this.onSubmit.bind(this)}>{pHCheckbox}</form>
       <form onSubmit={this.onSubmit.bind(this)}>{tssCheckbox}</form>
