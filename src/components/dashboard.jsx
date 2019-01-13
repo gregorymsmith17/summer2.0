@@ -27,6 +27,7 @@ export default class Dashboard extends Component {
 
         //The data that goes into the table showing weather data
         weatherData: [],
+        iconData: [],
 
         id: '',
         key: 1,
@@ -59,18 +60,25 @@ export default class Dashboard extends Component {
     let api_call =  await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${'Oakland'}&units=${'imperial'}&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`);
 
     let response = await api_call.json();
+
     //to see the exact api call remove the // for the console.log(response) below
-    //console.log(response)
+    console.log(response);
+
     for (let i=0; i < response.list.length; i++) {
 
+
+
       //.push adds temp values and date values to the weatherData array
-      weatherData.push({temp: response.list[i].main.temp, date: new Date(Date.parse(response.list[i].dt_txt))});
+      //weatherData.push({temp: response.list[i].main.temp, date: new Date(Date.parse(response.list[i].dt_txt)), description: response.list[i].weather[0].description, icon: response.list[i].weather[0].icon });
+
+      weatherData.push({temp: response.list[i].main.temp, date: new Date(Date.parse(response.list[i].dt_txt)), description: response.list[i].weather[0].description, image: 'http://openweathermap.org/img/w/' + response.list[i].weather[0].icon + '.png'  });
 
 
       console.log(weatherData);
 
       this.setState({
         weatherData: weatherData,
+        iconData: [{icon: '10n'}, {icon:'11n'}]
       })
     }
 
@@ -84,6 +92,32 @@ export default class Dashboard extends Component {
     });
   });
   }
+
+  editRow(row, isSelected, e, id) {
+    console.log(`${isSelected.id}`);
+    return (
+        <div style={{textAlign: 'center'}}>
+      <img src={'http://openweathermap.org/img/w/' + '10n' + '.png'} />
+
+
+      </div>
+    )
+
+  }
+
+   imageFormatter = (cell, row) => {
+      return (
+<span><img src={cell} /></span>
+)
+    }
+
+
+
+
+
+
+
+
 
 
 
@@ -104,6 +138,7 @@ export default class Dashboard extends Component {
           <Button onClick={this.getWeather}>Get Weather</Button>
 
 
+
         </Jumbotron>
         <hr></hr>
 
@@ -118,14 +153,21 @@ export default class Dashboard extends Component {
 
     <BootstrapTable
     data={ this.state.weatherData }
-    containerStyle={{width: '800px',overflowX: 'scroll'}}
+    containerStyle={{width: '800px', overflowX: 'scroll'}}
     pagination
     >
 
     <TableHeaderColumn dataField='date' isKey> Date</TableHeaderColumn>
     <TableHeaderColumn dataField='temp' >Temp</TableHeaderColumn>
+    <TableHeaderColumn dataField='description' >Description</TableHeaderColumn>
+    <TableHeaderColumn dataField="image" dataFormat={this.imageFormatter}>Product Image</TableHeaderColumn>
+
+
+
 
     </BootstrapTable>
+
+
 
 
 </Col>
