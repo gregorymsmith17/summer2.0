@@ -482,18 +482,21 @@ console.log(this.state.currentIcon)
       <Grid>
         <Row>
           <Col xs={11} sm={11} md={11} >
-        <Jumbotron>
-          <h1>Summer Lake</h1>
-          <p>
-            Homeowners Association
-          </p>
-
-
-
-
-        </Jumbotron>
+            <Row style={{paddingTop: '10px'}}>
+              <Col xs={11} sm={11} md={11} >
+              <Jumbotron>
+                <h1>Summer Lake</h1>
+                <p>
+                  Homeowners Association
+                </p>
+              </Jumbotron>
+            </Col>
+          </Row>
+          <Row style={{paddingTop: '0px'}}>
+            <Col xs={11} sm={11} md={11} >
         <hr></hr>
-
+        </Col>
+      </Row>
           <Row>
             <Col xs={4} sm={4} md={4} >
 
@@ -503,11 +506,11 @@ console.log(this.state.currentIcon)
           <Panel.Title style={{textAlign: 'center'}} componentClass="h3">Weather</Panel.Title>
         </Panel.Heading>
         <Panel.Body style={{textAlign: 'center'}}>
-          <h3>{this.state.currentCity}</h3>
+          <h2>{this.state.currentCity}</h2>
           <img style={{width: '75px', height: '75px'}} src={this.state.currentIcon} />
-          <p>{this.state.currentDescription}</p>
-          <p>Temperature: {this.state.currentTemp}</p>
-          <p>Humidity: {this.state.currentHumidity}</p>
+          <h3>{this.state.currentDescription}</h3>
+          <h3>Temperature: {this.state.currentTemp} F</h3>
+          <p>Humidity: {this.state.currentHumidity}%</p>
 
         </Panel.Body>
       </Panel>
