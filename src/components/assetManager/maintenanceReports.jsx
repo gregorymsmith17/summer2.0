@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
 import { PDFExport } from '@progress/kendo-react-pdf';
-import { fire } from '../fire';
+import { fire } from '../../fire';
 
 import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
 import { TiArrowSortedDown, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";

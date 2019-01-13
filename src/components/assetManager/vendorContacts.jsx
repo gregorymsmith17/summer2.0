@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
 import { PDFExport } from '@progress/kendo-react-pdf';
-import { fire } from '../fire';
+import { fire } from '../../fire';
 
 import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
 import { TiArrowSortedDown, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
@@ -45,7 +45,7 @@ const ColoredLine = ({ color }) => (
 
 
 
-export default class equipmentList extends Component {
+export default class vendorContacts extends Component {
 
 
     constructor(props) {
@@ -54,12 +54,12 @@ export default class equipmentList extends Component {
 
 
           //Contact Form Inputs
-          equipmentName: '',
-          equipmentType: '',
-          equipmentManf: '',
-          equipmentArea: '',
-
-          equipmentNotes: '',
+          vendorName: '',
+          vendorCompany: '',
+          vendorCompanyDescription: '',
+          vendorEmail: '',
+          vendorPhone: '',
+          vendorNotes: '',
 
           //Random things for changing tabs
           id: '',
@@ -122,18 +122,18 @@ export default class equipmentList extends Component {
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const samplesRef = fire.database().ref(`equipmentList/${user.uid}`);
-        const orderID = fire.database().ref(`/equipmentList/${user.uid}/${orderID}`);
+        const samplesRef = fire.database().ref(`vendorContacts/${user.uid}`);
+        const orderID = fire.database().ref(`/vendorContacts/${user.uid}/${orderID}`);
 
 
-        const equipmentList = {
+        const vendorContact = {
 
-          equipmentName: this.state.equipmentName,
-          equipmentType: this.state.equipmentType,
-          equipmentManf: this.state.equipmentManf,
-          equipmentArea: this.state.equipmentArea,
-
-          equipmentNotes: this.state.equipmentNotes,
+          vendorName: this.state.vendorName,
+          vendorCompany: this.state.vendorCompany,
+          vendorCompanyDescription: this.state.vendorCompanyDescription,
+          vendorEmail: this.state.vendorEmail,
+          vendorPhone: this.state.vendorPhone,
+          vendorNotes: this.state.vendorNotes,
 
           id: this.state.id,
         }
@@ -141,15 +141,15 @@ export default class equipmentList extends Component {
 
 
 
-        samplesRef.push(equipmentList);
+        samplesRef.push(vendorContact);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
-          equipmentName: '',
-          equipmentType: '',
-          equipmentManf: '',
-          equipmentArea: '',
-
-          equipmentNotes: '',
+          vendorName: '',
+          vendorCompany: '',
+          vendorCompanyDescription: '',
+          vendorEmail: '',
+          vendorPhone: '',
+          vendorNotes: '',
 
         });
       });
@@ -158,7 +158,7 @@ export default class equipmentList extends Component {
 
       componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const samplesRef = fire.database().ref(`equipmentList/${user.uid}`);
+          const samplesRef = fire.database().ref(`vendorContacts/${user.uid}`);
           samplesRef.on('value', (snapshot) => {
 
 
@@ -174,36 +174,38 @@ export default class equipmentList extends Component {
           for (let order in orders) {
             newState.push({
               id: order,
-              equipmentName: orders[order].equipmentName,
-              equipmentType: orders[order].equipmentType,
-              equipmentManf: orders[order].equipmentManf,
-              equipmentArea: orders[order].equipmentArea,
-              equipmentNotes: orders[order].equipmentNotes,
+              vendorName: orders[order].vendorName,
+              vendorCompany: orders[order].vendorCompany,
+              vendorCompanyDescription: orders[order].vendorCompanyDescription,
+              vendorEmail: orders[order].vendorEmail,
+              vendorPhone: orders[order].vendorPhone,
+              vendorNotes: orders[order].vendorNotes,
             });
             newState2.push({
               id: order,
-              equipmentName: orders[order].equipmentName,
-              equipmentType: orders[order].equipmentType,
-              equipmentManf: orders[order].equipmentManf,
-              equipmentArea: orders[order].equipmentArea,
-              equipmentNotes: orders[order].equipmentNotes,
+              vendorName: orders[order].vendorName,
+              vendorCompany: orders[order].vendorCompany,
+              vendorCompanyDescription: orders[order].vendorCompanyDescription,
+              vendorEmail: orders[order].vendorEmail,
+              vendorPhone: orders[order].vendorPhone,
+              vendorNotes: orders[order].vendorNotes,
             });
 
           }
 
           newState2.sort(function(a, b) {
 
-            if (a.equipmentName === b.equipmentName) {
+            if (a.vendorName === b.vendorName) {
               return 0;
             }
-            return a.equipmentName > b.equipmentName ? 1 : -1;
+            return a.vendorName > b.vendorName ? 1 : -1;
         });
         newState.sort(function(a, b) {
 
-          if (b.equipmentName === a.equipmentName) {
+          if (b.vendorName === a.vendorName) {
             return 0;
           }
-          return b.equipmentName > a.equipmentName ? 1 : -1;
+          return b.vendorName > a.vendorName ? 1 : -1;
       });
 
           this.setState({
@@ -225,32 +227,34 @@ export default class equipmentList extends Component {
     fillStates(itemId) {
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
         this.setState({
-          equipmentName: '',
-          equipmentType: '',
-          equipmentManf: '',
-          equipmentArea: '',
-          equipmentNotes: '',
+          vendorName: '',
+          vendorCompany: '',
+          vendorCompanyDescription: '',
+          vendorEmail: '',
+          vendorPhone: '',
+          vendorNotes: '',
 
         });
 
       let orders = snapshot.val();
-      let id = fire.database().ref().child(`/equipmentList/${user.uid}/${itemId}`).key;
+      let id = fire.database().ref().child(`/vendorContacts/${user.uid}/${itemId}`).key;
 
       let newState = [];
       for (let order in orders) {
         newState.push({
           id: order,
 
-          equipmentName: orders[order].equipmentName,
-          equipmentType: orders[order].equipmentType,
-          equipmentManf: orders[order].equipmentManf,
-          equipmentArea: orders[order].equipmentArea,
-          equipmentNotes: orders[order].equipmentNotes,
+          vendorName: orders[order].vendorName,
+          vendorCompany: orders[order].vendorCompany,
+          vendorCompanyDescription: orders[order].vendorCompanyDescription,
+          vendorEmail: orders[order].vendorEmail,
+          vendorPhone: orders[order].vendorPhone,
+          vendorNotes: orders[order].vendorNotes,
 
         });
       }
@@ -259,11 +263,12 @@ export default class equipmentList extends Component {
         id: id,
         key: 4,
 
-        equipmentName: snapshot.child('equipmentName').val(),
-        equipmentType: snapshot.child('equipmentType').val(),
-        equipmentManf: snapshot.child('equipmentManf').val(),
-        equipmentArea: snapshot.child('equipmentArea').val(),
-        equipmentNotes: snapshot.child('equipmentNotes').val(),
+        vendorName: snapshot.child('vendorName').val(),
+        vendorCompany: snapshot.child('vendorCompany').val(),
+        vendorCompanyDescription: snapshot.child('vendorCompanyDescription').val(),
+        vendorEmail: snapshot.child('vendorEmail').val(),
+        vendorPhone: snapshot.child('vendorPhone').val(),
+        vendorNotes: snapshot.child('vendorNotes').val(),
 
       })
 
@@ -276,16 +281,17 @@ export default class equipmentList extends Component {
   writeStates = (itemId) => {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${this.state.id}`);
+    const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${this.state.id}`);
 
 
     sampleRef.child("id").set(this.state.id);
 
-    sampleRef.child("equipmentName").set(this.state.equipmentName);
-    sampleRef.child("equipmentType").set(this.state.equipmentType);
-    sampleRef.child("equipmentManf").set(this.state.equipmentManf);
-    sampleRef.child("equipmentArea").set(this.state.equipmentArea);
-    sampleRef.child("equipmentNotes").set(this.state.equipmentNotes);
+    sampleRef.child("vendorName").set(this.state.vendorName);
+    sampleRef.child("vendorCompany").set(this.state.vendorCompany);
+    sampleRef.child("vendorCompanyDescription").set(this.state.vendorCompanyDescription);
+    sampleRef.child("vendorEmail").set(this.state.vendorEmail);
+    sampleRef.child("vendorPhone").set(this.state.vendorPhone);
+    sampleRef.child("vendorNotes").set(this.state.vendorNotes);
 
   });
 
@@ -297,7 +303,7 @@ export default class equipmentList extends Component {
   fillEmpty(itemId) {
     let area = '';
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
+    const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
 
 
     sampleRef.on('value', (snapshot) => {
@@ -309,11 +315,12 @@ export default class equipmentList extends Component {
       newState.push({
         id: order,
 
-        equipmentName: orders[order].equipmentName,
-        equipmentType: orders[order].equipmentType,
-        equipmentManf: orders[order].equipmentManf,
-        equipmentArea: orders[order].equipmentArea,
-        equipmentNotes: orders[order].equipmentNotes,
+        vendorName: orders[order].vendorName,
+        vendorCompany: orders[order].vendorCompany,
+        vendorCompanyDescription: orders[order].vendorCompanyDescription,
+        vendorEmail: orders[order].vendorEmail,
+        vendorPhone: orders[order].vendorPhone,
+        vendorNotes: orders[order].vendorNotes,
 
       });
     }
@@ -321,11 +328,12 @@ export default class equipmentList extends Component {
 
       id: '',
       key: 3,
-      equipmentName: '',
-      equipmentType: '',
-      equipmentManf: '',
-      equipmentArea: '',
-      equipmentNotes: '',
+      vendorName: '',
+      vendorCompany: '',
+      vendorCompanyDescription: '',
+      vendorEmail: '',
+      vendorPhone: '',
+      vendorNotes: '',
 
 
     })
@@ -339,7 +347,7 @@ export default class equipmentList extends Component {
 
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
@@ -350,11 +358,12 @@ export default class equipmentList extends Component {
         newState.push({
           id: order,
 
-          equipmentName: orders[order].equipmentName,
-          equipmentType: orders[order].equipmentType,
-          equipmentManf: orders[order].equipmentManf,
-          equipmentArea: orders[order].equipmentArea,
-          equipmentNotes: orders[order].equipmentNotes,
+          vendorName: orders[order].vendorName,
+          vendorCompany: orders[order].vendorCompany,
+          vendorCompanyDescription: orders[order].vendorCompanyDescription,
+          vendorEmail: orders[order].vendorEmail,
+          vendorPhone: orders[order].vendorPhone,
+          vendorNotes: orders[order].vendorNotes,
 
         });
       }
@@ -363,11 +372,12 @@ export default class equipmentList extends Component {
         id: snapshot.child('id').val(),
         key: 3,
 
-        equipmentName: snapshot.child('equipmentName').val(),
-        equipmentType: snapshot.child('equipmentType').val(),
-        equipmentManf: snapshot.child('equipmentManf').val(),
-        equipmentArea: snapshot.child('equipmentArea').val(),
-        equipmentNotes: snapshot.child('equipmentNotes').val(),
+        vendorName: snapshot.child('vendorName').val(),
+        vendorCompany: snapshot.child('vendorCompany').val(),
+        vendorCompanyDescription: snapshot.child('vendorCompanyDescription').val(),
+        vendorEmail: snapshot.child('vendorEmail').val(),
+        vendorPhone: snapshot.child('vendorPhone').val(),
+        vendorNotes: snapshot.child('vendorNotes').val(),
 
       })
 
@@ -378,7 +388,7 @@ export default class equipmentList extends Component {
 
     removesample(itemId) {
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/vendorContacts/${user.uid}/${itemId}`);
       sampleRef.remove();
     });
     }
@@ -393,25 +403,26 @@ writeData (e) {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`equipmentList/${user.uid}`);
-  const orderID = fire.database().ref(`/equipmentList/${user.uid}/${this.state.id}`);
+  const samplesRef = fire.database().ref(`vendorContacts/${user.uid}`);
+  const orderID = fire.database().ref(`/vendorContacts/${user.uid}/${this.state.id}`);
   const newCheckboxKey = firebase.database().ref().child('checkbox').push().key;
 
   let id = newCheckboxKey;
   let box = id;
 
 
-  const equipmentList = {
+  const vendorContact = {
 
     id: this.state.id,
-    equipmentName: this.state.equipmentName,
-    equipmentType: this.state.equipmentType,
-    equipmentManf: this.state.equipmentManf,
-    equipmentArea: this.state.equipmentArea,
-    equipmentNotes: this.state.equipmentNotes,
+    vendorName: this.state.vendorName,
+    vendorCompany: this.state.vendorCompany,
+    vendorCompanyDescription: this.state.vendorCompanyDescription,
+    vendorEmail: this.state.vendorEmail,
+    vendorPhone: this.state.vendorPhone,
+    vendorNotes: this.state.vendorNotes,
   }
 
-  samplesRef.child(this.state.id).set(equipmentList);
+  samplesRef.child(this.state.id).set(vendorContact);
 
 
 });
@@ -514,12 +525,12 @@ const options = {
         <Row>
           <Row>
             <Col xs={6} md={6}>
-          <h3>Equipment List</h3>
+          <h3>Vendor Contacts</h3>
 
           </Col>
           <Col xs={6} md={6}>
             <ButtonToolbar style={styles.topPad}>
-          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Add Equipment</Button>
+          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Contact</Button>
         </ButtonToolbar>
           </Col>
           </Row>
@@ -530,7 +541,7 @@ const options = {
 
 
 
-        <Tab eventKey={1} title="+ Equipment List">
+        <Tab eventKey={1} title="+ Vendor Contacts">
           <Grid>
 
           <Row style={styles.topPad}>
@@ -549,11 +560,11 @@ const options = {
 
               >
 
-              <TableHeaderColumn dataField='equipmentName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Name</TableHeaderColumn>
-              <TableHeaderColumn dataField='equipmentType' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Type</TableHeaderColumn>
-              <TableHeaderColumn dataField='equipmentManf' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Manufacturer</TableHeaderColumn>
-              <TableHeaderColumn dataField='equipmentArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Area</TableHeaderColumn>
-
+              <TableHeaderColumn dataField='vendorName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Name</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorCompany' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Company</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorCompanyDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorEmail' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Email</TableHeaderColumn>
+              <TableHeaderColumn dataField='vendorPhone' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Phone</TableHeaderColumn>
 
 
         <TableHeaderColumn
@@ -589,7 +600,7 @@ const options = {
           <form onSubmit={this.handleSubmit}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Equipment List</h2>
+                <h2>Vendor Contact</h2>
                 </Col>
 
                 </Row>
@@ -608,26 +619,29 @@ const options = {
   </thead>
   <tbody>
   <tr>
-  <td>Equipment Name</td>
-  <td><input type="text" name="equipmentName" placeholder="Equipment Name" onChange={this.handleChange} value={this.state.equipmentName} /></td>
+  <td>Vendor Name</td>
+  <td><input type="text" name="vendorName" placeholder="Vendor Name" onChange={this.handleChange} value={this.state.vendorName} /></td>
   </tr>
   <tr>
-  <td>Equipment Type</td>
-  <td><input type="text" name="equipmentType" placeholder="Equipment Type" onChange={this.handleChange} value={this.state.equipmentType} /></td>
+  <td>Vendor Company</td>
+  <td><input type="text" name="vendorCompany" placeholder="Vendor Company" onChange={this.handleChange} value={this.state.vendorCompany} /></td>
   </tr>
   <tr>
-  <td>Equipment Manufacturer</td>
-  <td><textarea  type="text"  name="equipmentManf" placeholder="Equipment Manufacturer" onChange={this.handleChange} value={this.state.equipmentManf}></textarea></td>
+  <td>Vendor Company Description</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorCompanyDescription" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorCompanyDescription}></textarea></td>
   </tr>
   <tr>
-  <td>Equipment Area</td>
-  <td><input type="text" name="equipmentArea" placeholder="Equipment Area" onChange={this.handleChange} value={this.state.equipmentArea} /></td>
+  <td>Vendor Email</td>
+  <td><input type="text" name="vendorEmail" placeholder="Vendor Email" onChange={this.handleChange} value={this.state.vendorEmail} /></td>
+  </tr>
+  <tr>
+  <td>Vendor Phone</td>
+  <td><input type="text" name="vendorPhone" placeholder="Vendor Phone" onChange={this.handleChange} value={this.state.vendorPhone} /></td>
   </tr>
 
-
   <tr>
-  <td>Equipment Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="equipmentNotes" placeholder="Equipment Notes" onChange={this.handleChange} value={this.state.equipmentNotes}></textarea></td>
+  <td>Vendor Notes</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorNotes" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorNotes}></textarea></td>
   </tr>
 
 
@@ -639,7 +653,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.handleSubmit} bsStyle="primary">Add Equipment</Button>
+            <Button onClick={this.handleSubmit} bsStyle="primary">Add Contact</Button>
             </Col></Row>
             <hr></hr>
           </form>
@@ -678,25 +692,28 @@ const options = {
   <tbody>
   <tr>
   <td>Vendor Name</td>
-  <td><input type="text" name="equipmentName" placeholder="Vendor Name" onChange={this.handleChange} value={this.state.equipmentName} /></td>
+  <td><input type="text" name="vendorName" placeholder="Vendor Name" onChange={this.handleChange} value={this.state.vendorName} /></td>
   </tr>
   <tr>
-  <td>Equipment Type</td>
-  <td><input type="text" name="equipmentType" placeholder="Equipment Type" onChange={this.handleChange} value={this.state.equipmentType} /></td>
+  <td>Vendor Company</td>
+  <td><input type="text" name="vendorCompany" placeholder="Vendor Company" onChange={this.handleChange} value={this.state.vendorCompany} /></td>
   </tr>
   <tr>
-  <td>Equipment Type Description</td>
-  <td><textarea  type="text"  name="equipmentManf" placeholder="Equipment Manufacturer" onChange={this.handleChange} value={this.state.equipmentManf}></textarea></td>
+  <td>Vendor Company Description</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorCompanyDescription" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorCompanyDescription}></textarea></td>
   </tr>
   <tr>
-  <td>Equipment Area</td>
-  <td><input type="text" name="equipmentArea" placeholder="Equipment Area" onChange={this.handleChange} value={this.state.equipmentArea} /></td>
+  <td>Vendor Email</td>
+  <td><input type="text" name="vendorEmail" placeholder="Vendor Email" onChange={this.handleChange} value={this.state.vendorEmail} /></td>
+  </tr>
+  <tr>
+  <td>Vendor Phone</td>
+  <td><input type="text" name="vendorPhone" placeholder="Vendor Phone" onChange={this.handleChange} value={this.state.vendorPhone} /></td>
   </tr>
 
-
   <tr>
-  <td>Equipment Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="equipmentNotes" placeholder="Equipment Notes" onChange={this.handleChange} value={this.state.equipmentNotes}></textarea></td>
+  <td>Vendor Notes</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="vendorNotes" placeholder="Vendor Notes" onChange={this.handleChange} value={this.state.vendorNotes}></textarea></td>
   </tr>
 
 
@@ -708,7 +725,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.writeData} bsStyle="primary">Overwrite Equipment</Button>
+            <Button onClick={this.writeData} bsStyle="primary">Overwrite Contact</Button>
             </Col></Row>
             <hr></hr>
           </form>

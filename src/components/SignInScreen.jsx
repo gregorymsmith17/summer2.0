@@ -6,13 +6,15 @@ import { fire, facebookProvider } from '../fire';
 
 import Dashboard from './dashboard';
 import monthlySamples from './monthlySamples';
-import maintenanceReports from './maintenanceReports';
-import vendorContacts from './vendorContacts';
+
 import uploadDocument from './uploadDocument';
 import profilePage from './profilePage';
-import equipmentList from './equipmentList';
-import chemicalApplications from './chemicalApplications';
-import fishStocking from './fishStocking';
+
+import maintenanceReports from './assetManager/maintenanceReports';
+import vendorContacts from './assetManager/vendorContacts';
+import equipmentList from './assetManager/equipmentList';
+import chemicalApplications from './assetManager/chemicalApplications';
+import fishStocking from './assetManager/fishStocking';
 
 import { Link } from 'react-router-dom';
 import { StickyContainer, Sticky } from 'react-sticky';

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
 import { PDFExport } from '@progress/kendo-react-pdf';
-import { fire } from '../fire';
+import { fire } from '../../fire';
 
 import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
 import { TiArrowSortedDown, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
@@ -45,7 +45,7 @@ const ColoredLine = ({ color }) => (
 
 
 
-export default class chemicalApplications extends Component {
+export default class fishStocking extends Component {
 
 
     constructor(props) {
@@ -54,12 +54,12 @@ export default class chemicalApplications extends Component {
 
 
           //Contact Form Inputs
-          chemicalName: '',
-          applicationArea: '',
-          applicationDescription: '',
-          applicationDate: '',
-          applicationAmount: '',
-          applicationNotes: '',
+          fishName: '',
+          stockingArea: '',
+          stockingDescription: '',
+          stockingDate: '',
+          stockingAmount: '',
+          stockingNotes: '',
 
           //Random things for changing tabs
           id: '',
@@ -122,18 +122,18 @@ export default class chemicalApplications extends Component {
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const samplesRef = fire.database().ref(`applicationInformation/${user.uid}`);
-        const orderID = fire.database().ref(`/applicationInformation/${user.uid}/${orderID}`);
+        const samplesRef = fire.database().ref(`stockingInformation/${user.uid}`);
+        const orderID = fire.database().ref(`/stockingInformation/${user.uid}/${orderID}`);
 
 
-        const applicationInfo = {
+        const stockingInfo = {
 
-          chemicalName: this.state.chemicalName,
-          applicationArea: this.state.applicationArea,
-          applicationDescription: this.state.applicationDescription,
-          applicationDate: this.state.applicationDate,
-          applicationAmount: this.state.applicationAmount,
-          applicationNotes: this.state.applicationNotes,
+          fishName: this.state.fishName,
+          stockingArea: this.state.stockingArea,
+          stockingDescription: this.state.stockingDescription,
+          stockingDate: this.state.stockingDate,
+          stockingAmount: this.state.stockingAmount,
+          stockingNotes: this.state.stockingNotes,
 
           id: this.state.id,
         }
@@ -141,15 +141,15 @@ export default class chemicalApplications extends Component {
 
 
 
-        samplesRef.push(applicationInfo);
+        samplesRef.push(stockingInfo);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
-          chemicalName: '',
-          applicationArea: '',
-          applicationDescription: '',
-          applicationDate: '',
-          applicationAmount: '',
-          applicationNotes: '',
+          fishName: '',
+          stockingArea: '',
+          stockingDescription: '',
+          stockingDate: '',
+          stockingAmount: '',
+          stockingNotes: '',
 
         });
       });
@@ -158,7 +158,7 @@ export default class chemicalApplications extends Component {
 
       componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const samplesRef = fire.database().ref(`applicationInformation/${user.uid}`);
+          const samplesRef = fire.database().ref(`stockingInformation/${user.uid}`);
           samplesRef.on('value', (snapshot) => {
 
 
@@ -174,38 +174,38 @@ export default class chemicalApplications extends Component {
           for (let order in orders) {
             newState.push({
               id: order,
-              chemicalName: orders[order].chemicalName,
-              applicationArea: orders[order].applicationArea,
-              applicationDescription: orders[order].applicationDescription,
-              applicationDate: orders[order].applicationDate,
-              applicationAmount: orders[order].applicationAmount,
-              applicationNotes: orders[order].applicationNotes,
+              fishName: orders[order].fishName,
+              stockingArea: orders[order].stockingArea,
+              stockingDescription: orders[order].stockingDescription,
+              stockingDate: orders[order].stockingDate,
+              stockingAmount: orders[order].stockingAmount,
+              stockingNotes: orders[order].stockingNotes,
             });
             newState2.push({
               id: order,
-              chemicalName: orders[order].chemicalName,
-              applicationArea: orders[order].applicationArea,
-              applicationDescription: orders[order].applicationDescription,
-              applicationDate: orders[order].applicationDate,
-              applicationAmount: orders[order].applicationAmount,
-              applicationNotes: orders[order].applicationNotes,
+              fishName: orders[order].fishName,
+              stockingArea: orders[order].stockingArea,
+              stockingDescription: orders[order].stockingDescription,
+              stockingDate: orders[order].stockingDate,
+              stockingAmount: orders[order].stockingAmount,
+              stockingNotes: orders[order].stockingNotes,
             });
 
           }
 
           newState2.sort(function(a, b) {
 
-            if (a.applicationDate === b.applicationDate) {
+            if (a.stockingDate === b.stockingDate) {
               return 0;
             }
-            return a.applicationDate > b.applicationDate ? 1 : -1;
+            return a.stockingDate > b.stockingDate ? 1 : -1;
         });
         newState.sort(function(a, b) {
 
-          if (b.applicationDate === a.applicationDate) {
+          if (b.stockingDate === a.stockingDate) {
             return 0;
           }
-          return b.applicationDate > a.applicationDate ? 1 : -1;
+          return b.stockingDate > a.stockingDate ? 1 : -1;
       });
 
           this.setState({
@@ -227,34 +227,34 @@ export default class chemicalApplications extends Component {
     fillStates(itemId) {
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/applicationInformation/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
         this.setState({
-          chemicalName: '',
-          applicationArea: '',
-          applicationDescription: '',
-          applicationDate: '',
-          applicationAmount: '',
-          applicationNotes: '',
+          fishName: '',
+          stockingArea: '',
+          stockingDescription: '',
+          stockingDate: '',
+          stockingAmount: '',
+          stockingNotes: '',
 
         });
 
       let orders = snapshot.val();
-      let id = fire.database().ref().child(`/applicationInformation/${user.uid}/${itemId}`).key;
+      let id = fire.database().ref().child(`/stockingInformation/${user.uid}/${itemId}`).key;
 
       let newState = [];
       for (let order in orders) {
         newState.push({
           id: order,
 
-          chemicalName: orders[order].chemicalName,
-          applicationArea: orders[order].applicationArea,
-          applicationDescription: orders[order].applicationDescription,
-          applicationDate: orders[order].applicationDate,
-          applicationAmount: orders[order].applicationAmount,
-          applicationNotes: orders[order].applicationNotes,
+          fishName: orders[order].fishName,
+          stockingArea: orders[order].stockingArea,
+          stockingDescription: orders[order].stockingDescription,
+          stockingDate: orders[order].stockingDate,
+          stockingAmount: orders[order].stockingAmount,
+          stockingNotes: orders[order].stockingNotes,
 
         });
       }
@@ -263,12 +263,12 @@ export default class chemicalApplications extends Component {
         id: id,
         key: 4,
 
-        chemicalName: snapshot.child('chemicalName').val(),
-        applicationArea: snapshot.child('applicationArea').val(),
-        applicationDescription: snapshot.child('applicationDescription').val(),
-        applicationDate: snapshot.child('applicationDate').val(),
-        applicationAmount: snapshot.child('applicationAmount').val(),
-        applicationNotes: snapshot.child('applicationNotes').val(),
+        fishName: snapshot.child('fishName').val(),
+        stockingArea: snapshot.child('stockingArea').val(),
+        stockingDescription: snapshot.child('stockingDescription').val(),
+        stockingDate: snapshot.child('stockingDate').val(),
+        stockingAmount: snapshot.child('stockingAmount').val(),
+        stockingNotes: snapshot.child('stockingNotes').val(),
 
       })
 
@@ -281,17 +281,17 @@ export default class chemicalApplications extends Component {
   writeStates = (itemId) => {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/applicationInformation/${user.uid}/${this.state.id}`);
+    const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${this.state.id}`);
 
 
     sampleRef.child("id").set(this.state.id);
 
-    sampleRef.child("chemicalName").set(this.state.chemicalName);
-    sampleRef.child("applicationArea").set(this.state.applicationArea);
-    sampleRef.child("applicationDescription").set(this.state.applicationDescription);
-    sampleRef.child("applicationDate").set(this.state.applicationDate);
-    sampleRef.child("applicationAmount").set(this.state.applicationAmount);
-    sampleRef.child("applicationNotes").set(this.state.applicationNotes);
+    sampleRef.child("fishName").set(this.state.fishName);
+    sampleRef.child("stockingArea").set(this.state.stockingArea);
+    sampleRef.child("stockingDescription").set(this.state.stockingDescription);
+    sampleRef.child("stockingDate").set(this.state.stockingDate);
+    sampleRef.child("stockingAmount").set(this.state.stockingAmount);
+    sampleRef.child("stockingNotes").set(this.state.stockingNotes);
 
   });
 
@@ -303,7 +303,7 @@ export default class chemicalApplications extends Component {
   fillEmpty(itemId) {
     let area = '';
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/applicationInformation/${user.uid}/${itemId}`);
+    const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
 
 
     sampleRef.on('value', (snapshot) => {
@@ -315,12 +315,12 @@ export default class chemicalApplications extends Component {
       newState.push({
         id: order,
 
-        chemicalName: orders[order].chemicalName,
-        applicationArea: orders[order].applicationArea,
-        applicationDescription: orders[order].applicationDescription,
-        applicationDate: orders[order].applicationDate,
-        applicationAmount: orders[order].applicationAmount,
-        applicationNotes: orders[order].applicationNotes,
+        fishName: orders[order].fishName,
+        stockingArea: orders[order].stockingArea,
+        stockingDescription: orders[order].stockingDescription,
+        stockingDate: orders[order].stockingDate,
+        stockingAmount: orders[order].stockingAmount,
+        stockingNotes: orders[order].stockingNotes,
 
       });
     }
@@ -328,12 +328,12 @@ export default class chemicalApplications extends Component {
 
       id: '',
       key: 3,
-      chemicalName: '',
-      applicationArea: '',
-      applicationDescription: '',
-      applicationDate: '',
-      applicationAmount: '',
-      applicationNotes: '',
+      fishName: '',
+      stockingArea: '',
+      stockingDescription: '',
+      stockingDate: '',
+      stockingAmount: '',
+      stockingNotes: '',
 
 
     })
@@ -347,7 +347,7 @@ export default class chemicalApplications extends Component {
 
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/applicationInformation/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
@@ -358,12 +358,12 @@ export default class chemicalApplications extends Component {
         newState.push({
           id: order,
 
-          chemicalName: orders[order].chemicalName,
-          applicationArea: orders[order].applicationArea,
-          applicationDescription: orders[order].applicationDescription,
-          applicationDate: orders[order].applicationDate,
-          applicationAmount: orders[order].applicationAmount,
-          applicationNotes: orders[order].applicationNotes,
+          fishName: orders[order].fishName,
+          stockingArea: orders[order].stockingArea,
+          stockingDescription: orders[order].stockingDescription,
+          stockingDate: orders[order].stockingDate,
+          stockingAmount: orders[order].stockingAmount,
+          stockingNotes: orders[order].stockingNotes,
 
         });
       }
@@ -372,12 +372,12 @@ export default class chemicalApplications extends Component {
         id: snapshot.child('id').val(),
         key: 3,
 
-        chemicalName: snapshot.child('chemicalName').val(),
-        applicationArea: snapshot.child('applicationArea').val(),
-        applicationDescription: snapshot.child('applicationDescription').val(),
-        applicationDate: snapshot.child('applicationDate').val(),
-        applicationAmount: snapshot.child('applicationAmount').val(),
-        applicationNotes: snapshot.child('applicationNotes').val(),
+        fishName: snapshot.child('fishName').val(),
+        stockingArea: snapshot.child('stockingArea').val(),
+        stockingDescription: snapshot.child('stockingDescription').val(),
+        stockingDate: snapshot.child('stockingDate').val(),
+        stockingAmount: snapshot.child('stockingAmount').val(),
+        stockingNotes: snapshot.child('stockingNotes').val(),
 
       })
 
@@ -388,7 +388,7 @@ export default class chemicalApplications extends Component {
 
     removesample(itemId) {
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/applicationInformation/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
       sampleRef.remove();
     });
     }
@@ -403,26 +403,26 @@ writeData (e) {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`applicationInformation/${user.uid}`);
-  const orderID = fire.database().ref(`/applicationInformation/${user.uid}/${this.state.id}`);
+  const samplesRef = fire.database().ref(`stockingInformation/${user.uid}`);
+  const orderID = fire.database().ref(`/stockingInformation/${user.uid}/${this.state.id}`);
   const newCheckboxKey = firebase.database().ref().child('checkbox').push().key;
 
   let id = newCheckboxKey;
   let box = id;
 
 
-  const applicationInfo = {
+  const stockingInfo = {
 
     id: this.state.id,
-    chemicalName: this.state.chemicalName,
-    applicationArea: this.state.applicationArea,
-    applicationDescription: this.state.applicationDescription,
-    applicationDate: this.state.applicationDate,
-    applicationAmount: this.state.applicationAmount,
-    applicationNotes: this.state.applicationNotes,
+    fishName: this.state.fishName,
+    stockingArea: this.state.stockingArea,
+    stockingDescription: this.state.stockingDescription,
+    stockingDate: this.state.stockingDate,
+    stockingAmount: this.state.stockingAmount,
+    stockingNotes: this.state.stockingNotes,
   }
 
-  samplesRef.child(this.state.id).set(applicationInfo);
+  samplesRef.child(this.state.id).set(stockingInfo);
 
 
 });
@@ -525,12 +525,12 @@ const options = {
         <Row>
           <Row>
             <Col xs={6} md={6}>
-          <h3>Chemical Applications</h3>
+          <h3>Fish Stocking</h3>
 
           </Col>
           <Col xs={6} md={6}>
             <ButtonToolbar style={styles.topPad}>
-          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Application</Button>
+          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Stocking Event</Button>
         </ButtonToolbar>
           </Col>
           </Row>
@@ -541,7 +541,7 @@ const options = {
 
 
 
-        <Tab eventKey={1} title="+ Chemical Applications">
+        <Tab eventKey={1} title="+ Fish Stocking">
           <Grid>
 
           <Row style={styles.topPad}>
@@ -560,11 +560,12 @@ const options = {
 
               >
 
-              <TableHeaderColumn dataField='chemicalName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Chemical Name</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Date</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Area</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Amount</TableHeaderColumn>
+              <TableHeaderColumn dataField='fishName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Fish Species</TableHeaderColumn>
+              <TableHeaderColumn dataField='stockingDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Date</TableHeaderColumn>
+              <TableHeaderColumn dataField='stockingArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Area</TableHeaderColumn>
+              <TableHeaderColumn dataField='stockingDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+
+              <TableHeaderColumn dataField='stockingAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Amount</TableHeaderColumn>
 
 
         <TableHeaderColumn
@@ -600,7 +601,7 @@ const options = {
           <form onSubmit={this.handleSubmit}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Chemical Application</h2>
+                <h2>Fish Stocking</h2>
                 </Col>
 
                 </Row>
@@ -619,29 +620,29 @@ const options = {
   </thead>
   <tbody>
   <tr>
-  <td>Chemical Name</td>
-  <td><input type="text" name="chemicalName" placeholder="Chemical Name" onChange={this.handleChange} value={this.state.chemicalName} /></td>
+  <td>Fish Species</td>
+  <td><input type="text" name="fishName" placeholder="Fish Species" onChange={this.handleChange} value={this.state.fishName} /></td>
   </tr>
   <tr>
-  <td>Application Date</td>
-  <td><input type="date" name="applicationDate" placeholder="Application Date" onChange={this.handleChange} value={this.state.applicationDate} /></td>
+  <td>Stocking Date</td>
+  <td><input type="date" name="stockingDate" placeholder="Stocking Date" onChange={this.handleChange} value={this.state.stockingDate} /></td>
   </tr>
   <tr>
-  <td>Application Area</td>
-  <td><input type="text" name="applicationArea" placeholder="Application Area" onChange={this.handleChange} value={this.state.applicationArea} /></td>
+  <td>Stocking Area</td>
+  <td><input type="text" name="stockingArea" placeholder="Stocking Area" onChange={this.handleChange} value={this.state.stockingArea} /></td>
   </tr>
   <tr>
-  <td>Application Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationDescription" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationDescription}></textarea></td>
+  <td>Stocking Description</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingDescription" placeholder="Stocking Description" onChange={this.handleChange} value={this.state.stockingDescription}></textarea></td>
   </tr>
   <tr>
-  <td>Application Amount</td>
-  <td><input type="text" name="applicationAmount" placeholder="Application Amount" onChange={this.handleChange} value={this.state.applicationAmount} /></td>
+  <td>Stocking Amount</td>
+  <td><input type="text" name="stockingAmount" placeholder="Stocking Amount" onChange={this.handleChange} value={this.state.stockingAmount} /></td>
   </tr>
 
   <tr>
-  <td>Application Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationNotes" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationNotes}></textarea></td>
+  <td>Stocking Notes</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingNotes" placeholder="Stocking Notes" onChange={this.handleChange} value={this.state.stockingNotes}></textarea></td>
   </tr>
 
 
@@ -653,7 +654,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.handleSubmit} bsStyle="primary">Add Application</Button>
+            <Button onClick={this.handleSubmit} bsStyle="primary">Add Stocking Event</Button>
             </Col></Row>
             <hr></hr>
           </form>
@@ -672,7 +673,7 @@ const options = {
           <form onSubmit={this.writeData}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Chemical Application</h2>
+                <h2>Fish Stocking</h2>
                 </Col>
 
                 </Row>
@@ -691,29 +692,29 @@ const options = {
   </thead>
   <tbody>
   <tr>
-  <td>Chemical Name</td>
-  <td><input type="text" name="chemicalName" placeholder="Chemical Name" onChange={this.handleChange} value={this.state.chemicalName} /></td>
+  <td>Fish Species</td>
+  <td><input type="text" name="fishName" placeholder="Fish Species" onChange={this.handleChange} value={this.state.fishName} /></td>
   </tr>
   <tr>
-  <td>Application Date</td>
-  <td><input type="date" name="applicationDate" placeholder="Application Date" onChange={this.handleChange} value={this.state.applicationDate} /></td>
+  <td>Stocking Date</td>
+  <td><input type="date" name="stockingDate" placeholder="Stocking Date" onChange={this.handleChange} value={this.state.stockingDate} /></td>
   </tr>
   <tr>
-  <td>Application Area</td>
-  <td><input type="text" name="applicationArea" placeholder="Application Area" onChange={this.handleChange} value={this.state.applicationArea} /></td>
+  <td>Stocking Area</td>
+  <td><input type="text" name="stockingArea" placeholder="Stocking Area" onChange={this.handleChange} value={this.state.stockingArea} /></td>
   </tr>
   <tr>
-  <td>Application Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationDescription" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationDescription}></textarea></td>
+  <td>Stocking Description</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingDescription" placeholder="Stocking Description" onChange={this.handleChange} value={this.state.stockingDescription}></textarea></td>
   </tr>
   <tr>
-  <td>Application Amount</td>
-  <td><input type="text" name="applicationAmount" placeholder="Application Amount" onChange={this.handleChange} value={this.state.applicationAmount} /></td>
+  <td>Stocking Amount</td>
+  <td><input type="text" name="stockingAmount" placeholder="Stocking Amount" onChange={this.handleChange} value={this.state.stockingAmount} /></td>
   </tr>
 
   <tr>
-  <td>Application Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationNotes" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationNotes}></textarea></td>
+  <td>Stocking Notes</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingNotes" placeholder="Stocking Notes" onChange={this.handleChange} value={this.state.stockingNotes}></textarea></td>
   </tr>
 
 
@@ -725,7 +726,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.writeData} bsStyle="primary">Overwrite Application</Button>
+            <Button onClick={this.writeData} bsStyle="primary">Overwrite Stocking</Button>
             </Col></Row>
             <hr></hr>
           </form>

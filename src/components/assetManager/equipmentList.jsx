@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
 import { PDFExport } from '@progress/kendo-react-pdf';
-import { fire } from '../fire';
+import { fire } from '../../fire';
 
 import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
 import { TiArrowSortedDown, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
@@ -45,7 +45,7 @@ const ColoredLine = ({ color }) => (
 
 
 
-export default class fishStocking extends Component {
+export default class equipmentList extends Component {
 
 
     constructor(props) {
@@ -54,12 +54,12 @@ export default class fishStocking extends Component {
 
 
           //Contact Form Inputs
-          fishName: '',
-          stockingArea: '',
-          stockingDescription: '',
-          stockingDate: '',
-          stockingAmount: '',
-          stockingNotes: '',
+          equipmentName: '',
+          equipmentType: '',
+          equipmentManf: '',
+          equipmentArea: '',
+
+          equipmentNotes: '',
 
           //Random things for changing tabs
           id: '',
@@ -122,18 +122,18 @@ export default class fishStocking extends Component {
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const samplesRef = fire.database().ref(`stockingInformation/${user.uid}`);
-        const orderID = fire.database().ref(`/stockingInformation/${user.uid}/${orderID}`);
+        const samplesRef = fire.database().ref(`equipmentList/${user.uid}`);
+        const orderID = fire.database().ref(`/equipmentList/${user.uid}/${orderID}`);
 
 
-        const stockingInfo = {
+        const equipmentList = {
 
-          fishName: this.state.fishName,
-          stockingArea: this.state.stockingArea,
-          stockingDescription: this.state.stockingDescription,
-          stockingDate: this.state.stockingDate,
-          stockingAmount: this.state.stockingAmount,
-          stockingNotes: this.state.stockingNotes,
+          equipmentName: this.state.equipmentName,
+          equipmentType: this.state.equipmentType,
+          equipmentManf: this.state.equipmentManf,
+          equipmentArea: this.state.equipmentArea,
+
+          equipmentNotes: this.state.equipmentNotes,
 
           id: this.state.id,
         }
@@ -141,15 +141,15 @@ export default class fishStocking extends Component {
 
 
 
-        samplesRef.push(stockingInfo);
+        samplesRef.push(equipmentList);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
-          fishName: '',
-          stockingArea: '',
-          stockingDescription: '',
-          stockingDate: '',
-          stockingAmount: '',
-          stockingNotes: '',
+          equipmentName: '',
+          equipmentType: '',
+          equipmentManf: '',
+          equipmentArea: '',
+
+          equipmentNotes: '',
 
         });
       });
@@ -158,7 +158,7 @@ export default class fishStocking extends Component {
 
       componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const samplesRef = fire.database().ref(`stockingInformation/${user.uid}`);
+          const samplesRef = fire.database().ref(`equipmentList/${user.uid}`);
           samplesRef.on('value', (snapshot) => {
 
 
@@ -174,38 +174,36 @@ export default class fishStocking extends Component {
           for (let order in orders) {
             newState.push({
               id: order,
-              fishName: orders[order].fishName,
-              stockingArea: orders[order].stockingArea,
-              stockingDescription: orders[order].stockingDescription,
-              stockingDate: orders[order].stockingDate,
-              stockingAmount: orders[order].stockingAmount,
-              stockingNotes: orders[order].stockingNotes,
+              equipmentName: orders[order].equipmentName,
+              equipmentType: orders[order].equipmentType,
+              equipmentManf: orders[order].equipmentManf,
+              equipmentArea: orders[order].equipmentArea,
+              equipmentNotes: orders[order].equipmentNotes,
             });
             newState2.push({
               id: order,
-              fishName: orders[order].fishName,
-              stockingArea: orders[order].stockingArea,
-              stockingDescription: orders[order].stockingDescription,
-              stockingDate: orders[order].stockingDate,
-              stockingAmount: orders[order].stockingAmount,
-              stockingNotes: orders[order].stockingNotes,
+              equipmentName: orders[order].equipmentName,
+              equipmentType: orders[order].equipmentType,
+              equipmentManf: orders[order].equipmentManf,
+              equipmentArea: orders[order].equipmentArea,
+              equipmentNotes: orders[order].equipmentNotes,
             });
 
           }
 
           newState2.sort(function(a, b) {
 
-            if (a.stockingDate === b.stockingDate) {
+            if (a.equipmentName === b.equipmentName) {
               return 0;
             }
-            return a.stockingDate > b.stockingDate ? 1 : -1;
+            return a.equipmentName > b.equipmentName ? 1 : -1;
         });
         newState.sort(function(a, b) {
 
-          if (b.stockingDate === a.stockingDate) {
+          if (b.equipmentName === a.equipmentName) {
             return 0;
           }
-          return b.stockingDate > a.stockingDate ? 1 : -1;
+          return b.equipmentName > a.equipmentName ? 1 : -1;
       });
 
           this.setState({
@@ -227,34 +225,32 @@ export default class fishStocking extends Component {
     fillStates(itemId) {
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
         this.setState({
-          fishName: '',
-          stockingArea: '',
-          stockingDescription: '',
-          stockingDate: '',
-          stockingAmount: '',
-          stockingNotes: '',
+          equipmentName: '',
+          equipmentType: '',
+          equipmentManf: '',
+          equipmentArea: '',
+          equipmentNotes: '',
 
         });
 
       let orders = snapshot.val();
-      let id = fire.database().ref().child(`/stockingInformation/${user.uid}/${itemId}`).key;
+      let id = fire.database().ref().child(`/equipmentList/${user.uid}/${itemId}`).key;
 
       let newState = [];
       for (let order in orders) {
         newState.push({
           id: order,
 
-          fishName: orders[order].fishName,
-          stockingArea: orders[order].stockingArea,
-          stockingDescription: orders[order].stockingDescription,
-          stockingDate: orders[order].stockingDate,
-          stockingAmount: orders[order].stockingAmount,
-          stockingNotes: orders[order].stockingNotes,
+          equipmentName: orders[order].equipmentName,
+          equipmentType: orders[order].equipmentType,
+          equipmentManf: orders[order].equipmentManf,
+          equipmentArea: orders[order].equipmentArea,
+          equipmentNotes: orders[order].equipmentNotes,
 
         });
       }
@@ -263,12 +259,11 @@ export default class fishStocking extends Component {
         id: id,
         key: 4,
 
-        fishName: snapshot.child('fishName').val(),
-        stockingArea: snapshot.child('stockingArea').val(),
-        stockingDescription: snapshot.child('stockingDescription').val(),
-        stockingDate: snapshot.child('stockingDate').val(),
-        stockingAmount: snapshot.child('stockingAmount').val(),
-        stockingNotes: snapshot.child('stockingNotes').val(),
+        equipmentName: snapshot.child('equipmentName').val(),
+        equipmentType: snapshot.child('equipmentType').val(),
+        equipmentManf: snapshot.child('equipmentManf').val(),
+        equipmentArea: snapshot.child('equipmentArea').val(),
+        equipmentNotes: snapshot.child('equipmentNotes').val(),
 
       })
 
@@ -281,17 +276,16 @@ export default class fishStocking extends Component {
   writeStates = (itemId) => {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${this.state.id}`);
+    const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${this.state.id}`);
 
 
     sampleRef.child("id").set(this.state.id);
 
-    sampleRef.child("fishName").set(this.state.fishName);
-    sampleRef.child("stockingArea").set(this.state.stockingArea);
-    sampleRef.child("stockingDescription").set(this.state.stockingDescription);
-    sampleRef.child("stockingDate").set(this.state.stockingDate);
-    sampleRef.child("stockingAmount").set(this.state.stockingAmount);
-    sampleRef.child("stockingNotes").set(this.state.stockingNotes);
+    sampleRef.child("equipmentName").set(this.state.equipmentName);
+    sampleRef.child("equipmentType").set(this.state.equipmentType);
+    sampleRef.child("equipmentManf").set(this.state.equipmentManf);
+    sampleRef.child("equipmentArea").set(this.state.equipmentArea);
+    sampleRef.child("equipmentNotes").set(this.state.equipmentNotes);
 
   });
 
@@ -303,7 +297,7 @@ export default class fishStocking extends Component {
   fillEmpty(itemId) {
     let area = '';
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
+    const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
 
 
     sampleRef.on('value', (snapshot) => {
@@ -315,12 +309,11 @@ export default class fishStocking extends Component {
       newState.push({
         id: order,
 
-        fishName: orders[order].fishName,
-        stockingArea: orders[order].stockingArea,
-        stockingDescription: orders[order].stockingDescription,
-        stockingDate: orders[order].stockingDate,
-        stockingAmount: orders[order].stockingAmount,
-        stockingNotes: orders[order].stockingNotes,
+        equipmentName: orders[order].equipmentName,
+        equipmentType: orders[order].equipmentType,
+        equipmentManf: orders[order].equipmentManf,
+        equipmentArea: orders[order].equipmentArea,
+        equipmentNotes: orders[order].equipmentNotes,
 
       });
     }
@@ -328,12 +321,11 @@ export default class fishStocking extends Component {
 
       id: '',
       key: 3,
-      fishName: '',
-      stockingArea: '',
-      stockingDescription: '',
-      stockingDate: '',
-      stockingAmount: '',
-      stockingNotes: '',
+      equipmentName: '',
+      equipmentType: '',
+      equipmentManf: '',
+      equipmentArea: '',
+      equipmentNotes: '',
 
 
     })
@@ -347,7 +339,7 @@ export default class fishStocking extends Component {
 
       let area = '';
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
 
       sampleRef.on('value', (snapshot) => {
 
@@ -358,12 +350,11 @@ export default class fishStocking extends Component {
         newState.push({
           id: order,
 
-          fishName: orders[order].fishName,
-          stockingArea: orders[order].stockingArea,
-          stockingDescription: orders[order].stockingDescription,
-          stockingDate: orders[order].stockingDate,
-          stockingAmount: orders[order].stockingAmount,
-          stockingNotes: orders[order].stockingNotes,
+          equipmentName: orders[order].equipmentName,
+          equipmentType: orders[order].equipmentType,
+          equipmentManf: orders[order].equipmentManf,
+          equipmentArea: orders[order].equipmentArea,
+          equipmentNotes: orders[order].equipmentNotes,
 
         });
       }
@@ -372,12 +363,11 @@ export default class fishStocking extends Component {
         id: snapshot.child('id').val(),
         key: 3,
 
-        fishName: snapshot.child('fishName').val(),
-        stockingArea: snapshot.child('stockingArea').val(),
-        stockingDescription: snapshot.child('stockingDescription').val(),
-        stockingDate: snapshot.child('stockingDate').val(),
-        stockingAmount: snapshot.child('stockingAmount').val(),
-        stockingNotes: snapshot.child('stockingNotes').val(),
+        equipmentName: snapshot.child('equipmentName').val(),
+        equipmentType: snapshot.child('equipmentType').val(),
+        equipmentManf: snapshot.child('equipmentManf').val(),
+        equipmentArea: snapshot.child('equipmentArea').val(),
+        equipmentNotes: snapshot.child('equipmentNotes').val(),
 
       })
 
@@ -388,7 +378,7 @@ export default class fishStocking extends Component {
 
     removesample(itemId) {
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/stockingInformation/${user.uid}/${itemId}`);
+      const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
       sampleRef.remove();
     });
     }
@@ -403,26 +393,25 @@ writeData (e) {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`stockingInformation/${user.uid}`);
-  const orderID = fire.database().ref(`/stockingInformation/${user.uid}/${this.state.id}`);
+  const samplesRef = fire.database().ref(`equipmentList/${user.uid}`);
+  const orderID = fire.database().ref(`/equipmentList/${user.uid}/${this.state.id}`);
   const newCheckboxKey = firebase.database().ref().child('checkbox').push().key;
 
   let id = newCheckboxKey;
   let box = id;
 
 
-  const stockingInfo = {
+  const equipmentList = {
 
     id: this.state.id,
-    fishName: this.state.fishName,
-    stockingArea: this.state.stockingArea,
-    stockingDescription: this.state.stockingDescription,
-    stockingDate: this.state.stockingDate,
-    stockingAmount: this.state.stockingAmount,
-    stockingNotes: this.state.stockingNotes,
+    equipmentName: this.state.equipmentName,
+    equipmentType: this.state.equipmentType,
+    equipmentManf: this.state.equipmentManf,
+    equipmentArea: this.state.equipmentArea,
+    equipmentNotes: this.state.equipmentNotes,
   }
 
-  samplesRef.child(this.state.id).set(stockingInfo);
+  samplesRef.child(this.state.id).set(equipmentList);
 
 
 });
@@ -525,12 +514,12 @@ const options = {
         <Row>
           <Row>
             <Col xs={6} md={6}>
-          <h3>Fish Stocking</h3>
+          <h3>Equipment List</h3>
 
           </Col>
           <Col xs={6} md={6}>
             <ButtonToolbar style={styles.topPad}>
-          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Stocking Event</Button>
+          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Add Equipment</Button>
         </ButtonToolbar>
           </Col>
           </Row>
@@ -541,7 +530,7 @@ const options = {
 
 
 
-        <Tab eventKey={1} title="+ Fish Stocking">
+        <Tab eventKey={1} title="+ Equipment List">
           <Grid>
 
           <Row style={styles.topPad}>
@@ -560,12 +549,11 @@ const options = {
 
               >
 
-              <TableHeaderColumn dataField='fishName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Fish Species</TableHeaderColumn>
-              <TableHeaderColumn dataField='stockingDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Date</TableHeaderColumn>
-              <TableHeaderColumn dataField='stockingArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Area</TableHeaderColumn>
-              <TableHeaderColumn dataField='stockingDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+              <TableHeaderColumn dataField='equipmentName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Name</TableHeaderColumn>
+              <TableHeaderColumn dataField='equipmentType' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Type</TableHeaderColumn>
+              <TableHeaderColumn dataField='equipmentManf' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Manufacturer</TableHeaderColumn>
+              <TableHeaderColumn dataField='equipmentArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Area</TableHeaderColumn>
 
-              <TableHeaderColumn dataField='stockingAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Amount</TableHeaderColumn>
 
 
         <TableHeaderColumn
@@ -601,7 +589,7 @@ const options = {
           <form onSubmit={this.handleSubmit}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Fish Stocking</h2>
+                <h2>Equipment List</h2>
                 </Col>
 
                 </Row>
@@ -620,29 +608,26 @@ const options = {
   </thead>
   <tbody>
   <tr>
-  <td>Fish Species</td>
-  <td><input type="text" name="fishName" placeholder="Fish Species" onChange={this.handleChange} value={this.state.fishName} /></td>
+  <td>Equipment Name</td>
+  <td><input type="text" name="equipmentName" placeholder="Equipment Name" onChange={this.handleChange} value={this.state.equipmentName} /></td>
   </tr>
   <tr>
-  <td>Stocking Date</td>
-  <td><input type="date" name="stockingDate" placeholder="Stocking Date" onChange={this.handleChange} value={this.state.stockingDate} /></td>
+  <td>Equipment Type</td>
+  <td><input type="text" name="equipmentType" placeholder="Equipment Type" onChange={this.handleChange} value={this.state.equipmentType} /></td>
   </tr>
   <tr>
-  <td>Stocking Area</td>
-  <td><input type="text" name="stockingArea" placeholder="Stocking Area" onChange={this.handleChange} value={this.state.stockingArea} /></td>
+  <td>Equipment Manufacturer</td>
+  <td><textarea  type="text"  name="equipmentManf" placeholder="Equipment Manufacturer" onChange={this.handleChange} value={this.state.equipmentManf}></textarea></td>
   </tr>
   <tr>
-  <td>Stocking Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingDescription" placeholder="Stocking Description" onChange={this.handleChange} value={this.state.stockingDescription}></textarea></td>
-  </tr>
-  <tr>
-  <td>Stocking Amount</td>
-  <td><input type="text" name="stockingAmount" placeholder="Stocking Amount" onChange={this.handleChange} value={this.state.stockingAmount} /></td>
+  <td>Equipment Area</td>
+  <td><input type="text" name="equipmentArea" placeholder="Equipment Area" onChange={this.handleChange} value={this.state.equipmentArea} /></td>
   </tr>
 
+
   <tr>
-  <td>Stocking Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingNotes" placeholder="Stocking Notes" onChange={this.handleChange} value={this.state.stockingNotes}></textarea></td>
+  <td>Equipment Notes</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="equipmentNotes" placeholder="Equipment Notes" onChange={this.handleChange} value={this.state.equipmentNotes}></textarea></td>
   </tr>
 
 
@@ -654,7 +639,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.handleSubmit} bsStyle="primary">Add Stocking Event</Button>
+            <Button onClick={this.handleSubmit} bsStyle="primary">Add Equipment</Button>
             </Col></Row>
             <hr></hr>
           </form>
@@ -673,7 +658,7 @@ const options = {
           <form onSubmit={this.writeData}>
             <Row>
               <Col xs={4} sm={4} md={4}>
-                <h2>Fish Stocking</h2>
+                <h2>Vendor Contact</h2>
                 </Col>
 
                 </Row>
@@ -692,29 +677,26 @@ const options = {
   </thead>
   <tbody>
   <tr>
-  <td>Fish Species</td>
-  <td><input type="text" name="fishName" placeholder="Fish Species" onChange={this.handleChange} value={this.state.fishName} /></td>
+  <td>Vendor Name</td>
+  <td><input type="text" name="equipmentName" placeholder="Vendor Name" onChange={this.handleChange} value={this.state.equipmentName} /></td>
   </tr>
   <tr>
-  <td>Stocking Date</td>
-  <td><input type="date" name="stockingDate" placeholder="Stocking Date" onChange={this.handleChange} value={this.state.stockingDate} /></td>
+  <td>Equipment Type</td>
+  <td><input type="text" name="equipmentType" placeholder="Equipment Type" onChange={this.handleChange} value={this.state.equipmentType} /></td>
   </tr>
   <tr>
-  <td>Stocking Area</td>
-  <td><input type="text" name="stockingArea" placeholder="Stocking Area" onChange={this.handleChange} value={this.state.stockingArea} /></td>
+  <td>Equipment Type Description</td>
+  <td><textarea  type="text"  name="equipmentManf" placeholder="Equipment Manufacturer" onChange={this.handleChange} value={this.state.equipmentManf}></textarea></td>
   </tr>
   <tr>
-  <td>Stocking Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingDescription" placeholder="Stocking Description" onChange={this.handleChange} value={this.state.stockingDescription}></textarea></td>
-  </tr>
-  <tr>
-  <td>Stocking Amount</td>
-  <td><input type="text" name="stockingAmount" placeholder="Stocking Amount" onChange={this.handleChange} value={this.state.stockingAmount} /></td>
+  <td>Equipment Area</td>
+  <td><input type="text" name="equipmentArea" placeholder="Equipment Area" onChange={this.handleChange} value={this.state.equipmentArea} /></td>
   </tr>
 
+
   <tr>
-  <td>Stocking Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingNotes" placeholder="Stocking Notes" onChange={this.handleChange} value={this.state.stockingNotes}></textarea></td>
+  <td>Equipment Notes</td>
+  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="equipmentNotes" placeholder="Equipment Notes" onChange={this.handleChange} value={this.state.equipmentNotes}></textarea></td>
   </tr>
 
 
@@ -726,7 +708,7 @@ const options = {
 
                   <Row>
                   <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.writeData} bsStyle="primary">Overwrite Stocking</Button>
+            <Button onClick={this.writeData} bsStyle="primary">Overwrite Equipment</Button>
             </Col></Row>
             <hr></hr>
           </form>
