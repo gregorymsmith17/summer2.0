@@ -10,6 +10,9 @@ import maintenanceReports from './maintenanceReports';
 import vendorContacts from './vendorContacts';
 import uploadDocument from './uploadDocument';
 import profilePage from './profilePage';
+import equipmentList from './equipmentList';
+import chemicalApplications from './chemicalApplications';
+import fishStocking from './fishStocking';
 
 import { Link } from 'react-router-dom';
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -96,6 +99,15 @@ const popoverRightAsset = (
     </NavItem>
     <NavItem componentClass={Link} href="/vendorContacts" to="/vendorContacts">
       Vendor Contacts
+    </NavItem>
+    <NavItem componentClass={Link} href="/equipmentList" to="/equipmentList">
+      Equipment List
+    </NavItem>
+    <NavItem componentClass={Link} href="/chemicalApplications" to="/chemicalApplications">
+      Chemical Applications
+    </NavItem>
+    <NavItem componentClass={Link} href="/fishStocking" to="/fishStocking">
+      Fish Stocking
     </NavItem>
 
 
@@ -238,6 +250,9 @@ class SignInScreen extends React.Component {
             <Route path="/vendorContacts" component={vendorContacts} />
             <Route path="/uploadDocument" component={uploadDocument} />
             <Route path="/profilePage" component={profilePage} />
+            <Route path="/equipmentList" component={equipmentList} />
+            <Route path="/chemicalApplications" component={chemicalApplications} />
+            <Route path="/fishStocking" component={fishStocking} />
 
 
             </Col>
