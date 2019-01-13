@@ -982,7 +982,7 @@ const options = {
         <Tooltip/>
 
           <Line type="monotone" dataKey={this.state.nitrogenPlot}  stroke="#8884d8" activeDot={{r: 8}}/>
-        <Line type="monotone" dataKey={this.state.phosphorusPlot}  stroke="#82ca9d, 3px" />
+            <Line type="monotone" dataKey={this.state.phosphorusPlot} stroke="#8884d8" activeDot={{r: 8}}/>
          <Line type="monotone" dataKey={this.state.tdsPlot} stroke="#8884d8" activeDot={{r: 8}}/>
         <Line type="monotone" dataKey={this.state.pHPlot} stroke="#82ca9d" />
         <Line type="monotone" dataKey={this.state.tempPlot}  stroke={this.state.tempColor} />

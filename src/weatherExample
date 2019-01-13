@@ -1,0 +1,28 @@
+//api call for weather data.  "FORECAST" gives 5 days, if that was replaced with "WEATHER" it gives the realtime information. CITY ID, Units, and API KEY.
+
+//API Key retrived when signed up for api at openweathermap.com
+
+//let api_call =  await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${'Oakland'}&units=${'imperial'}&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`);
+
+//let response = await api_call.json();
+
+//to see the exact api call remove the // for the console.log(response) below
+//console.log(response);
+
+//for (let i=0; i < response.list.length; i++) {
+
+
+
+  //.push adds temp values and date values to the weatherData array
+  //weatherData.push({temp: response.list[i].main.temp, date: new Date(Date.parse(response.list[i].dt_txt)), description: response.list[i].weather[0].description, icon: response.list[i].weather[0].icon });
+
+  //weatherData.push({temp: response.list[i].main.temp, date: new Date(Date.parse(response.list[i].dt_txt)), description: response.list[i].weather[0].description, image: 'http://openweathermap.org/img/w/' + response.list[i].weather[0].icon + '.png'  });
+
+
+  //console.log(weatherData);
+
+  //this.setState({
+    //weatherData: weatherData,
+    //iconData: [{icon: '10n'}, {icon:'11n'}]
+  //})
+//}
