@@ -18,15 +18,6 @@ import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, C
 
 
 
-
-
-
-
-
-
-
-
-
 const styles = {
   pdfPage: {
     padding: ".5in .5in"
@@ -83,10 +74,6 @@ export default class maintenanceReports extends Component {
           dataList: [],
           filter: "",
           blobUrl: null,
-
-
-
-
 
 
 
@@ -473,22 +460,6 @@ writeData (e) {
 
 });
 }
-
-
-
-handleBtnClick = () => {
-
-  let order = 'desc';
-  if (order === 'desc') {
-    this.refs.table.handleSort('asc', 'name');
-    order = 'asc';
-  } else {
-    this.refs.table.handleSort('desc', 'name');
-    order = 'desc';
-  }
-}
-
-
 
 
 

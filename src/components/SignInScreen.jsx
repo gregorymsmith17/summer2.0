@@ -4,7 +4,6 @@ import firebase from 'firebase';
 import * as firebaseui from 'firebaseui';
 import { fire, facebookProvider } from '../fire';
 
-
 import Dashboard from './dashboard';
 import monthlySamples from './monthlySamples';
 import maintenanceReports from './maintenanceReports';
@@ -12,15 +11,12 @@ import vendorContacts from './vendorContacts';
 import uploadDocument from './uploadDocument';
 import profilePage from './profilePage';
 
-
-
-
-
 import { Link } from 'react-router-dom';
 import { StickyContainer, Sticky } from 'react-sticky';
 import { Col, Popover, Panel, Grid, Collapse, Well, ListGroup, ListGroupItem, Button, Nav, NavItem, OverlayTrigger, Row, Tab, Tabs } from 'react-bootstrap';
 
 import { BrowserRouter, Route } from 'react-router-dom';
+
 
 const styles = {
   sidenav: {
@@ -114,16 +110,8 @@ const popoverRightDocuments = (
       <NavItem componentClass={Link} href="/uploadDocument" to="/uploadDocument">
       Documents
     </NavItem>
-    <NavItem componentClass={Link} href="/data" to="/data">
-      Equipment Manuals
-    </NavItem>
-
-
-
-
-
-
   </Popover>
+
 );
 
 class SignInScreen extends React.Component {

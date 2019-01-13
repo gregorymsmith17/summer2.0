@@ -455,27 +455,12 @@ writeData (e) {
 
 
 
-
-
-
-  //this.setState is used to clear the text boxes after the form has been submitted.
-
 });
 }
 
 
 
-handleBtnClick = () => {
 
-  let order = 'desc';
-  if (order === 'desc') {
-    this.refs.table.handleSort('asc', 'name');
-    order = 'asc';
-  } else {
-    this.refs.table.handleSort('desc', 'name');
-    order = 'desc';
-  }
-}
 
 
 
@@ -496,15 +481,7 @@ rawMarkup(){
 
 
 
- DOSort = (a, b, order) => {
-   let dataList = this.state.dataList;   // order is desc or asc
-  if (order === 'desc') {
-    return a.DOResult - b.DOResult;
-  } else {
-    return b.DOResult - a.DOResult;
-  }
-}
-
+ 
 
 
 editRow(row, isSelected, e, id) {

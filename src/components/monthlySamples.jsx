@@ -18,16 +18,6 @@ import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, C
 
 
 
-
-
-
-
-
-
-
-
-
-
 const styles = {
   topPad: {
     paddingTop: "20px"
@@ -85,7 +75,6 @@ export default class monthlySamples extends Component {
           displayColorPicker: false,
 
           //colors for graph lines
-          color: '#9E4444',
           tempColor: '',
 
 

@@ -25,48 +25,17 @@ export default class Dashboard extends Component {
       super(props);
       this.state = {
 
+        //The data that goes into the table showing weather data
         weatherData: [],
 
         id: '',
         key: 1,
-        idKey: '',
-        page: '',
-        area: '',
-        areaData: [],
-        responsibility: '',
-        responsibilityData: [],
-        startDate: '',
-        startDateData: [],
-        endDate: '',
-        endDateData: [],
-        description: '',
-        descriptionData: [],
-        checkbox: '',
-        checkboxData: [],
-        samples: [],
-        orders: [],
-        orders2: [],
-        dataList: [],
-        filter: "",
-        blob: null,
-        file:null,
-        blobUrl: null,
-
-        report: [],
 
 
 
 
 
       }
-      //these are triggered events.  handleChange is for text box changes
-      //handlesubmit is for the form being submitted.
-      //every event trigger needs to be bound like is below with .bind
-      //we might now have to do this anymore with the newest version of react, but i have it to be safe.
-
-      this.filter = this.filter.bind(this);
-
-
 
     }
 
@@ -75,19 +44,26 @@ export default class Dashboard extends Component {
 
 
 
+    //async allows await to be used for API calls.  Without ASYNC an error will be called saying that await is a reserved word.
+
+    //ComponentDidMount runs over and over again
 
   async componentDidMount() {
     let weatherData = [];
 
 
+    //api call for weather data.  "FORECAST" gives 5 days, if that was replaced with "WEATHER" it gives the realtime information. CITY ID, Units, and API KEY.
+
+    //API Key retrived when signed up for api at openweathermap.com
 
     let api_call =  await fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${'Oakland'}&units=${'imperial'}&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`);
 
-
     let response = await api_call.json();
-
+    //to see the exact api call remove the // for the console.log(response) below
+    //console.log(response)
     for (let i=0; i < response.list.length; i++) {
 
+      //.push adds temp values and date values to the weatherData array
       weatherData.push({temp: response.list[i].main.temp, date: new Date(Date.parse(response.list[i].dt_txt))});
 
 
@@ -97,163 +73,22 @@ export default class Dashboard extends Component {
         weatherData: weatherData,
       })
     }
+
+
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-
-
-
 
       const samplesRef = fire.database().ref(`dailySamples/${user.uid}`);
       samplesRef.on('value', (snapshot) => {
 
-        let startDateData = [];
-        let endDateData = [];
-        let descriptionData = [];
-        let responsibilityData = [];
-        let areaData = [];
-        let checkboxData = [];
-        let idData = [];
-        let sampleDateData = [];
-        let ammoniaResultData = [];
 
-        let dataList = snapshot.val();
-        let filter = [];
-
-
-      let orders = snapshot.val();
-      let orders2 = snapshot.val();
-      let orders3 = snapshot.val();
-
-      let newState = [];
-      let newState2 = [];
-      let newState3 = [];
-
-      for (let order in orders) {
-        newState.push({
-          id: order,
-          startDate: orders[order].startDate,
-          endDate: orders[order].endDate,
-          description: orders[order].description,
-          responsibility: orders[order].responsibility,
-          area: orders[order].area,
-
-          sampleDate: orders[order].sampleDate,
-          sampleTime: orders[order].sampleTime,
-          operator: orders[order].operator,
-          sampleLocation: orders[order].sampleLocation,
-          temperatureResult: orders[order].temperatureResult,
-          conductivityResult: orders[order].conductivityResult,
-          pHResult: orders[order].pHResult,
-          DOResult: orders[order].DOResult,
-          nitrateResult: orders[order].nitrateResult,
-          nitriteResult: orders[order].nitriteResult,
-          ammoniaResult: orders[order].ammoniaResult,
-          totalInorganicNitrogen: orders[order].totalInorganicNitrogen,
-          turbidityResult: orders[order].turbidityResult,
-          TSSResult: orders[order].TSSResult,
-
-        });
-      }
-      for (let order2 in orders2) {
-        newState2.push({
-
-          sampleDate: orders2[order2].sampleDate,
-          DOResult: orders2[order2].DOResult,
-          nitrateResult: orders2[order2].nitrateResult,
-          nitriteResult: orders2[order2].nitriteResult,
-          ammoniaResult: orders2[order2].ammoniaResult,
-
-        });
-      }
-      newState2.sort(function(a, b) {
-
-        if (a.sampleDate === b.sampleDate) {
-          return 0;
-        }
-        return a.sampleDate > b.sampleDate ? 1 : -1;
-    });
-    newState.sort(function(a, b) {
-
-      if (b.sampleDate === a.sampleDate) {
-        return 0;
-      }
-      return b.sampleDate > a.sampleDate ? 1 : -1;
-  });
-
-
-      this.setState({
-        orders: newState,
-        orders2: newState2,
-        dataList: newState,
-      });
     });
   });
   }
-
-  ammoniaOn = () => {
-    let ammonia = "ammoniaResult";
-    this.setState({
-      ammoniaPlot: ammonia,
-
-    })
-  }
-
-  ammoniaOff = () => {
-    let ammonia = '';
-    this.setState({
-      ammoniaPlot: ammonia,
-
-    })
-
-  }
-
-  filter = (url) => {
-
-
-
-    domtoimage.toBlob(document.getElementById('my-node'))
-        .then((blob) => {
-
-
-            console.log(blob);
-            const blobUrl = URL.createObjectURL(blob);
-
-            console.log(blobUrl);
-
-            this.setState({
-              blobUrl: blobUrl,
-            })
-
-        });
-
-
-}
-
-onDrag = event => {
-  event.preventDefault()
-}
-
-onDrop = event => {
-  event.preventDefault()
-  let file = event.dataTransfer.files[0]
-  this.setState({ file })
-}
-
-
-
-
 
 
 
 
   render() {
-    let { file } = this.state
-
-    let url = file && URL.createObjectURL(file)
-
-
-    let img = document.createElement("my-node");
-
 
 
 
@@ -284,20 +119,11 @@ onDrop = event => {
     <BootstrapTable
     data={ this.state.weatherData }
     containerStyle={{width: '800px',overflowX: 'scroll'}}
-
-
     pagination
-
-
     >
 
     <TableHeaderColumn dataField='date' isKey> Date</TableHeaderColumn>
-
     <TableHeaderColumn dataField='temp' >Temp</TableHeaderColumn>
-
-
-
-
 
     </BootstrapTable>
 
