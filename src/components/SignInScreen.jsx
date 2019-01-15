@@ -18,7 +18,7 @@ import fishStocking from './assetManager/fishStocking';
 
 import { Link } from 'react-router-dom';
 import { StickyContainer, Sticky } from 'react-sticky';
-import { Col, Popover, Panel, Grid, Collapse, Well, ListGroup, ListGroupItem, Button, Nav, NavItem, OverlayTrigger, Row, Tab, Tabs } from 'react-bootstrap';
+import { Col, PanelGroup, Popover, Panel, Grid, Collapse, Well, ListGroup, ListGroupItem, Button, Nav, NavItem, OverlayTrigger, Row, Tab, Tabs } from 'react-bootstrap';
 
 import { BrowserRouter, Route } from 'react-router-dom';
 
@@ -32,8 +32,8 @@ const styles = {
     zindex: 1,
     top: 0, /* Stay at the top */
     left: 0,
-    backgroundColor: '#325168' /* Fixed Sidebar (stay in place on scroll) */
-
+    backgroundColor: '#E6E6E6', /* Fixed Sidebar (stay in place on scroll) */
+    paddingTop: "50px",
 },
 background: {
   backgroundColor: '#FFFFFF',
@@ -52,7 +52,7 @@ background: {
 
   },
   topPad: {
-    paddingTop: "15px"
+    paddingTop: "50px"
   },
   bottomPad: {
     paddingBottom: "15px"
@@ -61,6 +61,8 @@ background: {
 
 }
 // Configure Firebase.
+
+
 
 const popoverRight = (
   <Popover id="popover-positioned-right" title="Popover right">
@@ -74,8 +76,6 @@ const popoverRightSampling = (
       <NavItem componentClass={Link} href="/monthlySamples" to="/monthlySamples">
       Monthly Samples
     </NavItem>
-
-
 
   </Popover>
 );
@@ -136,8 +136,12 @@ class SignInScreen extends React.Component {
       open: false,
       open1: false,
       open2: false,
+
+
     };
+
   }
+  
 
   // The component's Local state.
   state = {
@@ -163,6 +167,16 @@ class SignInScreen extends React.Component {
     }
   };
 
+  closePopover = () => {
+    this.state = {
+      open: false,
+      open1: false,
+      open2: false,
+
+    };
+
+  }
+
   // Listen to the Firebase Auth state and set the local state.
   componentDidMount() {
     this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
@@ -179,9 +193,29 @@ class SignInScreen extends React.Component {
     if (!this.state.isSignedIn) {
       return (
         <div>
-          <h1>My App</h1>
-          <p>Please sign-in:</p>
-          <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
+          <Grid>
+            <Row>
+              <Col xs={9} sm={9} md={9}>
+          <h1>Lakistry</h1>
+            </Col>
+            <Col xs={3} sm={3} md={3}>
+              <PanelGroup
+        accordion
+        id="accordion-example"
+
+      >
+        <Panel eventKey="1">
+          <Panel.Heading>
+            <Panel.Title toggle>Login</Panel.Title>
+          </Panel.Heading>
+          <Panel.Body collapsible>P<StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/></Panel.Body>
+        </Panel>
+
+      </PanelGroup>
+
+          </Col>
+        </Row>
+          </Grid>
         </div>
       );
     }

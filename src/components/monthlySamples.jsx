@@ -47,6 +47,8 @@ export default class monthlySamples extends Component {
           checkboxStateconductivity: true,
           checkboxStatehardness: true,
           checkboxStateturbidity: true,
+          checkboxStatedo: true,
+
 
 
 
@@ -555,7 +557,7 @@ rawMarkup(){
 
  nitrogenSort = (a, b, order) => {
    let dataList = this.state.dataList;   // order is desc or asc
-  if (order === 'desc') {
+  if (order === 'asc') {
     return a.nitrogen - b.nitrogen;
   } else {
     return b.nitrogen - a.nitrogen;
@@ -563,7 +565,7 @@ rawMarkup(){
 }
 phosphorusSort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.phosphorus - b.phosphorus;
  } else {
    return b.phosphorus - a.phosphorus;
@@ -571,7 +573,7 @@ phosphorusSort = (a, b, order) => {
 }
 tdsSort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.tds - b.tds;
  } else {
    return b.tds - a.tds;
@@ -579,7 +581,7 @@ tdsSort = (a, b, order) => {
 }
 tssSort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.tss - b.tss;
  } else {
    return b.tss - a.tss;
@@ -587,7 +589,7 @@ tssSort = (a, b, order) => {
 }
 salinitySort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.salinity - b.salinity;
  } else {
    return b.salinity - a.salinity;
@@ -595,7 +597,7 @@ salinitySort = (a, b, order) => {
 }
 turbiditySort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.turbidity - b.turbidity;
  } else {
    return b.turbidity - a.turbidity;
@@ -603,7 +605,7 @@ turbiditySort = (a, b, order) => {
 }
 pHSort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.pH - b.pH;
  } else {
    return b.pH - a.pH;
@@ -611,7 +613,7 @@ pHSort = (a, b, order) => {
 }
 hardnessSort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.totalHardness - b.totalHardness;
  } else {
    return b.totalHardness - a.totalHardness;
@@ -619,7 +621,7 @@ hardnessSort = (a, b, order) => {
 }
 tempSort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.temp - b.temp;
  } else {
    return b.temp - a.temp;
@@ -627,7 +629,7 @@ tempSort = (a, b, order) => {
 }
 doSort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.do - b.do;
  } else {
    return b.do - a.do;
@@ -635,7 +637,7 @@ doSort = (a, b, order) => {
 }
 conductivitySort = (a, b, order) => {
   let dataList = this.state.dataList;   // order is desc or asc
- if (order === 'desc') {
+ if (order === 'asc') {
    return a.conductivity - b.conductivity;
  } else {
    return b.conductivity - a.conductivity;
@@ -808,6 +810,21 @@ toggleNitrogen(event) {
                       })
                     }
                   }
+                  toggleDO(event) {
+                      this.setState({
+                        checkboxStatedo: !this.state.checkboxStatedo
+                      });
+                      const checkboxState = this.state.checkboxStatedo;
+                      if (checkboxState) {
+                        this.setState({
+                          doPlot: '',
+                        })
+                      } else {
+                        this.setState({
+                          doPlot: 'do',
+                        })
+                      }
+                    }
 
 
 
@@ -880,7 +897,16 @@ test = () => {
 const options = {
   exportCSVBtn: this.createCustomExportCSVButton
 };
-
+const doCheckbox = (
+  <span>
+    <input
+    type="checkbox"
+    defaultChecked='true'
+    onClick={this.toggleDO.bind(this)}
+    />
+  <label>DO</label>
+  </span>
+);
    const nitrogenCheckbox = (
      <span>
        <input
@@ -990,6 +1016,7 @@ const options = {
         <Line type="monotone" dataKey={this.state.salinityPlot} stroke="#82ca9d" />
         <Line type="monotone" dataKey={this.state.totalHardnessPlot} stroke="#82ca9d" />
         <Line type="monotone" dataKey={this.state.turbidityPlot} stroke="#82ca9d" />
+        <Line type="monotone" dataKey={this.state.doPlot} stroke="#82ca9d" />
         <Brush />
         <Legend />
         </LineChart>
@@ -1017,6 +1044,7 @@ const options = {
       <form onSubmit={this.onSubmit.bind(this)}>{salinityCheckbox}</form>
       <form onSubmit={this.onSubmit.bind(this)}>{hardnessCheckbox}</form>
       <form onSubmit={this.onSubmit.bind(this)}>{turbidityCheckbox}</form>
+      <form onSubmit={this.onSubmit.bind(this)}>{doCheckbox}</form>
 
         </Col>
 
@@ -1164,7 +1192,7 @@ const options = {
   </tr>
   <tr>
   <td>Sample Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
+  <td><textarea  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
   </tr>
 
   </tbody>
@@ -1265,7 +1293,7 @@ const options = {
   </tr>
   <tr>
   <td>Sample Notes</td>
-  <td><input  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
+  <td><textarea  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
   </tr>
 
 
