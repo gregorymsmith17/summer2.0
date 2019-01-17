@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Navbar, Nav, FormGroup, Checkbox, Grid, PageHeader, Jumbotron, Row, Col, NavItem, Button, Modal, Panel } from 'react-bootstrap';
+import { Navbar, Nav, FormGroup, Checkbox, Grid, PageHeader, Jumbotron, NavItem, Modal, Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import FileSaver from 'file-saver';
@@ -19,9 +19,22 @@ import { TiArrowSortedDown, TiBrush, TiArrowSortedUp, TiPencil, TiTrash } from "
 
 import { LineChart, LabelList, ResponsiveContainer, BarChart, Bar, Surface, ReferenceLine, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
 
-
+import { Row, Col, Tabs, Card, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
+
+const TabPane = Tabs.TabPane;
+
+const tabListNoTitle = [{
+  key: 'article',
+  tab: 'article',
+}, {
+  key: 'app',
+  tab: 'app',
+}, {
+  key: 'project',
+  tab: 'project',
+}];
 
 export default class Dashboard extends Component {
 
@@ -32,6 +45,8 @@ center: {
 },
 zoom: 13
 };
+
+
 
 
   constructor(props) {
@@ -92,14 +107,32 @@ zoom: 13
         //averages
         nitrogenAverage: [],
         nitrogenAvg: '',
+        nitrogenLatest: '',
         nitrogenGraph: [],
         phosphorusAverage: [],
         phosphorusAvg: '',
         phosphorusGraph: [],
+        phoshporusLatest: '',
         dissolvedOxygenAverage: [],
         dissolvedOxygenAvg: '',
         dissolvedOxygenGraph: [],
+        dissolvedOxygenLatest: '',
 
+        turbidityLatest: '',
+        turbidityAverage: [],
+        turbidityAvg: '',
+        turbidityGraph: [],
+        tssLatest: '',
+        tssAverage: [],
+        tssAvg: '',
+        tssGraph: [],
+        salinityLatest: '',
+        salinityAverage: [],
+        salinityAvg: '',
+        salinityGraph: [],
+
+        key: 'tab1',
+        noTitleKey: 'app',
 
 
 
@@ -137,6 +170,11 @@ zoom: 13
         let nitrogenAverage = [];
         let phosphorusAverage = [];
         let dissolvedOxygenAverage = [];
+        let tssAverage = [];
+        let turbidityAverage = [];
+        let salinityAverage = [];
+
+
 
 
 
@@ -206,6 +244,7 @@ zoom: 13
         dataList: newState,
         color: this.state.color,
       });
+      console.log(orders2)
 
       snapshot.forEach(ss => {
           nitrogenAverage.push({nitrogen: ss.child('nitrogen').val(), date: ss.child('sampleDate').val()} );
@@ -240,8 +279,9 @@ zoom: 13
         let nitrogenReverse = nitrogenData.reverse();
         let nitrogen = ([nitrogenReverse[0], nitrogenReverse[1], nitrogenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
 
-        console.log(nitrogenData)
+        console.log(nitrogenReverse[0])
         this.setState({
+          nitrogenLatest: nitrogenReverse[0],
           nitrogenAvg: nitrogen,
           nitrogenGraph: nitrogenGraph,
         })
@@ -275,6 +315,7 @@ zoom: 13
           let phosphorus = ([phosphorusReverse[0], phosphorusReverse[1], phosphorusReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
           console.log(phosphorusReverse)
           this.setState({
+            phosphorusLatest: phosphorusReverse[0],
             phosphorusAvg: phosphorus,
             phosphorusGraph: phosphorusGraph,
           })
@@ -311,11 +352,122 @@ zoom: 13
 
             let dissolvedOxygen = ([dissolvedOxygenReverse[0], dissolvedOxygenReverse[1], dissolvedOxygenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
 
-            console.log(dissolvedOxygenReverse)
+            console.log(phosphorusReverse)
             this.setState({
+              dissolvedOxygenLatest: dissolvedOxygenReverse[0],
               dissolvedOxygenAvg: dissolvedOxygen,
               dissolvedOxygenGraph: dissolvedOxygenGraph,
             })
+
+            snapshot.forEach(ss => {
+                tssAverage.push({tss: ss.child('tss').val(), date: ss.child('sampleDate').val()} );
+                tssAverage.sort(function(a, b) {
+                  if (a.date === b.date) {
+                    return 0;
+                  }
+                  return a.date > b.date ? 1 : -1;
+              });
+                this.setState({
+                  tssAverage: (tssAverage),
+                })
+              });
+
+              let tssData = [];
+              for (let i=0; i < tssAverage.length; i++) {
+              //push send this data to the back of the chartData variable above.
+              tssData.push(parseFloat(tssAverage[i].tss));
+
+            }
+              let tssReverse = tssData.reverse();
+
+              let tssReverse2 = tssAverage.reverse();
+
+              let tssGraph = ([{tss: tssReverse2[2].tss, date: tssReverse2[2].date}, {tss: tssReverse2[1].tss, date: tssReverse2[1].date}, {tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
+              console.log(tssGraph)
+
+
+
+              let tss = ([tssReverse[0], tssReverse[1], tssReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
+
+              console.log(phosphorusReverse)
+              this.setState({
+                tssLatest: tssReverse[0],
+                tssAvg: tss,
+                tssGraph: tssGraph,
+              })
+              snapshot.forEach(ss => {
+                  turbidityAverage.push({turbidity: ss.child('turbidity').val(), date: ss.child('sampleDate').val()} );
+                  turbidityAverage.sort(function(a, b) {
+                    if (a.date === b.date) {
+                      return 0;
+                    }
+                    return a.date > b.date ? 1 : -1;
+                });
+                  this.setState({
+                    turbidityAverage: (turbidityAverage),
+                  })
+                });
+
+                let turbidityData = [];
+                for (let i=0; i < turbidityAverage.length; i++) {
+                //push send this data to the back of the chartData variable above.
+                turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
+
+              }
+                let turbidityReverse = turbidityData.reverse();
+
+                let turbidityReverse2 = turbidityAverage.reverse();
+
+                let turbidityGraph = ([{do: turbidityReverse2[2].turbidity, date: turbidityReverse2[2].date}, {do: turbidityReverse2[1].turbidity, date: turbidityReverse2[1].date}, {do: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
+                console.log(turbidityGraph)
+
+
+
+                let turbidity = ([turbidityReverse[0], turbidityReverse[1], turbidityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
+
+                console.log(phosphorusReverse)
+                this.setState({
+                  turbidityLatest: turbidityReverse[0],
+                  turbidityAvg: turbidity,
+                  turbidityGraph: turbidityGraph,
+                })
+
+                snapshot.forEach(ss => {
+                    salinityAverage.push({salinity: ss.child('salinity').val(), date: ss.child('sampleDate').val()} );
+                    salinityAverage.sort(function(a, b) {
+                      if (a.date === b.date) {
+                        return 0;
+                      }
+                      return a.date > b.date ? 1 : -1;
+                  });
+                    this.setState({
+                      salinityAverage: (salinityAverage),
+                    })
+                  });
+
+                  let salinityData = [];
+                  for (let i=0; i < salinityAverage.length; i++) {
+                  //push send this data to the back of the chartData variable above.
+                  salinityData.push(parseFloat(salinityAverage[i].salinity));
+
+                }
+                  let salinityReverse = salinityData.reverse();
+
+                  let salinityReverse2 = salinityAverage.reverse();
+
+                  let salinityGraph = ([{do: salinityReverse2[2].salinity, date: salinityReverse2[2].date}, {do: salinityReverse2[1].salinity, date: salinityReverse2[1].date}, {do: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
+                  console.log(salinityGraph)
+
+
+
+                  let salinity = ([salinityReverse[0], salinityReverse[1], salinityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
+
+                  console.log(phosphorusReverse)
+                  this.setState({
+                    salinityLatest: salinityReverse[0],
+                    salinityAvg: salinity,
+                    salinityGraph: salinityGraph,
+                  })
 
 
     });
@@ -565,6 +717,11 @@ zoom: 13
                         event.preventDefault();
                       }
 
+                      onTabChange = (key, type) => {
+     console.log(key, type);
+     this.setState({ [type]: key });
+   }
+
   render() {
 
     const doCheckbox = (
@@ -644,263 +801,497 @@ zoom: 13
 
 
     return (
-      <Grid>
-        <Row>
-          <Col xs={12} sm={12} md={12} >
-            <Row style={{paddingTop: '10px'}}>
-              <Col xs={12} sm={12} md={12} >
-                <PageHeader>
-    Summer Lake <small>Home Owners Association</small>
-  </PageHeader>
-            </Col>
-          </Row>
 
-          <Row>
-            <Col xs={4} sm={4} md={4} >
+      <Layout>
 
-              <div>
-      <Panel >
-        <Panel.Heading>
-          <Panel.Title style={{textAlign: 'left'}} componentClass="h3">WEATHER</Panel.Title>
-        </Panel.Heading>
-        <Panel.Body style={{textAlign: 'center'}}>
-          <h2>{this.state.currentCity}</h2>
-          <img style={{width: '75px', height: '75px'}} src={this.state.currentIcon} />
-          <h3>{this.state.currentDescription}</h3>
-          <h3>Temperature: {this.state.currentTemp} F</h3>
-          <p>Humidity: {this.state.currentHumidity}%</p>
 
-        </Panel.Body>
-      </Panel>
-    </div>
-    </Col>
-    <Col xs={8} sm={8} md={8} >
-      <Panel >
-    <Panel.Heading>
-      <Panel.Title style={{textAlign: 'left'}} componentClass="h3">LOCATION</Panel.Title>
-    </Panel.Heading>
-    <Panel.Body>
-      <div style={{ height: '39vh', width: '100%' }}>
-        <GoogleMapReact
-          bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
-          defaultCenter={this.props.center}
-          defaultZoom={this.props.zoom}
-        >
-          <AnyReactComponent
-            lat={37.987636425563075}
-            lng={-121.63235758701154}
-            text={'Summer Lake'}
-          />
-        </GoogleMapReact>
+        <div style={{ background: '#F0F0F0', padding: '5px' }}>
+        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+          <div style={{position: 'relative'}}>
+        <Col xs={18} sm={18} md={18} lg={18} xl={18}>
+          <h1>Dashboard</h1>
+          <h3>Summer Lake Homeowners Association</h3>
+        </Col>
+        <Col xs={6} sm={6} md={6} lg={6} xl={6} style={{ position: 'absolute',
+      top: '0%',
+      right: '0%', textAlign: 'right'}}><div><span>
+          <Icon style={{fontSize: '24px', position: 'absolute', right: '80%'}} type="notification" /><Icon style={{fontSize: '24px', position: 'absolute', right: '60%'}} type="user" /><div style={{fontSize: '16px', position: 'absolute', right: '15%'}}>Summer Lake</div></span></div>
+        </Col>
+
+
+
+
       </div>
+        </Row>
+        </div>
 
 
-    </Panel.Body>
-  </Panel>
 
+        <Row style={{backgroundColor: '#F0F0F0'}}>
+        <Col span={24}>
+        <hr style={{backgroundColor: 'black', height: '0px', border: 0}}></hr>
+        </Col>
+        </Row>
 
-</Col>
-
-  </Row>
-  <Row>
-    <Col xs={12} sm={12} md={12}>
-      <hr></hr>
+        <div style={{ background: '#F0F0F0', padding: '5px' }}>
+    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+        <div style={{position: 'relative'}}>
+          <div style={{ position: 'absolute',
+        top: '0%',
+        left: '0%', backgroundColor: 'lightBlue', height: '100%', width: '4%', zIndex: 1}} />
+        <Card  style={{textAlign: 'left'}} bordered={true}>
+          <h3>{this.state.nitrogenLatest} mg/L</h3>
+          <hr></hr>
+          <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
+          <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
+        </Card>
+        </div>
       </Col>
-    </Row>
-
-  <Row>
-
-
-
-
-
-<Col xs={4} sm={4} md={4}>
-  <Panel>
-     <Panel.Heading>
-       <Panel.Title style={{textAlign: 'left'}} componentClass="h3">PHOSPHORUS</Panel.Title>
-     </Panel.Heading>
-     <Panel.Body style={{textAlign: 'center'}}>
-     <h2>Phosphorus</h2>
-     <p>Average</p>
-     <h3>Last 3 months</h3>
-     <h2>{this.state.phosphorusAvg} mg/L</h2>
-       <ResponsiveContainer  width='100%' aspect={5/3.0}>
-         <BarChart    data={this.state.phosphorusGraph}
-              margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-
-         <XAxis dataKey="date"/>
-
-         <Tooltip/>
-
-         <Bar dataKey="phosphorus" fill="#F0C808">
-         <LabelList dataKey="phosphorus" position="top" />
-       </Bar>
-          </BarChart>
-          </ResponsiveContainer>
-
-   </Panel.Body>
-   </Panel>
-</Col>
-<Col xs={4} sm={4} md={4}>
-  <Panel >
-     <Panel.Heading>
-       <Panel.Title style={{textAlign: 'left'}} componentClass="h3">NITROGEN</Panel.Title>
-     </Panel.Heading>
-     <Panel.Body style={{textAlign: 'center'}}>
-     <h2>Nitrogen</h2>
-     <p>Average</p>
-     <h3>Last 3 months</h3>
-     <h2>{this.state.nitrogenAvg} mg/L</h2>
-       <ResponsiveContainer  width='100%' aspect={5/3.0}>
-         <BarChart    data={this.state.nitrogenGraph}
-              margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-
-         <XAxis dataKey="date"/>
-
-         <Tooltip/>
-
-         <Bar dataKey="nitrogen" fill="#086788" >
-         <LabelList dataKey="nitrogen" position="top" /></Bar>
-          </BarChart>
-          </ResponsiveContainer>
-   </Panel.Body>
-   </Panel>
-</Col>
-<Col xs={4} sm={4} md={4}>
-  <Panel >
-     <Panel.Heading>
-       <Panel.Title  componentClass="h3">DISSOLVED OXYGEN</Panel.Title>
-     </Panel.Heading>
-     <Panel.Body >
-       <div style={{textAlign: 'center'}}>
-     <h2>DO</h2>
-     <p>Average</p>
-     <h3>Last 3 months</h3>
-     <h2>{this.state.dissolvedOxygenAvg} mg/L</h2>
-     </div>
-
-     <ResponsiveContainer  width='100%' aspect={5/3.0}>
-       <BarChart    data={this.state.dissolvedOxygenGraph}
-            margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-
-       <XAxis dataKey="date"/>
-
-       <Tooltip/>
-
-       <Bar dataKey="do" fill="#DD1C1A"><LabelList dataKey="do" position="top" /></Bar>
-        </BarChart>
-        </ResponsiveContainer>
-
-
-
-
-
-   </Panel.Body>
-   </Panel>
-</Col>
-</Row>
-
-
-  <Row>
-    <Col xs={11} sm={11} md={11}>
-      <hr></hr>
+      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+        <div style={{position: 'relative'}}>
+          <div style={{ position: 'absolute',
+        top: '0%',
+        left: '0%', backgroundColor: '#086788', height: '100%', width: '4%', zIndex: 1}} />
+        <Card  style={{textAlign: 'left'}} bordered={true}>
+          <h3>{this.state.phosphorusLatest} mg/L</h3>
+          <hr></hr>
+            <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
+            <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
+        </Card>
+        </div>
       </Col>
+      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+        <div style={{position: 'relative'}}>
+          <div style={{ position: 'absolute',
+        top: '0%',
+        left: '0%', backgroundColor: '#F0C808', height: '100%', width: '4%', zIndex: 1}} />
+      <Card  style={{textAlign: 'left'}} bordered={true}>
+          <h3>{this.state.dissolvedOxygenLatest} mg/L</h3>
+          <hr></hr>
+            <p style={{lineHeight: '2px'}}><b>DISSOLVED OXYGEN</b></p>
+            <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
+        </Card>
+        </div>
+      </Col>
+
+
     </Row>
+  </div>
 
 
-  <Row>
-    <Col xs={12} sm={12} md={12}>
-    <div>
-<Panel >
-<Panel.Heading>
-<Panel.Title style={{textAlign: 'left'}} componentClass="h3">WATER QUALITY</Panel.Title>
-</Panel.Heading>
-<Panel.Body>
-<ResponsiveContainer width='100%' aspect={7/3.0}>
-<LineChart
 
-  data={this.state.orders2} syncId="anyId"
-  margin={{top: 10, right: 30, left: 0, bottom: 0}}>
-
-<XAxis dataKey="sampleDate"/>
-<YAxis label={{ value: 'Measurement', angle: -90, position: 'insideLeft' }}/>
-<Tooltip/>
-
-<Line type="monotone" dataKey={this.state.nitrogenPlot}  stroke="#06AED5" activeDot={{r: 8}}/>
-<Line type="monotone" dataKey={this.state.phosphorusPlot} stroke="#086788" activeDot={{r: 8}}/>
-<Line type="monotone" dataKey={this.state.tdsPlot} stroke="#F0C808" activeDot={{r: 8}}/>
-<Line type="monotone" dataKey={this.state.pHPlot} stroke="#06AED5" />
-<Line type="monotone" dataKey={this.state.tempPlot}  stroke={this.state.tempColor} />
-<Line type="monotone" dataKey={this.state.tssPlot} stroke="#DD1C1A" />
-<Line type="monotone" dataKey={this.state.salinityPlot} stroke="#06AED5" />
-<Line type="monotone" dataKey={this.state.totalHardnessPlot} stroke="#086788" />
-<Line type="monotone" dataKey={this.state.turbidityPlot} stroke="#F0C808" />
-<Line type="monotone" dataKey={this.state.doPlot} stroke="#06AED5" />
-
-<Brush />
-<Legend />
-</LineChart>
-
-
-</ResponsiveContainer>
-<Row>
-<Col smOffset={1} xs={11} sm={11} md={11} >
-
-<Row>
-<Col xs={4} sm={4} md={4} >
-<form onSubmit={this.onSubmit.bind(this)}>{nitrogenCheckbox}</form>
+  <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px'}}>
+<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+  <div style={{position: 'relative'}}>
+    <div style={{ position: 'absolute',
+  top: '0%',
+  left: '0%', backgroundColor: '#5C80BC', height: '100%', width: '4%', zIndex: 1}} />
+  <Card  style={{textAlign: 'left'}} bordered={true}>
+    <h3>{this.state.tssLatest} mg/L</h3>
+    <hr></hr>
+    <p style={{lineHeight: '2px'}}><b>TSS</b></p>
+    <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
+  </Card>
+  </div>
 </Col>
-<Col xs={4} sm={4} md={4} >
-<form onSubmit={this.onSubmit.bind(this)}>{phosphorusCheckbox}</form>
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+  <div style={{position: 'relative'}}>
+    <div style={{ position: 'absolute',
+  top: '0%',
+  left: '0%', backgroundColor: '#30323D', height: '100%', width: '4%', zIndex: 1}} />
+  <Card  style={{textAlign: 'left'}} bordered={true}>
+    <h3>{this.state.turbidityLatest} mg/L</h3>
+    <hr></hr>
+      <p style={{lineHeight: '2px'}}><b>TURBIDITY</b></p>
+      <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
+  </Card>
+  </div>
 </Col>
-<Col xs={4} sm={4} md={4} >
-<form onSubmit={this.onSubmit.bind(this)}>{tempCheckbox}
-  <TiBrush size={20}  onClick={ this.handleClick }>Color</TiBrush>
-{ this.state.displayColorPicker ? <div style={ popover }>
-  <div style={ cover } onClick={ this.handleClose }/>
-  <ChromePicker color={ this.state.tempColor } onChangeComplete={ this.tempColorChange } />
-</div> : null }</form>
-  </Col>
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+  <div style={{position: 'relative'}}>
+    <div style={{ position: 'absolute',
+  top: '0%',
+  left: '0%', backgroundColor: '#CDD1C4', height: '100%', width: '4%', zIndex: 1}} />
+<Card  style={{textAlign: 'left'}} bordered={true}>
+    <h3>{this.state.salinityLatest} PPT</h3>
+    <hr></hr>
+      <p style={{lineHeight: '2px'}}><b>SALINITY</b></p>
+      <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
+  </Card>
+  </div>
+</Col>
+
+
 </Row>
-<Row>
-<Col xs={4} sm={4} md={4} >
-<form onSubmit={this.onSubmit.bind(this)}>{tdsCheckbox}</form>
-</Col>
-<Col xs={4} sm={4} md={4} >
-  <form onSubmit={this.onSubmit.bind(this)}>{pHCheckbox}</form>
-</Col>
-<Col xs={4} sm={4} md={4} >
-  <form onSubmit={this.onSubmit.bind(this)}>{tssCheckbox}</form>
-</Col>
-</Row>
-<Row>
-<Col xs={4} sm={4} md={4} >
-  <form onSubmit={this.onSubmit.bind(this)}>{salinityCheckbox}</form>
-</Col>
-<Col xs={4} sm={4} md={4} >
-  <form onSubmit={this.onSubmit.bind(this)}>{hardnessCheckbox}</form>
-</Col>
-<Col xs={4} sm={4} md={4} >
-  <form onSubmit={this.onSubmit.bind(this)}>{turbidityCheckbox}</form>
-</Col>
-<form onSubmit={this.onSubmit.bind(this)}>{doCheckbox}</form>
-</Row>
-</Col>
-</Row>
-
-</Panel.Body>
-</Panel>
 </div>
 
 
-  </Col></Row>
+
+<Row style={{backgroundColor: '#F0F0F0'}}>
+<Col span={24}>
+<hr style={{backgroundColor: 'black', height: '0px', border: 0}}></hr>
+</Col>
+</Row>
+
+<div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+<Col xs={24} sm={24} md={24} lg={24} xl={24}>
+
+
+      <Card
+
+
+      >
+      <Tabs defaultActiveKey="1" >
+  <TabPane tab="Nutrients" key="1">
+    <Row>
+    <Col span={24}>
+
+        <p style={{lineHeight: '2px'}}><b>NITROGEN AND PHOSPHORUS</b></p>
+        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
+        <hr></hr>
+  </Col>
+</Row>
+
+    <Row>
+    <Col span={24}>
+      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
+        <AreaChart data={this.state.orders2}
+  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+  <defs>
+    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
+      <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
+    </linearGradient>
+    <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
+      <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
+    </linearGradient>
+  </defs>
+  <XAxis dataKey="sampleDate" />
+  <YAxis />
+  <CartesianGrid strokeDasharray="6 6" />
+  <Tooltip />
+
+  <Area type="monotone" dataKey="nitrogen" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="nitrogen" position="top" /></Area>
+  <Area type="monotone" dataKey="phosphorus" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="phosphorus" position="top" /></Area>
+  <Legend />
+</AreaChart>
+ </ResponsiveContainer>
+
+</Col>
+</Row>
+
+  </TabPane>
+  <TabPane tab="Salinity and TDS" key="2">
+    <Row>
+    <Col span={24}>
+
+        <p style={{lineHeight: '2px'}}><b>Salinity and TDS</b></p>
+        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
+        <hr></hr>
+  </Col>
+</Row>
+
+    <Row>
+    <Col span={24}>
+      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
+        <AreaChart data={this.state.orders2}
+  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+  <defs>
+    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
+      <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
+    </linearGradient>
+    <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
+      <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
+    </linearGradient>
+  </defs>
+  <XAxis dataKey="sampleDate" />
+  <YAxis domain={[0, 10]}/>
+  <CartesianGrid strokeDasharray="6 6" />
+  <Tooltip />
+
+  <Area type="monotone" dataKey="tds" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="tds" position="top" /></Area>
+  <Area type="monotone" dataKey="salinity" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="salinity" position="top" /></Area>
+
+  <Legend />
+</AreaChart>
+ </ResponsiveContainer>
+
+</Col>
+</Row>
+
+
+
+  </TabPane>
+  <TabPane tab="Turbidity and Dissolved Oxygen" key="3">
+    <Row>
+    <Col span={24}>
+
+        <p style={{lineHeight: '2px'}}><b>TURBIDITY AND DISSOLVED OXYGEN</b></p>
+        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
+        <hr></hr>
+  </Col>
+</Row>
+
+    <Row>
+    <Col span={24}>
+      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
+        <AreaChart data={this.state.orders2}
+  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+  <defs>
+    <linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="5%" stopColor="#809848" stopOpacity={0.8}/>
+      <stop offset="95%" stopColor="#809848" stopOpacity={0}/>
+    </linearGradient>
+    <linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="5%" stopColor="#40798C" stopOpacity={0.8}/>
+      <stop offset="95%" stopColor="#40798C" stopOpacity={0}/>
+    </linearGradient>
+  </defs>
+  <XAxis dataKey="sampleDate" />
+  <YAxis />
+  <CartesianGrid strokeDasharray="6 6" />
+  <Tooltip />
+
+  <Area type="monotone" dataKey="turbidity" stroke="#809848" fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey="turbidity" position="top" /></Area>
+  <Area type="monotone" dataKey="do" stroke="#40798C" fillOpacity={1} fill="url(#colorDO)" ><LabelList dataKey="do" position="top" /></Area>
+
+  <Legend />
+</AreaChart>
+ </ResponsiveContainer>
+
+</Col>
+</Row>
 
 
 
 
-        </Col>
-        </Row>
-      </Grid>
+  </TabPane>
+</Tabs>
+
+      </Card>
+</Col>
+</Row>
+</div>
+
+
+        <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+       <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+         <Card  style={{textAlign: 'left'}} bordered={true} >
+           <div style={{textAlign: 'center'}}>
+           <h3>{this.state.currentCity}</h3>
+             <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
+             <h3>{this.state.currentDescription}</h3>
+             <p>Temperature: {this.state.currentTemp} F</p>
+             <p>Humidity: {this.state.currentHumidity}%</p>
+             </div>
+         </Card>
+       </Col>
+
+       <Col xs={24} sm={24} md={16} lg={16} xl={16}>
+         <Card  style={{textAlign: 'left'}} bordered={true} >
+           <div style={{ height: '29vh', width: '100%' }}>
+             <GoogleMapReact
+               bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
+               defaultCenter={this.props.center}
+               defaultZoom={this.props.zoom}
+             >
+               <AnyReactComponent
+                 lat={37.987636425563075}
+                 lng={-121.63235758701154}
+                 text={'Summer Lake'}
+               />
+             </GoogleMapReact>
+           </div>
+         </Card>
+
+       </Col>
+
+
+       </Row>
+       </div>
+
+
+
+
+
+
+
+
+ <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+
+<Card   bordered={true}>
+
+
+  <Row>
+  <Col span={16}>
+
+      <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
+      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
+      <p style={{lineHeight: '2px'}}>AVERAGE</p>
+
+</Col>
+<Col span={8}>
+
+    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.nitrogenAvg}mg/L</b></p>
+
+
+</Col>
+
+<Row>
+<Col span={24}>
+<hr></hr>
+</Col>
+</Row>
+
+</Row>
+
+<Row>
+<Col span={24}>
+
+    <ResponsiveContainer  width='100%' aspect={5/3.0}>
+      <BarChart    data={this.state.nitrogenGraph}
+           margin={{top: 20, right: 0, left: 0, bottom: 5}}>
+           <defs>
+           <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
+             <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
+             <stop offset="95%" stopColor="#086788" stopOpacity={0.3}/>
+           </linearGradient>
+           </defs>
+
+      <XAxis dataKey="date" />
+
+      <Tooltip/>
+
+      <Bar barSize={30} dataKey="nitrogen" fillOpacity={1} fill="url(#colorBlue)">
+      <LabelList dataKey="nitrogen" position="top" /></Bar>
+       </BarChart>
+       </ResponsiveContainer>
+     </Col>
+     </Row>
+</Card>
+</Col>
+
+
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+<Card  bordered={true}>
+
+  <Row>
+  <Col span={16}>
+
+      <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
+      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
+      <p style={{lineHeight: '2px'}}>AVERAGE</p>
+
+  </Col>
+  <Col span={8}>
+
+    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.phosphorusAvg}mg/L</b></p>
+
+
+  </Col>
+
+  </Row>
+  <Row>
+  <Col span={24}>
+  <hr></hr>
+  </Col>
+</Row>
+
+
+  <Row> <Col span={24}>
+    <ResponsiveContainer  width='100%' aspect={5/3.0}>
+      <BarChart    data={this.state.phosphorusGraph}
+           margin={{top: 20, right: 0, left: 0, bottom: 5}}>
+           <defs>
+           <linearGradient id="colorYellow" x1="0" y1="0" x2="0" y2="1">
+             <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
+             <stop offset="95%" stopColor="#F0C808" stopOpacity={0.3}/>
+           </linearGradient>
+           </defs>
+      <XAxis dataKey="date"/>
+
+      <Tooltip/>
+
+      <Bar barSize={30} dataKey="phosphorus" fillOpacity={1} fill="url(#colorYellow)">
+      <LabelList dataKey="phosphorus" position="top" />
+    </Bar>
+       </BarChart>
+       </ResponsiveContainer>
+       </Col></Row>
+
+</Card>
+</Col>
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+<Card   bordered={true}>
+
+
+  <Row>
+  <Col span={16}>
+
+      <p style={{lineHeight: '2px'}}><b>DISSOLVED O<sub>2</sub></b></p>
+      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
+      <p style={{lineHeight: '2px'}}>AVERAGE</p>
+
+  </Col>
+  <Col span={8}>
+
+    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.dissolvedOxygenAvg}mg/L</b></p>
+
+
+  </Col>
+
+  <Row>
+  <Col span={24}>
+  <hr></hr>
+  </Col>
+  </Row>
+
+  </Row>
+
+  <Row>
+  <Col span={24}>
+
+
+  <ResponsiveContainer  width='100%' aspect={5/3.0}>
+    <BarChart    data={this.state.dissolvedOxygenGraph}
+         margin={{top: 20, right: 0, left: 0, bottom: 5}}>
+         <defs>
+         <linearGradient id="colorRed" x1="0" y1="0" x2="0" y2="1">
+           <stop offset="5%" stopColor="#DD1C1A" stopOpacity={0.8}/>
+           <stop offset="95%" stopColor="#DD1C1A" stopOpacity={0.3}/>
+         </linearGradient>
+         </defs>
+    <XAxis dataKey="date"/>
+
+    <Tooltip/>
+
+    <Bar barSize={30} dataKey="do" fillOpacity={1} fill="url(#colorRed)"><LabelList dataKey="do" position="top" /></Bar>
+     </BarChart>
+     </ResponsiveContainer>
+
+</Col></Row>
+</Card>
+</Col>
+</Row>
+</div>
+
+
+
+
+
+
+      </Layout>
+
+
 
     )
   }
