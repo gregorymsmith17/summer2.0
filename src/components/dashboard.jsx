@@ -915,7 +915,7 @@ zoom: 13
   top: '0%',
   left: '0%', backgroundColor: '#CDD1C4', height: '100%', width: '4%', zIndex: 1}} />
 <Card  style={{textAlign: 'left'}} bordered={true}>
-    <h3>{this.state.salinityLatest} PPT</h3>
+    <h3>{this.state.salinityLatest} ppt</h3>
     <hr></hr>
       <p style={{lineHeight: '2px'}}><b>SALINITY</b></p>
       <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
@@ -946,8 +946,8 @@ zoom: 13
       >
       <Tabs defaultActiveKey="1" >
   <TabPane tab="Nutrients" key="1">
-    <Row>
-    <Col span={24}>
+    <Row style={{paddingTop: '15px'}}>
+    <Col span={24} >
 
         <p style={{lineHeight: '2px'}}><b>NITROGEN AND PHOSPHORUS</b></p>
         <p style={{lineHeight: '2px'}}>18 MONTHS</p>
@@ -986,10 +986,10 @@ zoom: 13
 
   </TabPane>
   <TabPane tab="Salinity and TDS" key="2">
-    <Row>
+    <Row style={{paddingTop: '15px'}}>
     <Col span={24}>
 
-        <p style={{lineHeight: '2px'}}><b>Salinity and TDS</b></p>
+        <p style={{lineHeight: '2px'}}><b>SALINITY AND TDS</b></p>
         <p style={{lineHeight: '2px'}}>18 MONTHS</p>
         <hr></hr>
   </Col>
@@ -1029,7 +1029,7 @@ zoom: 13
 
   </TabPane>
   <TabPane tab="Turbidity and Dissolved Oxygen" key="3">
-    <Row>
+    <Row style={{paddingTop: '15px'}}>
     <Col span={24}>
 
         <p style={{lineHeight: '2px'}}><b>TURBIDITY AND DISSOLVED OXYGEN</b></p>
@@ -1080,42 +1080,7 @@ zoom: 13
 </div>
 
 
-        <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-       <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-       <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-         <Card  style={{textAlign: 'left'}} bordered={true} >
-           <div style={{textAlign: 'center'}}>
-           <h3>{this.state.currentCity}</h3>
-             <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
-             <h3>{this.state.currentDescription}</h3>
-             <p>Temperature: {this.state.currentTemp} F</p>
-             <p>Humidity: {this.state.currentHumidity}%</p>
-             </div>
-         </Card>
-       </Col>
 
-       <Col xs={24} sm={24} md={16} lg={16} xl={16}>
-         <Card  style={{textAlign: 'left'}} bordered={true} >
-           <div style={{ height: '29vh', width: '100%' }}>
-             <GoogleMapReact
-               bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
-               defaultCenter={this.props.center}
-               defaultZoom={this.props.zoom}
-             >
-               <AnyReactComponent
-                 lat={37.987636425563075}
-                 lng={-121.63235758701154}
-                 text={'Summer Lake'}
-               />
-             </GoogleMapReact>
-           </div>
-         </Card>
-
-       </Col>
-
-
-       </Row>
-       </div>
 
 
 
@@ -1283,6 +1248,44 @@ zoom: 13
 </Col>
 </Row>
 </div>
+
+<div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+ <Card  style={{textAlign: 'left'}} bordered={true} >
+   <div style={{textAlign: 'center'}}>
+   <h3>{this.state.currentCity}</h3>
+     <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
+     <h3>{this.state.currentDescription}</h3>
+     <p>Temperature: {this.state.currentTemp} F</p>
+     <p>Humidity: {this.state.currentHumidity}%</p>
+     </div>
+ </Card>
+</Col>
+
+<Col xs={24} sm={24} md={16} lg={16} xl={16}>
+ <Card  style={{textAlign: 'left'}} bordered={true} >
+   <div style={{ height: '29vh', width: '100%' }}>
+     <GoogleMapReact
+       bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
+       defaultCenter={this.props.center}
+       defaultZoom={this.props.zoom}
+     >
+       <AnyReactComponent
+         lat={37.987636425563075}
+         lng={-121.63235758701154}
+         text={'Summer Lake'}
+       />
+     </GoogleMapReact>
+   </div>
+ </Card>
+
+</Col>
+
+
+</Row>
+</div>
+
 
 
 

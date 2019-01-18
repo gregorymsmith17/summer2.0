@@ -2,28 +2,20 @@
       color: black;
     }
 
+
     .ant-carousel .slick-slide {
       text-align: center;
-      color: black;
-      height: 160px;
-      line-height: 160px;
-      background: white;
+
+      background: #364d79;
       overflow: hidden;
     }
 
-    .ant-carousel .slick-slide h3 {
-      color: black;
+    .ant-carousel .slick-slide  {
+      color: #fff;
+      font: 24px;
     }
 
-    .ant-carousel .slick-dots div {
-    color: black;
-    background-color: black;
-}
-.ant-carousel .slick-slide div {
-  color: black;
-}
-
-.ant-carousel .slick-active {
+    .ant-carousel .slick-dots {
     position: absolute;
     bottom: 12px;
     list-style: none;
@@ -31,8 +23,6 @@
     text-align: center;
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 200%;
     height: 3px;
-    color: black;
-
 }

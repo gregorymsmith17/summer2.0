@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, Button, ResponsiveEmbed, ButtonToolbar, Form, Grid, Row, FormGroup, Tab, Radio, Tabs, Col, Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
@@ -14,9 +14,11 @@ import { ChromePicker } from 'react-color';
 import fileDownload from "js-file-download";
 
 
-import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
+import { LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, BarChart, Bar, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
 
+import { Row, Col, Tabs, Card, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
 
+const TabPane = Tabs.TabPane;
 
 const styles = {
   topPad: {
@@ -101,6 +103,10 @@ export default class monthlySamples extends Component {
           phosphorusPlot: 'phosphorus',
           totalHardnessPlot: 'totalHardness',
           tssPlot: 'tss',
+
+          //for drawers
+          visible: false,
+          visible1: false,
 
 
 
@@ -318,6 +324,7 @@ export default class monthlySamples extends Component {
       sampleRef.on('value', (snapshot) => {
 
         this.setState({
+          visible1: true,
           sampleDate: '',
           sampleTaker: '',
           temp: '',
@@ -363,7 +370,7 @@ export default class monthlySamples extends Component {
       this.setState({
 
         id: id,
-        key: 4,
+
 
         sampleDate: snapshot.child('sampleDate').val(),
         sampleTaker: snapshot.child('sampleTaker').val(),
@@ -423,8 +430,9 @@ export default class monthlySamples extends Component {
 
 
 
-  fillEmpty(itemId) {
+  fillEmpty = (itemId) => {
     let area = '';
+
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
 
@@ -457,8 +465,7 @@ export default class monthlySamples extends Component {
     }
     this.setState({
 
-      id: '',
-      key: 3,
+      visible: true,
       sampleDate: '',
       sampleTaker: '',
       temp: '',
@@ -528,6 +535,10 @@ writeData (e) {
   }
 
   samplesRef.child(this.state.id).set(sample);
+
+  this.setState({
+    visible1: false,
+  })
 
 
 
@@ -650,10 +661,10 @@ editRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
       <div style={{textAlign: 'center'}}>
-    <TiPencil size={20} type="button"
+    <Icon type="edit" style={{fontSize: '24px'}}
     onClick={() => this.fillStates(`${isSelected.id}`)}>
       Click me
-    </TiPencil>
+    </Icon>
     </div>
   )
 }
@@ -662,10 +673,10 @@ deleteRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
     <div style={{textAlign: 'center'}}>
-    <TiTrash  size={20} type="button"
+    <Icon type="delete" style={{fontSize: '24px'}}
     onClick={() => this.removesample(`${isSelected.id}`)}>
       Click me
-    </TiTrash>
+    </Icon>
     </div>
   )
 }
@@ -877,6 +888,21 @@ test = () => {
 }
 
 
+showDrawer = () => {
+  this.setState({
+    visible: true,
+  });
+};
+onClose = () => {
+  this.setState({
+    visible: false,
+  });
+};
+onClose1 = () => {
+  this.setState({
+    visible1: false,
+  });
+};
 
 
 
@@ -971,364 +997,552 @@ const doCheckbox = (
 
 
         return (
-    <div>
+    <Layout>
 
-      <Grid>
-        <Row>
-          <Row>
-            <Col xs={6} md={6}>
-          <h3>Monthly Sample Logs</h3>
-
-          </Col>
-          <Col xs={6} md={6}>
-            <ButtonToolbar style={styles.topPad}>
-          <Button bsStyle="primary" onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create New Sample Log</Button>
-        </ButtonToolbar>
-          </Col>
-          </Row>
-          <Col xs={12} sm={10} md={10}>
-
-
-      <Tabs activeKey={this.state.key} onSelect={this.handleSelect} defaultActiveKey={1} id="uncontrolled-tab-example">
-
-        <Tab eventKey={1} title="+ Graphs">
-
-          <Row style={styles.topPad}>
-
-          <Col xs={7} sm={7} md={7} lg={7}>
-
-
-          <div id="my-node">
-          <LineChart
-            width={750} height={400} data={this.state.orders2} syncId="anyId"
-            margin={{top: 10, right: 30, left: 0, bottom: 0}}>
-        <CartesianGrid strokeDasharray="3 3"/>
-        <XAxis dataKey="sampleDate"/>
-        <YAxis/>
-        <Tooltip/>
-
-          <Line type="monotone" dataKey={this.state.nitrogenPlot}  stroke="#8884d8" activeDot={{r: 8}}/>
-            <Line type="monotone" dataKey={this.state.phosphorusPlot} stroke="#8884d8" activeDot={{r: 8}}/>
-         <Line type="monotone" dataKey={this.state.tdsPlot} stroke="#8884d8" activeDot={{r: 8}}/>
-        <Line type="monotone" dataKey={this.state.pHPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.tempPlot}  stroke={this.state.tempColor} />
-        <Line type="monotone" dataKey={this.state.tssPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.salinityPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.totalHardnessPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.turbidityPlot} stroke="#82ca9d" />
-        <Line type="monotone" dataKey={this.state.doPlot} stroke="#82ca9d" />
-        <Brush />
-        <Legend />
-        </LineChart>
-
-        </div>
+      <div style={{ background: '#F0F0F0', padding: '5px' }}>
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+        <div style={{position: 'relative'}}>
+      <Col xs={24} sm={24} md={18} lg={18} xl={18}>
+        <h1><b>Monthly Samples</b></h1>
+        <h3><b>Summer Lake Homeowners Association</b></h3>
       </Col>
-        <Col smOffset={2} xs={3} sm={3} md={3} lg={3}>
-
-
-      <form onSubmit={this.onSubmit.bind(this)}>{nitrogenCheckbox}</form>
-
-      <form onSubmit={this.onSubmit.bind(this)}>{phosphorusCheckbox}</form>
-
-      <form onSubmit={this.onSubmit.bind(this)}>{tempCheckbox}
-        <TiBrush size={20}  onClick={ this.handleClick }>Color</TiBrush>
-      { this.state.displayColorPicker ? <div style={ popover }>
-        <div style={ cover } onClick={ this.handleClose }/>
-        <ChromePicker color={ this.state.tempColor } onChangeComplete={ this.tempColorChange } />
-      </div> : null }</form>
-
-
-      <form onSubmit={this.onSubmit.bind(this)}>{tdsCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{pHCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{tssCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{salinityCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{hardnessCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{turbidityCheckbox}</form>
-      <form onSubmit={this.onSubmit.bind(this)}>{doCheckbox}</form>
-
-        </Col>
-
-
-
+      <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{ textAlign: 'right'}}>
+    <Button size="large" type="primary" onClick={() => this.fillEmpty()}>+ Add Sample</Button>
+      <Drawer
+        title= "Fill in Sample Form"
+        placement={this.state.placement}
+        closable={false}
+        onClose={this.onClose}
+        visible={this.state.visible}
+        width={500}
+      >
+      <form>
+        <Row style={{textAlign: 'right'}}>
+        <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Sample</Icon>
         </Row>
+        <Row>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="sampleDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.sampleDate} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Taker</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="sampleTaker" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.sampleTaker} /></Col>
+  </FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Water Temp</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="temp" onChange={this.handleChange} type="number" placeholder="Water Temperature" value={this.state.temp} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Dissolved O<sub>2</sub></b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="do" onChange={this.handleChange} type="number" placeholder="Dissolved Oxygen" value={this.state.do} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Conductivity</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="conductivity" onChange={this.handleChange} type="number" placeholder="Conductivity" value={this.state.conductivity} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>TDS</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="tds" onChange={this.handleChange} type="number" placeholder="TDS" value={this.state.tds} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Salinity</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="salinity" onChange={this.handleChange} type="number" placeholder="Salinity" value={this.state.salinity} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>pH</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="pH" onChange={this.handleChange} type="number" placeholder="pH" value={this.state.pH} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Turbidity</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="turbidity" onChange={this.handleChange}type="number" placeholder="Turbidity" value={this.state.turbidity} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Total Nitrogen</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="nitrogen" onChange={this.handleChange}type="number" placeholder="Total Nitrogen" value={this.state.nitrogen} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Total Phosphorus</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="phosphorus" onChange={this.handleChange} type="number" placeholder="Total Phosphorus" value={this.state.phosphorus} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Total Hardness</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="totalHardness" onChange={this.handleChange} type="number" placeholder="Total Hardness" value={this.state.totalHardness} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>TSS</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="tss" onChange={this.handleChange} type="number" placeholder="TSS" value={this.state.tss} /></Col>
+</FormGroup>
+</Row>
+<Row style={{paddingTop: '10px'}}>
+<FormGroup>
+  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Notes</b></Col>
+  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+  <FormControl name="sampleNotes" onChange={this.handleChange} type="textarea" placeholder="Sample Notes" value={this.state.sampleNotes} /></Col>
+</FormGroup>
+</Row>
+
+
+
+<Row style={{paddingTop: '10px', textAlign: 'right'}}>
+<Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Add sample</Button>
+</Row>
 
 
 
 
-        </Tab>
 
-        <Tab eventKey={2} title="+ Monthly Samples">
-          <Grid>
-
-          <Row style={styles.topPad}>
+</form>
 
 
 
-            <Col xs={10} sm={10} md={10} lg={10}>
+      </Drawer>
 
-
-              <BootstrapTable
-              data={ this.state.dataList }
-              options={options}
-              exportCSV
-              pagination
-              containerStyle={{width: '1000px',overflowX: 'scroll'}}
-
-
-              >
-
-  <TableHeaderColumn width='110px' dataField='sampleDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Sample Date</TableHeaderColumn>
-  <TableHeaderColumn width='110px' dataField='temp' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tempSort }>Temperature</TableHeaderColumn>
-  <TableHeaderColumn width='110px' dataField='do' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.doSort }>Dissolved Oxygen</TableHeaderColumn>
-  <TableHeaderColumn width='110px' dataField='conductivity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.conductivitySort }>Conductivity</TableHeaderColumn>
-  <TableHeaderColumn width='110px' dataField='tds' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tdsSort }>Total Dissolved Solids</TableHeaderColumn>
-  <TableHeaderColumn width='110px' dataField='salinity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.salinitySort }>Salinity</TableHeaderColumn>
-    <TableHeaderColumn width='110px' dataField='nitrogen' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.nitrogenSort }>Total Nitrogen</TableHeaderColumn>
-      <TableHeaderColumn width='110px' dataField='phosphorus' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.phosphorusSort }>Total Phosphorus</TableHeaderColumn>
-        <TableHeaderColumn width='110px' dataField='totalHardness' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.hardnessSort }>Hardness</TableHeaderColumn>
-          <TableHeaderColumn width='110px' dataField='tss' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tssSort }>TSS</TableHeaderColumn>
-
-        <TableHeaderColumn
-              dataField='button'
-              dataFormat={this.editRow.bind(this)}
-              width='110px'
-              >Edit</TableHeaderColumn>
-
-          <TableHeaderColumn
-                dataField='button'
-                dataFormat={this.deleteRow.bind(this)}
-                width='110px'
-                >Delete</TableHeaderColumn>
-
-
-              </BootstrapTable>
-              </Col>
-
+      <Drawer
+        title= "Edit Sample"
+        placement={this.state.placement}
+        closable={false}
+        onClose={this.onClose1}
+        visible={this.state.visible1}
+        width={500}
+      >
+        <form>
+          <Row style={{textAlign: 'right'}}>
+          <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose1()}>+ Add Sample</Icon>
           </Row>
-        </Grid>
-          </Tab>
-
-
-
-
-
-
-      <Tab eventKey={3} >
-        <Grid>
           <Row>
-            <Col xs={10} md={10}>
-        <section className='add-item'>
-          <form onSubmit={this.handleSubmit}>
-            <Row>
-              <Col xs={4} sm={4} md={4}>
-                <h2>Monthly Sample Log</h2>
-                </Col>
-
-                </Row>
-                <hr></hr>
-                <Row>
-                  <Col xs={8} sm={8} md={8}>
-
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Description</th>
-  <th>Results</th>
-
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Date</td>
-  <td><input type="date" name="sampleDate" placeholder="Date of Sample" onChange={this.handleChange} value={this.state.sampleDate} /></td>
-  </tr>
-  <tr>
-  <td>Name</td>
-  <td><input type="text" name="sampleTaker" placeholder="Your Name" onChange={this.handleChange} value={this.state.sampleTaker} /></td>
-  </tr>
-  <tr>
-  <td>Water Temperature</td>
-  <td><input type="number" name="temp" placeholder="Temp of Sample" onChange={this.handleChange} value={this.state.temp} /></td>
-  </tr>
-  <tr>
-  <td>DO</td>
-  <td><input type="number" name="do" placeholder="Dissolved Oxygen" onChange={this.handleChange} value={this.state.do} /></td>
-  </tr>
-  <tr>
-  <td>Conductivity</td>
-  <td><input type="number" name="conductivity" placeholder="Conductivity" onChange={this.handleChange} value={this.state.conductivity} /></td>
-  </tr>
-  <tr>
-  <td>Total Dissolved Solids</td>
-  <td><input type="number" name="tds" placeholder="Total Dissolved Solids" onChange={this.handleChange} value={this.state.tds} /></td>
-  </tr>
-  <tr>
-  <td>Salinity</td>
-  <td><input type="number" name="salinity" placeholder="Salinity" onChange={this.handleChange} value={this.state.salinity} /></td>
-  </tr>
-  <tr>
-  <td>pH</td>
-  <td><input type="number" name="pH" placeholder="pH" onChange={this.handleChange} value={this.state.pH} /></td>
-  </tr>
-  <tr>
-  <td>Turbidity</td>
-  <td><input type="number" name="turbidity" placeholder="Turbidity" onChange={this.handleChange} value={this.state.turbidity} /></td>
-  </tr>
-  <tr>
-  <td>Total Nitrogen</td>
-  <td><input type="number" name="nitrogen" placeholder="Total Nitrogen" onChange={this.handleChange} value={this.state.nitrogen} /></td>
-  </tr>
-  <tr>
-  <td>Total Phosphorus</td>
-  <td><input type="number" name="phosphorus" placeholder="Total Phosphorus" onChange={this.handleChange} value={this.state.phosphorus} /></td>
-  </tr>
-  <tr>
-  <td>Total Hardness</td>
-  <td><input type="number" name="totalHardness" placeholder="Total Hardness" onChange={this.handleChange} value={this.state.totalHardness} /></td>
-  </tr>
-  <tr>
-  <td>Total Suspended Solids</td>
-  <td><input type="number" name="tss" placeholder="Total Suspended Solids" onChange={this.handleChange} value={this.state.tss} /></td>
-  </tr>
-  <tr>
-  <td>Sample Notes</td>
-  <td><textarea  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
-  </tr>
-
-  </tbody>
-  </Table>
-
-</Col>
-                  </Row>
-
-                  <Row>
-                  <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.handleSubmit} bsStyle="primary">Add sample</Button>
-            </Col></Row>
-            <hr></hr>
-          </form>
-        </section>
-
-        </Col>
-        </Row>
-
-        </Grid>
-      </Tab>
-      <Tab eventKey={4} >
-        <Grid>
-          <Row>
-            <Col xs={10} md={10}>
-        <section className='add-item'>
-          <form onSubmit={this.writeData}>
-            <Row>
-              <Col xs={4} sm={4} md={4}>
-                <h2>Monthly Sample Log</h2>
-                </Col>
-
-                </Row>
-                <hr></hr>
-                <Row>
-                  <Col xs={8} sm={8} md={8}>
-
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Description</th>
-  <th>Results</th>
-
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Date</td>
-  <td><input type="date" name="sampleDate" placeholder="Date of Sample" onChange={this.handleChange} value={this.state.sampleDate} /></td>
-  </tr>
-  <tr>
-  <td>Name</td>
-  <td><input type="text" name="sampleTaker" placeholder="Your Name" onChange={this.handleChange} value={this.state.sampleTaker} /></td>
-  </tr>
-  <tr>
-  <td>Water Temperature</td>
-  <td><input type="number" name="temp" placeholder="Temp of Sample" onChange={this.handleChange} value={this.state.temp} /></td>
-  </tr>
-  <tr>
-  <td>DO</td>
-  <td><input type="number" name="do" placeholder="Dissolved Oxygen" onChange={this.handleChange} value={this.state.do} /></td>
-  </tr>
-  <tr>
-  <td>Conductivity</td>
-  <td><input type="number" name="conductivity" placeholder="Conductivity" onChange={this.handleChange} value={this.state.conductivity} /></td>
-  </tr>
-  <tr>
-  <td>Total Dissolved Solids</td>
-  <td><input type="number" name="tds" placeholder="Total Dissolved Solids" onChange={this.handleChange} value={this.state.tds} /></td>
-  </tr>
-  <tr>
-  <td>Salinity</td>
-  <td><input type="number" name="salinity" placeholder="Salinity" onChange={this.handleChange} value={this.state.salinity} /></td>
-  </tr>
-  <tr>
-  <td>pH</td>
-  <td><input type="number" name="pH" placeholder="pH" onChange={this.handleChange} value={this.state.pH} /></td>
-  </tr>
-  <tr>
-  <td>Turbidity</td>
-  <td><input type="number" name="turbidity" placeholder="Turbidity" onChange={this.handleChange} value={this.state.turbidity} /></td>
-  </tr>
-  <tr>
-  <td>Total Nitrogen</td>
-  <td><input type="number" name="nitrogen" placeholder="Total Nitrogen" onChange={this.handleChange} value={this.state.nitrogen} /></td>
-  </tr>
-  <tr>
-  <td>Total Phosphorus</td>
-  <td><input type="number" name="phosphorus" placeholder="Total Phosphorus" onChange={this.handleChange} value={this.state.phosphorus} /></td>
-  </tr>
-  <tr>
-  <td>Total Hardness</td>
-  <td><input type="number" name="totalHardness" placeholder="Total Hardness" onChange={this.handleChange} value={this.state.totalHardness} /></td>
-  </tr>
-  <tr>
-  <td>Total Suspended Solids</td>
-  <td><input type="number" name="tss" placeholder="Total Suspended Solids" onChange={this.handleChange} value={this.state.tss} /></td>
-  </tr>
-  <tr>
-  <td>Sample Notes</td>
-  <td><textarea  type="textArea" style={{ height: 80, width: 400 }}  name="sampleNotes" placeholder="Sample Notes" onChange={this.handleChange} value={this.state.sampleNotes} /></td>
-  </tr>
-
-
-  </tbody>
-  </Table>
-
-</Col>
-                  </Row>
-
-                  <Row>
-                  <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.writeData} bsStyle="primary">Overwrite sample</Button>
-            </Col></Row>
-            <hr></hr>
-          </form>
-
-        </section>
-
-        </Col>
-        </Row>
-
-        </Grid>
-      </Tab>
-
-
-
-
-    </Tabs>
-
-
-    </Col>
+    <FormGroup>
+      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+      <FormControl name="sampleDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.sampleDate} /></Col>
+    </FormGroup>
     </Row>
-    </Grid>
+    <Row style={{paddingTop: '10px'}}>
+    <FormGroup>
+      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Taker</b></Col>
+      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+      <FormControl name="sampleTaker" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.sampleTaker} /></Col>
+    </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Water Temp</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="temp" onChange={this.handleChange} type="number" placeholder="Water Temperature" value={this.state.temp} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Dissolved O<sub>2</sub></b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="do" onChange={this.handleChange} type="number" placeholder="Dissolved Oxygen" value={this.state.do} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Conductivity</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="conductivity" onChange={this.handleChange} type="number" placeholder="Conductivity" value={this.state.conductivity} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>TDS</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="tds" onChange={this.handleChange} type="number" placeholder="TDS" value={this.state.tds} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Salinity</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="salinity" onChange={this.handleChange} type="number" placeholder="Salinity" value={this.state.salinity} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>pH</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="pH" onChange={this.handleChange} type="number" placeholder="pH" value={this.state.pH} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Turbidity</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="turbidity" onChange={this.handleChange}type="number" placeholder="Turbidity" value={this.state.turbidity} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Total Nitrogen</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="nitrogen" onChange={this.handleChange}type="number" placeholder="Total Nitrogen" value={this.state.nitrogen} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Total Phosphorus</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="phosphorus" onChange={this.handleChange} type="number" placeholder="Total Phosphorus" value={this.state.phosphorus} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Total Hardness</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="totalHardness" onChange={this.handleChange} type="number" placeholder="Total Hardness" value={this.state.totalHardness} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>TSS</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="tss" onChange={this.handleChange} type="number" placeholder="TSS" value={this.state.tss} /></Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Notes</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    <FormControl name="sampleNotes" onChange={this.handleChange} type="textarea" placeholder="Sample Notes" value={this.state.sampleNotes} /></Col>
+  </FormGroup>
+  </Row>
+
+
+
+  <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+  <Button type="primary" onClick={this.writeData} bsStyle="primary">Overwrite Sample</Button>
+  </Row>
+
+
+
+
+
+  </form>
+      </Drawer>
+      </Col>
 
     </div>
-        )
-            }
-          }
+      </Row>
+
+      </div>
+
+      <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+
+
+            <Card
+
+
+            >
+            <Tabs defaultActiveKey="1" >
+        <TabPane tab="GRAPHS" key="1">
+          <Row>
+          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+          <Row>
+
+          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
+
+              <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>NITROGEN AND PHOSPHORUS</b></p>
+
+
+        </Col>
+      </Row>
+
+          <Row>
+          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={200}>
+              <AreaChart data={this.state.orders2}
+        syncId="anyId">
+        <defs>
+          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
+          </linearGradient>
+        </defs>
+        <XAxis dataKey="sampleDate" />
+        <YAxis domain={[0, 5]}/>
+        <Tooltip />
+
+        <Area type="monotone" dataKey="nitrogen" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="nitrogen" position="top" /></Area>
+        <Area type="monotone" dataKey="phosphorus" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="phosphorus" position="top" /></Area>
+        <Legend />
+        <Brush></Brush>
+      </AreaChart>
+       </ResponsiveContainer>
+
+      </Col>
+      </Row>
+      <Row>
+      <Col span={24}>
+      <hr></hr>
+      </Col>
+      </Row>
+
+
+      <Row>
+        <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+          <Row>
+      <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
+          <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>SALINITY</b></p>
+
+    </Col>
+  </Row>
+
+      <Row>
+      <Col span={24}>
+        <ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
+          <BarChart data={this.state.orders2}
+
+    syncId="anyId"
+    >
+    <defs>
+      <linearGradient id="colorSalinity" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="5%" stopColor="#9EC1A3" stopOpacity={0.8}/>
+        <stop offset="95%" stopColor="#9EC1A3" stopOpacity={0.3}/>
+      </linearGradient>
+
+    </defs>
+    <XAxis dataKey="sampleDate" />
+    <YAxis />
+    <Tooltip />
+
+
+    <Bar barSize={15} type="monotone" dataKey="salinity" stroke="#9EC1A3" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'12px'}} dataKey="salinity" position="top" /></Bar>
+
+    <Legend />
+  </BarChart>
+   </ResponsiveContainer>
+
+  </Col>
+  </Row>
+</Col>
+
+  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+    <Row>
+<Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
+    <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TDS</b></p>
+
+</Col>
+</Row>
+
+<Row>
+<Col span={24}>
+  <ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
+    <BarChart data={this.state.orders2}
+
+syncId="anyId"
+>
+<defs>
+<linearGradient id="colorTDS" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor="#DC965A" stopOpacity={0.8}/>
+  <stop offset="95%" stopColor="#DC965A" stopOpacity={0.3}/>
+</linearGradient>
+
+</defs>
+<XAxis dataKey="sampleDate" />
+<YAxis />
+<Tooltip />
+
+
+<Bar barSize={15} type="monotone" dataKey="tds" stroke="#DC965A" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'12px'}} dataKey="tds" position="top" /></Bar>
+
+<Legend />
+</BarChart>
+</ResponsiveContainer>
+
+</Col>
+</Row>
+</Col>
+</Row>
+
+
+<Row>
+  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+    <Row>
+<Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
+    <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TSS</b></p>
+
+</Col>
+</Row>
+
+<Row>
+<Col span={24}>
+  <ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
+    <LineChart data={this.state.orders2}
+
+syncId="anyId"
+>
+
+<XAxis dataKey="sampleDate" />
+<YAxis />
+<Tooltip />
+
+
+<Line strokeWidth={3} type="monotone" dataKey="tss" stroke="#22333B" ><LabelList style={{fontSize:'12px'}} dataKey="tss" position="top" /></Line>
+
+<Legend />
+</LineChart>
+</ResponsiveContainer>
+
+</Col>
+</Row>
+</Col>
+
+<Col xs={24} sm={12} md={12} lg={12} xl={12}>
+<Row>
+<Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
+<p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TURBIDITY</b></p>
+
+</Col>
+</Row>
+
+<Row>
+<Col span={24}>
+<ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
+<LineChart data={this.state.orders2}
+
+syncId="anyId"
+>
+
+<XAxis dataKey="sampleDate" />
+<YAxis domain={[0,50]}/>
+<Tooltip />
+
+
+<Line strokeWidth={3} type="monotone" dataKey="turbidity" stroke="#89A7A7" ><LabelList style={{fontSize:'12px'}} dataKey="turbidity" position="top" /></Line>
+
+<Legend />
+</LineChart>
+</ResponsiveContainer>
+
+</Col>
+</Row>
+</Col>
+</Row>
+
+
+
+
+
+
+
+
+
+      </Col>
+    </Row>
+
+        </TabPane>
+        <TabPane tab="DATA TABLE" key="2">
+          <Row>
+          <Col span={24} style={{paddingTop: '15px'}}>
+
+              <p style={{lineHeight: '2px'}}><b>DATA TABLE</b></p>
+
+              <hr></hr>
+        </Col>
+      </Row>
+
+          <Row>
+          <Col span={24}>
+            <BootstrapTable
+            data={ this.state.dataList }
+            options={options}
+            exportCSV
+            pagination
+
+
+
+            >
+
+            <TableHeaderColumn width='130px' dataField='sampleDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Sample Date</TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='temp' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tempSort }>Temperature</TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='do' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.doSort }>Dissolved O<sub>2</sub></TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='conductivity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.conductivitySort }>Conductivity</TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='tds' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tdsSort }>TDS</TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='salinity' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.salinitySort }>Salinity</TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='nitrogen' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.nitrogenSort }>Total Nitrogen</TableHeaderColumn>
+            <TableHeaderColumn width='145px' dataField='phosphorus' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.phosphorusSort }>Total Phosphorus</TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='totalHardness' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.hardnessSort }>Hardness</TableHeaderColumn>
+            <TableHeaderColumn width='130px' dataField='tss' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort sortFunc={ this.tssSort }>TSS</TableHeaderColumn>
+
+            <TableHeaderColumn
+            dataField='button'
+            dataFormat={this.editRow.bind(this)}
+            width='80px'
+            >Edit</TableHeaderColumn>
+
+            <TableHeaderColumn
+              dataField='button'
+              dataFormat={this.deleteRow.bind(this)}
+              width='80px'
+              >Delete</TableHeaderColumn>
+
+
+            </BootstrapTable>
+
+      </Col>
+      </Row>
+
+
+
+        </TabPane>
+
+      </Tabs>
+
+            </Card>
+      </Col>
+      </Row>
+      </div>
+
+
+
+
+
+    </Layout>
+      )
+    }
+  }

@@ -20,13 +20,14 @@ import fishStocking from './assetManager/fishStocking';
 
 import lake from './images/lake.jpg';
 import lake2 from './images/lake2.png';
+import lake3 from './images/lake3.png';
 
 import { Link } from 'react-router-dom';
 import { StickyContainer, Sticky } from 'react-sticky';
 import { PanelGroup, Popover, Panel, Grid, Collapse, Well, ListGroup, ListGroupItem, Nav, NavItem, Jumbotron, OverlayTrigger, Tab, Tabs } from 'react-bootstrap';
 import { TiArrowSortedDown, TiUser, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
 import { MdPlayCircleOutline } from "react-icons/md";
-import { Row, Col, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
+import { Row, Col, Card, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
 
 import { BrowserRouter, Route } from 'react-router-dom';
 
@@ -273,60 +274,71 @@ class SignInScreen extends React.Component {
         <Layout>
               <Header style={{ backgroundColor: '#ECECEC'}}>
 
-                <Row style={{paddingTop: '10px'}}>
-              <Col span={12}>
-                <h1>Lakistry</h1>
 
-              </Col>
-              <Col offset={8} span={4}><Button type="primary" onClick={this.showDrawer}>
-                  <TiUser size={20} />Login
-                </Button><Drawer
-                  title= "Login"
-                  placement={this.state.placement}
-                  closable={false}
-                  onClose={this.onClose}
-                  visible={this.state.visible}
-                  width={300}
-                >
-                  <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
-                </Drawer></Col>
 
-            </Row>
+
+                  <div style={{ background: '#F0F0F0', padding: '5px' }}>
+                  <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <div style={{position: 'relative'}}>
+                  <Col xs={16} sm={16} md={16} lg={16} xl={16}>
+                    <div style={{fontSize: '36px'}}><b>Lakistry</b></div>
+                  </Col>
+                  <Col xs={8} sm={8} md={8} lg={8} xl={8} onClick={this.showDrawer}style={{ position: 'absolute',
+                top: '0%',
+                right: '0%', textAlign: 'right'}}>
+
+                  <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'right'}}>
+                    <div style={{fontSize: '20px'}}><b>Log In</b></div>
+                    </Col>
+                  </Col>
+                  <Drawer
+                    title= "Login"
+                    placement={this.state.placement}
+                    closable={false}
+                    onClose={this.onClose}
+                    visible={this.state.visible}
+                    width={300}
+                  >
+                    <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
+                  </Drawer>
+
+
+                </div>
+                  </Row>
+                  </div>
+
 
 
               </Header>
               <Content>
 
-
-            <Row>
-
-              <Col span={24}>
-                <Carousel autoplay>
-    <div style={{position: 'relative'}} ><img src={lake2} style={{width: '100%', height: '100%'}} /> <Button size="large" type="normal" style={{ position: 'absolute',
-  top: '60%',
-  left: '10%'}}><h3>Request Demo</h3> </Button>
-<div style={{ position: 'absolute',
-top: '40%',
-left: '10%'}}>
-<h1 style={{color: 'white'}}>Lake Management</h1>
-<h1 style={{color: 'white'}}>Made Simple</h1>
-</div>
-  </div>
-
-  </Carousel>
+                <div style={{ background: '#F0F0F0', padding: '5px' }}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <Col xs={24} sm={24} md={8} lg={24} xl={24}>
+                <div style={{position: 'relative'}}>
+                  <div style={{ position: 'absolute',
+                top: '0%',
+                left: '0%', backgroundColor: 'lightBlue', height: '100%', width: '4%', zIndex: 1}} />
+                <Carousel>
+                  <div >
 
 
+
+
+                  </div>
+                  <div><h3>2</h3></div>
+                  <div><h3>3</h3></div>
+                  <div><h3>4</h3></div>
+                </Carousel>
+
+                </div>
               </Col>
 
-            </Row>
-            <Row>
-              <Col span={6}>col-6</Col>
-              <Col span={6}>col-6</Col>
-              <Col span={6}>col-6</Col>
-              <Col span={6}>col-6</Col>
-            </Row>
 
 
+
+            </Row>
+          </div>
 
               </Content>
               <Footer>Footer</Footer>
@@ -353,9 +365,9 @@ left: '10%'}}>
           >
           <Menu
             onClick={handleClick}
-            style={{ backgroundColor: 'white', paddingTop: '20px', left: '5px', width: '100%', height: '100vh' }}
+            style={{ backgroundColor: 'white', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'gray' }}
             mode="vertical">
-            <SubMenu key="sub1" title={<Link to="/dashboard"><span><Icon type="dashboard" /><span>Dashboard</span></span></Link>}>
+            <SubMenu key="sub1" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/dashboard"><span><Icon type="dashboard" /><span>Dashboard</span></span></Link>}>
 
             </SubMenu>
 
@@ -382,7 +394,7 @@ left: '10%'}}>
             <Menu.Item key="11"><Link to="/uploadDocument">Documents</Link></Menu.Item>
           </SubMenu>
 
-          <SubMenu key="sub6" title={<span><Icon type="user" /><span>Documents</span></span>}>
+          <SubMenu key="sub6" title={<span><Icon type="user" /><span>Profile</span></span>}>
             <Menu.Item key="12"><Link to="/profilePage">Profile</Link></Menu.Item>
           </SubMenu>
 
@@ -432,7 +444,7 @@ left: '10%'}}>
           onClick={handleClick}
           style={{ backgroundColor: '#2E2E2E', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'white', fontSize: '18px' }}
           mode="vertical">
-          <SubMenu key="sub1" title={<Link to="/dashboard"><span><Icon type="dashboard" /><span><b>Dashboard</b></span></span></Link>}>
+          <SubMenu key="sub1" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/dashboard"><span><Icon type="dashboard" /><span><b>Dashboard</b></span></span></Link>}>
 
           </SubMenu>
 
@@ -459,8 +471,7 @@ left: '10%'}}>
           <Menu.Item key="11"><Link to="/uploadDocument">Documents</Link></Menu.Item>
         </SubMenu>
 
-        <SubMenu key="sub6" title={<span><Icon type="user" /><span><b>Documents</b></span></span>}>
-          <Menu.Item key="12"><Link to="/profilePage">Profile</Link></Menu.Item>
+        <SubMenu key="sub6" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/profilePage"><span><Icon type="user" /><span><b>Profile</b></span></span></Link>}>
         </SubMenu>
 
 
