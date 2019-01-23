@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, Button, ResponsiveEmbed, ButtonToolbar, Form, Grid, Row, FormGroup, Tab, Radio, Tabs, Col, Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
@@ -15,11 +15,11 @@ import fileDownload from "js-file-download";
 
 import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
 
+import { Row, Col, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
 
 
 
-
-
+const TabPane = Tabs.TabPane;
 
 
 
@@ -76,6 +76,19 @@ export default class fishStocking extends Component {
           dataList: [],
           filter: "",
           blobUrl: null,
+
+          //drawers
+          visible: false,
+          visible1: false,
+
+          //Inputs for Profile Page
+          lakeName: '',
+          locationCity: '',
+          locationState: '',
+          managementContact: '',
+          hoaContact: '',
+          managementContactNumber: '',
+          hoaContactNumber: '',
 
 
 
@@ -216,6 +229,23 @@ export default class fishStocking extends Component {
 
 
         });
+        const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+        profileRef.on('value', (snapshot) => {
+
+
+        this.setState({
+          lakeName: snapshot.child('lakeName').val(),
+          locationCity: snapshot.child('locationCity').val(),
+          locationState: snapshot.child('locationState').val(),
+          managementContact: snapshot.child('managementContact').val(),
+          hoaContact: snapshot.child('hoaContact').val(),
+          managementContactNumber: snapshot.child('managementContactNumber').val(),
+          hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+
+        });
+
+
+      });
 
       });
 
@@ -262,6 +292,7 @@ export default class fishStocking extends Component {
 
         id: id,
         key: 4,
+        visible1: true,
 
         fishName: snapshot.child('fishName').val(),
         stockingArea: snapshot.child('stockingArea').val(),
@@ -328,6 +359,7 @@ export default class fishStocking extends Component {
 
       id: '',
       key: 3,
+      visible: true,
       fishName: '',
       stockingArea: '',
       stockingDescription: '',
@@ -424,6 +456,10 @@ writeData (e) {
 
   samplesRef.child(this.state.id).set(stockingInfo);
 
+  this.setState({
+    visible1: false,
+  })
+
 
 });
 }
@@ -457,20 +493,24 @@ rawMarkup(){
 editRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiPencil size={20} type="button"
+      <div style={{textAlign: 'center'}}>
+    <Icon type="edit" style={{fontSize: '24px'}}
     onClick={() => this.fillStates(`${isSelected.id}`)}>
       Click me
-    </TiPencil>
+    </Icon>
+    </div>
   )
 }
 
 deleteRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiTrash size={20} type="button"
+    <div style={{textAlign: 'center'}}>
+    <Icon type="delete" style={{fontSize: '24px'}}
     onClick={() => this.removesample(`${isSelected.id}`)}>
       Click me
-    </TiTrash>
+    </Icon>
+    </div>
   )
 }
 
@@ -496,6 +536,22 @@ createCustomExportCSVButton = (onClick) => {
 }
 
 
+showDrawer = () => {
+  this.setState({
+    visible: true,
+  });
+};
+onClose = () => {
+  this.setState({
+    visible: false,
+  });
+};
+onClose1 = () => {
+  this.setState({
+    visible1: false,
+  });
+};
+
 
 
 
@@ -519,237 +575,257 @@ const options = {
 
 
         return (
-    <div>
 
-      <Grid>
-        <Row>
-          <Row>
-            <Col xs={6} md={6}>
-          <h3>Fish Stocking</h3>
+          <Layout>
 
-          </Col>
-          <Col xs={6} md={6}>
-            <ButtonToolbar style={styles.topPad}>
-          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Stocking Event</Button>
-        </ButtonToolbar>
-          </Col>
-          </Row>
-          <Col xs={12} sm={10} md={10}>
+            <div style={{ background: '#F0F0F0', padding: '5px' }}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <div style={{position: 'relative'}}>
+            <Col xs={24} sm={24} md={18} lg={18} xl={18}>
+              <h1><b>Fish Stocking</b></h1>
+              <h3><b>{this.state.lakeName}</b></h3>
+            </Col>
+            <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{ textAlign: 'right'}}>
+          <Button size="large" type="primary" onClick={() => this.fillEmpty()}>+ Add Stocking Event</Button>
+            <Drawer
+              title= "Fill in Stocking Event"
+              placement={this.state.placement}
+              closable={false}
+              onClose={this.onClose}
+              visible={this.state.visible}
+              width={500}
+            >
+            <form>
+              <Row style={{textAlign: 'right'}}>
+              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Stocking Event</Icon>
+              </Row>
+              <Row>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Species Name</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="fishName" onChange={this.handleChange} type="text" placeholder="Species Name" value={this.state.fishName} /></Col>
+        </FormGroup>
+        </Row>
+              <Row>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="stockingDate" onChange={this.handleChange} type="date" placeholder="Stocking Date" value={this.state.stockingDate} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Area</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="stockingArea" onChange={this.handleChange} type="text" placeholder="Stocking Area" value={this.state.stockingArea} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Amount</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="stockingAmount" onChange={this.handleChange} type="text" placeholder="Stocking Amount" value={this.state.stockingAmount} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Description</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="stockingDescription" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Description" value={this.state.stockingDescription} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Notes</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="stockingNotes" componentClass="textarea" style={{ height: 80, width: 335}} onChange={this.handleChange} type="textarea" placeholder="Notes" value={this.state.stockingNotes} /></Col>
+        </FormGroup>
+        </Row>
 
 
-      <Tabs activeKey={this.state.key} onSelect={this.handleSelect} defaultActiveKey={1} id="uncontrolled-tab-example">
 
 
 
-        <Tab eventKey={1} title="+ Fish Stocking">
-          <Grid>
-
-          <Row style={styles.topPad}>
-
+        <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+        <Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Add Stocking Event</Button>
+        </Row>
 
 
-            <Col xs={10} sm={10} md={10} lg={10}>
 
 
-              <BootstrapTable
-              data={ this.state.dataList }
-              options={options}
-              exportCSV
-              pagination
+
+        </form>
 
 
-              >
 
-              <TableHeaderColumn dataField='fishName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Fish Species</TableHeaderColumn>
-              <TableHeaderColumn dataField='stockingDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Date</TableHeaderColumn>
-              <TableHeaderColumn dataField='stockingArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Area</TableHeaderColumn>
-              <TableHeaderColumn dataField='stockingDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+            </Drawer>
 
-              <TableHeaderColumn dataField='stockingAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Amount</TableHeaderColumn>
+            <Drawer
+              title= "Edit Stocking Event"
+              placement={this.state.placement}
+              closable={false}
+              onClose={this.onClose1}
+              visible={this.state.visible1}
+              width={500}
+            >
+              <form>
+                <Row style={{textAlign: 'right'}}>
+                <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose1()}>+ Add Application Report</Icon>
+                </Row>
+                <Row>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Species Name</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="fishName" onChange={this.handleChange} type="text" placeholder="Species Name" value={this.state.fishName} /></Col>
+                  </FormGroup>
+                  </Row>
+                        <Row>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="stockingDate" onChange={this.handleChange} type="date" placeholder="Stocking Date" value={this.state.stockingDate} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Area</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="stockingArea" onChange={this.handleChange} type="text" placeholder="Stocking Area" value={this.state.stockingArea} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Amount</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="stockingAmount" onChange={this.handleChange} type="text" placeholder="Stocking Amount" value={this.state.stockingAmount} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Description</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="stockingDescription" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Description" value={this.state.stockingDescription} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Notes</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="stockingNotes" onChange={this.handleChange} type="textarea"  componentClass="textarea" style={{ height: 80, width: 335}}placeholder="Notes" value={this.state.stockingNotes} /></Col>
+                  </FormGroup>
+                  </Row>
 
 
-        <TableHeaderColumn
-              dataField='button'
-              width={45}
-              dataFormat={this.editRow.bind(this)}
-              ></TableHeaderColumn>
-
-          <TableHeaderColumn
-                dataField='button'
-                  width={45}
-                dataFormat={this.deleteRow.bind(this)}
-                ></TableHeaderColumn>
 
 
-              </BootstrapTable>
+        <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+        <Button type="primary" onClick={this.writeData} bsStyle="primary">Overwrite Stocking Event</Button>
+        </Row>
+
+
+
+
+
+        </form>
+            </Drawer>
+            </Col>
+
+          </div>
+            </Row>
+
+            </div>
+
+            <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+
+
+                  <Card
+
+
+                  >
+                  <Tabs defaultActiveKey="1" >
+              <TabPane tab="Fish Stocking Logs" key="1">
+                <Row>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                <Row>
+
+                <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
+
+                    <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>STOCKING EVENTS</b></p>
+
+
               </Col>
+            </Row>
 
+                <Row>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                  <BootstrapTable
+                  data={ this.state.dataList }
+                  options={options}
+                  exportCSV
+                  pagination
+
+
+                  >
+
+                  <TableHeaderColumn dataField='fishName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Fish Species</TableHeaderColumn>
+                  <TableHeaderColumn dataField='stockingDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Date</TableHeaderColumn>
+                  <TableHeaderColumn dataField='stockingArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Area</TableHeaderColumn>
+                  <TableHeaderColumn dataField='stockingDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+                  <TableHeaderColumn dataField='stockingAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Amount</TableHeaderColumn>
+
+
+
+
+            <TableHeaderColumn
+                  width='100px'
+                  dataField='button'
+                  dataFormat={this.editRow.bind(this)}
+                  >Edit</TableHeaderColumn>
+
+              <TableHeaderColumn
+                    width='100px'
+                    dataField='button'
+                    dataFormat={this.deleteRow.bind(this)}
+                    >Delete</TableHeaderColumn>
+
+
+                  </BootstrapTable>
+
+
+            </Col>
+            </Row>
+            <Row>
+            <Col span={24}>
+            <hr></hr>
+            </Col>
+            </Row>
+
+
+
+
+
+
+            </Col>
           </Row>
-        </Grid>
-          </Tab>
+
+              </TabPane>
+
+
+            </Tabs>
+
+                  </Card>
+            </Col>
+            </Row>
+            </div>
 
 
 
 
 
+          </Layout>
 
-      <Tab eventKey={3} >
-        <Grid>
-          <Row>
-            <Col xs={10} md={10}>
-        <section className='add-item'>
-          <form onSubmit={this.handleSubmit}>
-            <Row>
-              <Col xs={4} sm={4} md={4}>
-                <h2>Fish Stocking</h2>
-                </Col>
-
-                </Row>
-                <hr></hr>
-                <Row>
-                  <Col xs={8} sm={8} md={8}>
-
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Item</th>
-  <th>Description</th>
-
-
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Fish Species</td>
-  <td><input type="text" name="fishName" placeholder="Fish Species" onChange={this.handleChange} value={this.state.fishName} /></td>
-  </tr>
-  <tr>
-  <td>Stocking Date</td>
-  <td><input type="date" name="stockingDate" placeholder="Stocking Date" onChange={this.handleChange} value={this.state.stockingDate} /></td>
-  </tr>
-  <tr>
-  <td>Stocking Area</td>
-  <td><input type="text" name="stockingArea" placeholder="Stocking Area" onChange={this.handleChange} value={this.state.stockingArea} /></td>
-  </tr>
-  <tr>
-  <td>Stocking Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingDescription" placeholder="Stocking Description" onChange={this.handleChange} value={this.state.stockingDescription}></textarea></td>
-  </tr>
-  <tr>
-  <td>Stocking Amount</td>
-  <td><input type="text" name="stockingAmount" placeholder="Stocking Amount" onChange={this.handleChange} value={this.state.stockingAmount} /></td>
-  </tr>
-
-  <tr>
-  <td>Stocking Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingNotes" placeholder="Stocking Notes" onChange={this.handleChange} value={this.state.stockingNotes}></textarea></td>
-  </tr>
-
-
-  </tbody>
-  </Table>
-
-</Col>
-                  </Row>
-
-                  <Row>
-                  <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.handleSubmit} bsStyle="primary">Add Stocking Event</Button>
-            </Col></Row>
-            <hr></hr>
-          </form>
-        </section>
-
-        </Col>
-        </Row>
-
-        </Grid>
-      </Tab>
-      <Tab eventKey={4} >
-        <Grid>
-          <Row>
-            <Col xs={10} md={10}>
-        <section className='add-item'>
-          <form onSubmit={this.writeData}>
-            <Row>
-              <Col xs={4} sm={4} md={4}>
-                <h2>Fish Stocking</h2>
-                </Col>
-
-                </Row>
-                <hr></hr>
-                <Row>
-                  <Col xs={8} sm={8} md={8}>
-
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Item</th>
-  <th>Description</th>
-
-
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Fish Species</td>
-  <td><input type="text" name="fishName" placeholder="Fish Species" onChange={this.handleChange} value={this.state.fishName} /></td>
-  </tr>
-  <tr>
-  <td>Stocking Date</td>
-  <td><input type="date" name="stockingDate" placeholder="Stocking Date" onChange={this.handleChange} value={this.state.stockingDate} /></td>
-  </tr>
-  <tr>
-  <td>Stocking Area</td>
-  <td><input type="text" name="stockingArea" placeholder="Stocking Area" onChange={this.handleChange} value={this.state.stockingArea} /></td>
-  </tr>
-  <tr>
-  <td>Stocking Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingDescription" placeholder="Stocking Description" onChange={this.handleChange} value={this.state.stockingDescription}></textarea></td>
-  </tr>
-  <tr>
-  <td>Stocking Amount</td>
-  <td><input type="text" name="stockingAmount" placeholder="Stocking Amount" onChange={this.handleChange} value={this.state.stockingAmount} /></td>
-  </tr>
-
-  <tr>
-  <td>Stocking Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="stockingNotes" placeholder="Stocking Notes" onChange={this.handleChange} value={this.state.stockingNotes}></textarea></td>
-  </tr>
-
-
-  </tbody>
-  </Table>
-
-</Col>
-                  </Row>
-
-                  <Row>
-                  <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.writeData} bsStyle="primary">Overwrite Stocking</Button>
-            </Col></Row>
-            <hr></hr>
-          </form>
-
-        </section>
-
-        </Col>
-        </Row>
-
-        </Grid>
-      </Tab>
-
-
-
-
-    </Tabs>
-
-
-    </Col>
-    </Row>
-    </Grid>
-
-    </div>
         )
             }
           }

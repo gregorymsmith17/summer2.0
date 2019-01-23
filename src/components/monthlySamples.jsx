@@ -14,9 +14,9 @@ import { ChromePicker } from 'react-color';
 import fileDownload from "js-file-download";
 
 
-import { LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, BarChart, Bar, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
+import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, BarChart, Bar, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, Card, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
+import { Row, Col, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
 
 const TabPane = Tabs.TabPane;
 
@@ -107,6 +107,38 @@ export default class monthlySamples extends Component {
           //for drawers
           visible: false,
           visible1: false,
+
+          //Graph 1
+          parameterGraph1: 'salinity',
+          parameterGraph2: 'tds',
+          parameterGraph3: 'tss',
+          parameterGraph4: 'turbidity',
+          graphType: 'Area',
+          graphType2: 'Area',
+          graphType3: 'Bar',
+          graphType4: 'Bar',
+
+
+          //barLine
+          barLine: '',
+          lineLine: '',
+          graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey="salinity" position="top" /></Area>,
+
+          graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey="tds" position="top" /></Area>,
+
+          graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey="tss" position="top" /></Bar>,
+
+          graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Bar>,
+
+
+          //Inputs for Profile Page
+          lakeName: '',
+          locationCity: '',
+          locationState: '',
+          managementContact: '',
+          hoaContact: '',
+          managementContactNumber: '',
+          hoaContactNumber: '',
 
 
 
@@ -292,9 +324,28 @@ export default class monthlySamples extends Component {
             orders2: newState2,
             dataList: newState,
             color: this.state.color,
+
           });
 
         });
+
+        const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+        profileRef.on('value', (snapshot) => {
+
+
+        this.setState({
+          lakeName: snapshot.child('lakeName').val(),
+          locationCity: snapshot.child('locationCity').val(),
+          locationState: snapshot.child('locationState').val(),
+          managementContact: snapshot.child('managementContact').val(),
+          hoaContact: snapshot.child('hoaContact').val(),
+          managementContactNumber: snapshot.child('managementContactNumber').val(),
+          hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+
+        });
+
+
+      });
         const colorsRef = fire.database().ref(`colors/${user.uid}`);
 
         colorsRef.on('value', (snapshot) => {
@@ -904,6 +955,91 @@ onClose1 = () => {
   });
 };
 
+graph1Line = () => {
+  this.setState({
+    graphType: 'Line',
+    graphingType1: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph1} position="top" /></Line>,
+  });
+};
+
+graph1Area = () => {
+  this.setState({
+    graphType: 'Area',
+    graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph1} position="top" /></Area>,
+  });
+};
+
+graph1Bar = () => {
+  this.setState({
+    graphType: 'Bar',
+    graphingType1: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph1} position="top" /></Bar>,
+  });
+};
+
+graph2Line = () => {
+  this.setState({
+    graphType2: 'Line',
+    graphingType2: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph2} position="top" /></Line>,
+  });
+};
+
+graph2Area = () => {
+  this.setState({
+    graphType2: 'Area',
+    graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph2} position="top" /></Area>,
+  });
+};
+
+graph2Bar = () => {
+  this.setState({
+    graphType2: 'Bar',
+    graphingType2: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph2} position="top" /></Bar>,
+  });
+};
+
+graph3Line = () => {
+  this.setState({
+    graphType3: 'Line',
+    graphingType3: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph3} position="top" /></Line>,
+  });
+};
+
+graph3Area = () => {
+  this.setState({
+    graphType3: 'Area',
+    graphingType3: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph3} position="top" /></Area>,
+  });
+};
+
+graph3Bar = () => {
+  this.setState({
+    graphType3: 'Bar',
+    graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph3} position="top" /></Bar>,
+  });
+};
+
+graph4Line = () => {
+  this.setState({
+    graphType4: 'Line',
+    graphingType4: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Line>,
+  });
+};
+
+graph4Area = () => {
+  this.setState({
+    graphType4: 'Area',
+    graphingType4: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Area>,
+  });
+};
+
+graph4Bar = () => {
+  this.setState({
+    graphType4: 'Bar',
+    graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Bar>,
+  });
+};
+
+
 
 
 
@@ -917,6 +1053,53 @@ onClose1 = () => {
 
 
       render() {
+
+
+        function handleButtonClick(e) {
+
+          console.log('click left button', e);
+        }
+
+        function handleMenuClick(e) {
+
+          console.log('click', e);
+        }
+
+        const menu = (
+          <Menu onClick={handleMenuClick}>
+
+            <Menu.Item key="1" onClick={this.graph1Line}>Line Graph</Menu.Item>
+            <Menu.Item key="2" onClick={this.graph1Area}>Area Graph</Menu.Item>
+            <Menu.Item key="3" onClick={this.graph1Bar}>Bar Graph</Menu.Item>
+          </Menu>
+        );
+
+        const menu2 = (
+          <Menu onClick={handleMenuClick}>
+
+            <Menu.Item key="1" onClick={this.graph2Line}>Line Graph</Menu.Item>
+            <Menu.Item key="2" onClick={this.graph2Area}>Area Graph</Menu.Item>
+            <Menu.Item key="3" onClick={this.graph2Bar}>Bar Graph</Menu.Item>
+          </Menu>
+        );
+        const menu3 = (
+          <Menu onClick={handleMenuClick}>
+
+            <Menu.Item key="1" onClick={this.graph3Line}>Line Graph</Menu.Item>
+            <Menu.Item key="2" onClick={this.graph3Area}>Area Graph</Menu.Item>
+            <Menu.Item key="3" onClick={this.graph3Bar}>Bar Graph</Menu.Item>
+          </Menu>
+        );
+        const menu4 = (
+          <Menu onClick={handleMenuClick}>
+
+            <Menu.Item key="1" onClick={this.graph4Line}>Line Graph</Menu.Item>
+            <Menu.Item key="2" onClick={this.graph4Area}>Area Graph</Menu.Item>
+            <Menu.Item key="3" onClick={this.graph4Bar}>Bar Graph</Menu.Item>
+          </Menu>
+        );
+
+
         function buttonFormatter(cell, row){
   return '<BootstrapButton type="submit"></BootstrapButton>';
 }
@@ -1004,7 +1187,7 @@ const doCheckbox = (
         <div style={{position: 'relative'}}>
       <Col xs={24} sm={24} md={18} lg={18} xl={18}>
         <h1><b>Monthly Samples</b></h1>
-        <h3><b>Summer Lake Homeowners Association</b></h3>
+        <h3><b>{this.state.lakeName}</b></h3>
       </Col>
       <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{ textAlign: 'right'}}>
     <Button size="large" type="primary" onClick={() => this.fillEmpty()}>+ Add Sample</Button>
@@ -1326,23 +1509,39 @@ const doCheckbox = (
       <Row>
         <Col xs={24} sm={12} md={12} lg={12} xl={12}>
           <Row>
-      <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
-          <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>SALINITY</b></p>
+      <Col xs={24} sm={24} md={18} lg={18} xl={18} style={{paddingTop: '15px'}}>
+
+
+      <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>SALINITY</b>
+    </p>
+
+    </Col>
+    <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{paddingTop: '0px'}}>
+      <div>
+
+  <Dropdown overlay={menu}>
+    <Button style={{ marginLeft: 8 }}>{this.state.graphType} <Icon type="down" />
+    </Button>
+  </Dropdown>
+</div>
+
 
     </Col>
   </Row>
 
       <Row>
       <Col span={24}>
+
+
         <ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
-          <BarChart data={this.state.orders2}
+          <ComposedChart data={this.state.orders2}
 
     syncId="anyId"
     >
     <defs>
       <linearGradient id="colorSalinity" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="5%" stopColor="#9EC1A3" stopOpacity={0.8}/>
-        <stop offset="95%" stopColor="#9EC1A3" stopOpacity={0.3}/>
+        <stop offset="5%" stopColor="#EB8258" stopOpacity={0.8}/>
+        <stop offset="95%" stopColor="#EB8258" stopOpacity={0.3}/>
       </linearGradient>
 
     </defs>
@@ -1350,11 +1549,11 @@ const doCheckbox = (
     <YAxis />
     <Tooltip />
 
+    {this.state.graphingType1}
 
-    <Bar barSize={15} type="monotone" dataKey="salinity" stroke="#9EC1A3" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'12px'}} dataKey="salinity" position="top" /></Bar>
 
     <Legend />
-  </BarChart>
+  </ComposedChart>
    </ResponsiveContainer>
 
   </Col>
@@ -1363,23 +1562,38 @@ const doCheckbox = (
 
   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
     <Row>
-<Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
-    <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TDS</b></p>
+<Col xs={24} sm={24} md={18} lg={18} xl={18} style={{paddingTop: '15px'}}>
+
+
+<p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TDS</b>
+</p>
+
+</Col>
+<Col xs={24} sm={24} md={6} lg={6} xl={6} style={{paddingTop: '0px'}}>
+<div>
+
+<Dropdown overlay={menu2}>
+<Button style={{ marginLeft: 8 }}>{this.state.graphType2} <Icon type="down" />
+</Button>
+</Dropdown>
+</div>
+
 
 </Col>
 </Row>
 
+
 <Row>
 <Col span={24}>
   <ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
-    <BarChart data={this.state.orders2}
+    <ComposedChart data={this.state.orders2}
 
 syncId="anyId"
 >
 <defs>
 <linearGradient id="colorTDS" x1="0" y1="0" x2="0" y2="1">
-  <stop offset="5%" stopColor="#DC965A" stopOpacity={0.8}/>
-  <stop offset="95%" stopColor="#DC965A" stopOpacity={0.3}/>
+  <stop offset="5%" stopColor="#88AB75" stopOpacity={0.8}/>
+  <stop offset="95%" stopColor="#88AB75" stopOpacity={0.3}/>
 </linearGradient>
 
 </defs>
@@ -1388,10 +1602,9 @@ syncId="anyId"
 <Tooltip />
 
 
-<Bar barSize={15} type="monotone" dataKey="tds" stroke="#DC965A" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'12px'}} dataKey="tds" position="top" /></Bar>
-
+{this.state.graphingType2}
 <Legend />
-</BarChart>
+</ComposedChart>
 </ResponsiveContainer>
 
 </Col>
@@ -1403,29 +1616,50 @@ syncId="anyId"
 <Row>
   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
     <Row>
-<Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
-    <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TSS</b></p>
+<Col xs={24} sm={24} md={18} lg={18} xl={18} style={{paddingTop: '15px'}}>
+
+
+<p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TSS</b>
+</p>
+
+</Col>
+<Col xs={24} sm={24} md={6} lg={6} xl={6} style={{paddingTop: '0px'}}>
+<div>
+
+<Dropdown overlay={menu3}>
+<Button style={{ marginLeft: 8 }}>{this.state.graphType3} <Icon type="down" />
+</Button>
+</Dropdown>
+</div>
+
 
 </Col>
 </Row>
 
+
 <Row>
 <Col span={24}>
   <ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
-    <LineChart data={this.state.orders2}
+    <ComposedChart data={this.state.orders2}
 
 syncId="anyId"
 >
+<defs>
+<linearGradient id="colorTSS" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor="#6689A1" stopOpacity={0.8}/>
+  <stop offset="95%" stopColor="#6689A1" stopOpacity={0.3}/>
+</linearGradient>
+
+</defs>
 
 <XAxis dataKey="sampleDate" />
 <YAxis />
 <Tooltip />
 
 
-<Line strokeWidth={3} type="monotone" dataKey="tss" stroke="#22333B" ><LabelList style={{fontSize:'12px'}} dataKey="tss" position="top" /></Line>
-
+{this.state.graphingType3}
 <Legend />
-</LineChart>
+</ComposedChart>
 </ResponsiveContainer>
 
 </Col>
@@ -1433,30 +1667,50 @@ syncId="anyId"
 </Col>
 
 <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-<Row>
-<Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '15px'}}>
-<p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TURBIDITY</b></p>
+  <Row>
+  <Col xs={24} sm={24} md={18} lg={18} xl={18} style={{paddingTop: '15px'}}>
 
-</Col>
-</Row>
+
+  <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>TURBIDITY</b>
+  </p>
+
+  </Col>
+  <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{paddingTop: '0px'}}>
+  <div>
+
+  <Dropdown overlay={menu4}>
+  <Button style={{ marginLeft: 8 }}>{this.state.graphType4} <Icon type="down" />
+  </Button>
+  </Dropdown>
+  </div>
+
+
+  </Col>
+  </Row>
 
 <Row>
 <Col span={24}>
 <ResponsiveContainer width="100%" aspect={5/3.0} minHeight={200}>
-<LineChart data={this.state.orders2}
+<ComposedChart data={this.state.orders2}
 
 syncId="anyId"
 >
+<defs>
+<linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor="#995D81" stopOpacity={0.8}/>
+  <stop offset="95%" stopColor="#995D81" stopOpacity={0.3}/>
+</linearGradient>
+
+</defs>
 
 <XAxis dataKey="sampleDate" />
 <YAxis domain={[0,50]}/>
 <Tooltip />
 
-
-<Line strokeWidth={3} type="monotone" dataKey="turbidity" stroke="#89A7A7" ><LabelList style={{fontSize:'12px'}} dataKey="turbidity" position="top" /></Line>
+{this.state.graphingType4}
 
 <Legend />
-</LineChart>
+</ComposedChart>
 </ResponsiveContainer>
 
 </Col>

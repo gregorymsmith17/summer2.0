@@ -12,6 +12,7 @@
     "firebaseui": "^3.5.1",
     "google-map-react": "^1.1.2",
     "google-maps-react": "^2.0.2",
+    "google-trends-api": "^4.7.0",
     "js-file-download": "^0.4.4",
     "jspdf": "^1.5.3",
     "lodash": "^4.17.11",

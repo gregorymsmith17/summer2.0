@@ -18,6 +18,7 @@ import equipmentList from './assetManager/equipmentList';
 import chemicalApplications from './assetManager/chemicalApplications';
 import fishStocking from './assetManager/fishStocking';
 
+
 import lake from './images/lake.jpg';
 import lake2 from './images/lake2.png';
 import lake3 from './images/lake3.png';
@@ -281,7 +282,7 @@ class SignInScreen extends React.Component {
                   <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                     <div style={{position: 'relative'}}>
                   <Col xs={16} sm={16} md={16} lg={16} xl={16}>
-                    <div style={{fontSize: '36px'}}><b>Lakistry</b></div>
+                    <div style={{fontSize: '36px'}}><b>Limno Analytics</b></div>
                   </Col>
                   <Col xs={8} sm={8} md={8} lg={8} xl={8} onClick={this.showDrawer}style={{ position: 'absolute',
                 top: '0%',
@@ -471,7 +472,8 @@ class SignInScreen extends React.Component {
           <Menu.Item key="11"><Link to="/uploadDocument">Documents</Link></Menu.Item>
         </SubMenu>
 
-        <SubMenu key="sub6" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/profilePage"><span><Icon type="user" /><span><b>Profile</b></span></span></Link>}>
+        <SubMenu key="sub6" title={<span><Icon type="user" /><span><b>Profile</b></span></span>}>
+          <Menu.Item key="11"><Link to="/profilePage">Profile Info</Link></Menu.Item>
         </SubMenu>
 
 
@@ -501,6 +503,7 @@ class SignInScreen extends React.Component {
           <Route path="/equipmentList" component={equipmentList} />
           <Route path="/chemicalApplications" component={chemicalApplications} />
           <Route path="/fishStocking" component={fishStocking} />
+
         </div>
       </Content>
       <Footer style={{ textAlign: 'center' }}>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, Button, ResponsiveEmbed, ButtonToolbar, Form, Grid, Row, FormGroup, Tab, Radio, Tabs, Col, Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
@@ -15,12 +15,12 @@ import fileDownload from "js-file-download";
 
 import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
 
+import { Row, Col, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
 
 
 
 
-
-
+const TabPane = Tabs.TabPane;
 
 
 
@@ -53,7 +53,8 @@ export default class profilePage extends Component {
 
           //Inputs for Profile Page
           lakeName: '',
-          location: '',
+          locationCity: '',
+          locationState: '',
           managementContact: '',
           hoaContact: '',
           managementContactNumber: '',
@@ -131,7 +132,8 @@ export default class profilePage extends Component {
         const profileInformation = {
 
           lakeName: this.state.lakeName,
-          location: this.state.location,
+          locationCity: this.state.locationCity,
+          locationState: this.state.locationState,
           managementContact: this.state.managementContact,
           hoaContact: this.state.hoaContact,
           managementContactNumber: this.state.managementContactNumber,
@@ -167,76 +169,17 @@ export default class profilePage extends Component {
 
       componentDidMount(itemId) {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const samplesRef = fire.database().ref(`profileInformation/${user.uid}`);
-          samplesRef.on('value', (snapshot) => {
+          const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+          profileRef.on('value', (snapshot) => {
 
 
-            let dataList = snapshot.val();
-            let filter = [];
-            let orders = snapshot.val();
-            let orders2 = snapshot.val();
+  
 
-            let newState = [];
-            let newState2 = [];
-            let newState3 = [];
-
-          for (let order in orders) {
-            newState.push({
-              id: order,
-              lakeName: orders[order].lakeName,
-              location: orders[order].location,
-              managementContact: orders[order].managementContact,
-              hoaContact: orders[order].hoaContact,
-            });
-
-
-
-
-
-          }
-
-          newState2.sort(function(a, b) {
-
-            if (a.sampleDate === b.sampleDate) {
-              return 0;
-            }
-            return a.sampleDate > b.sampleDate ? 1 : -1;
-        });
-        newState.sort(function(a, b) {
-
-          if (b.maintenanceDate === a.maintenanceDate) {
-            return 0;
-          }
-          return b.maintenanceDate > a.maintenanceDate ? 1 : -1;
-      });
-
-
-
-          this.setState({
-            orders: newState,
-            orders2: newState2,
-            dataList: newState,
-          });
-
-
-
-
-          console.log(this.state.dataList);
-
-
-
-
-
-        });
-
-        const colorsRef = fire.database().ref(`profileInformation/${user.uid}`);
-
-        colorsRef.on('value', (snapshot) => {
-          let colorList = snapshot.val();
 
           this.setState({
             lakeName: snapshot.child('lakeName').val(),
-            location: snapshot.child('location').val(),
+            locationCity: snapshot.child('locationCity').val(),
+            locationState: snapshot.child('locationState').val(),
             managementContact: snapshot.child('managementContact').val(),
             hoaContact: snapshot.child('hoaContact').val(),
             managementContactNumber: snapshot.child('managementContactNumber').val(),
@@ -264,7 +207,8 @@ export default class profilePage extends Component {
         this.setState({
 
           lakeName: '',
-          location: '',
+          locationCity: '',
+          locationState: '',
           managementContact: '',
           hoaContact: '',
           managementContactNumber: '',
@@ -280,7 +224,8 @@ export default class profilePage extends Component {
         newState.push({
           id: order,
           lakeName: orders[order].lakeName,
-          location: orders[order].location,
+          locationCity: orders[order].locationCity,
+          locationState: orders[order].locationState,
           managementContact: orders[order].managementContact,
           hoaContact: orders[order].hoaContact,
           managementContactNumber: orders[order].managementContactNumber,
@@ -294,7 +239,8 @@ export default class profilePage extends Component {
         key: 4,
 
         lakeName: snapshot.child('lakeName').val(),
-        location: snapshot.child('location').val(),
+        locationCity: snapshot.child('locationCity').val(),
+        locationState: snapshot.child('locationState').val(),
         managementContact: snapshot.child('managementContact').val(),
         hoaContact: snapshot.child('hoaContact').val(),
         managementContactNumber: snapshot.child('managementContactNumber').val(),
@@ -318,7 +264,8 @@ export default class profilePage extends Component {
     sampleRef.child("id").set(this.state.id);
 
     sampleRef.child("lakeName").set(this.state.lakeName);
-    sampleRef.child("location").set(this.state.location);
+    sampleRef.child("locationCity").set(this.state.locationCity);
+    sampleRef.child("locationState").set(this.state.locationState);
     sampleRef.child("managementContact").set(this.state.managementContact);
     sampleRef.child("hoaContact").set(this.state.hoaContact);
     sampleRef.child("managementContactNumber").set(this.state.managementContactNumber);
@@ -346,7 +293,8 @@ export default class profilePage extends Component {
         id: order,
 
         lakeName: orders[order].lakeName,
-        location: orders[order].location,
+        locationCity: orders[order].locationCity,
+        locationState: orders[order].locationState,
         managementContact: orders[order].managementContact,
         hoaContact: orders[order].hoaContact,
         managementContactNumber: orders[order].managementContactNumber,
@@ -360,7 +308,8 @@ export default class profilePage extends Component {
               id: '',
               key: 3,
               lakeName: '',
-              location: '',
+              locationCity: '',
+              locationState: '',
               managementContact: '',
               hoaContact: '',
               managementContactNumber: '',
@@ -386,7 +335,8 @@ export default class profilePage extends Component {
           id: order,
 
           lakeName: orders[order].lakeName,
-          location: orders[order].location,
+          locationCity: orders[order].locationCity,
+          locationState: orders[order].locationState,
           managementContact: orders[order].managementContact,
           hoaContact: orders[order].hoaContact,
           managementContactNumber: orders[order].managementContactNumber,
@@ -400,7 +350,8 @@ export default class profilePage extends Component {
         key: 3,
 
         lakeName: snapshot.child('lakeName').val(),
-        location: snapshot.child('location').val(),
+        locationCity: snapshot.child('locationCity').val(),
+        locationState: snapshot.child('locationState').val(),
         managementContact: snapshot.child('managementContact').val(),
         hoaContact: snapshot.child('hoaContact').val(),
         managementContactNumber: snapshot.child('managementContactNumber').val(),
@@ -444,7 +395,8 @@ writeData (e) {
   const profileInformation = {
 
     lakeName: this.state.lakeName,
-    location: this.state.location,
+    locationCity: this.state.locationCity,
+    locationState: this.state.locationState,
     managementContact: this.state.managementContact,
     hoaContact: this.state.hoaContact,
     managementContactNumber: this.state.managementContactNumber,
@@ -481,7 +433,7 @@ rawMarkup(){
 
 
 
- 
+
 
 
 editRow(row, isSelected, e, id) {
@@ -548,115 +500,142 @@ const options = {
 
 
         return (
-    <div>
+          <Layout>
 
-      <Grid>
-        <Row>
-          <Row>
-            <Col xs={6} md={6}>
-          <h3>Profile</h3>
+            <div style={{ background: '#F0F0F0', padding: '5px' }}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <div style={{position: 'relative'}}>
+            <Col xs={24} sm={24} md={18} lg={18} xl={18}>
+              <h1><b>Profile Information</b></h1>
 
-          </Col>
-
-          </Row>
-          <Col xs={12} sm={10} md={10}>
+            </Col>
 
 
-      <Tabs activeKey={this.state.key} onSelect={this.handleSelect} defaultActiveKey={1} id="uncontrolled-tab-example">
+          </div>
+            </Row>
+
+            </div>
+
+            <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
 
 
+                  <Card
 
 
+                  >
+                  <Tabs defaultActiveKey="1" >
+              <TabPane tab="Profile Information" key="1">
+                <Row>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                <Row>
 
-      <Tab eventKey={1} title="Profile Information">
-        <Grid>
-          <Row>
-            <Col xs={10} md={10}>
-        <section className='add-item'>
-          <form onSubmit={this.handleSubmit}>
-            <Row>
-              <Col xs={4} sm={4} md={4}>
-                <h2>Profile Information</h2>
-                </Col>
-                <Col smOffset={2} xs={4} sm={4} md={4}>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
+
+                    <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>PROFILE INFORMATION</b></p>
+
 
               </Col>
+            </Row>
 
-                </Row>
-                <hr></hr>
                 <Row>
-                  <Col xs={10} sm={10} md={10}>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                  <form>
 
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Item</th>
-  <th>Description</th>
-
-  </tr>
-  </thead>
-  <tbody tdstyle={{flex: 1, flexWrap: 'wrap', overflowY: 'auto'}}>
-  <tr>
-  <td>Lake Name</td>
-  <td><input type="text" name="lakeName" placeholder="Lake Name" onChange={this.handleChange} value={this.state.lakeName} /></td>
-  </tr>
-  <tr>
-  <td>Lake Location</td>
-  <td><input type="location" name="location" placeholder="Lake Location" onChange={this.handleChange} value={this.state.location} /></td>
-  </tr>
-  <tr>
-  <td>Lake Management Contact Name</td>
-  <td><input type="text" name="managementContact" placeholder="Contact Name" onChange={this.handleChange} value={this.state.managementContact} /></td>
-  </tr>
-  <tr>
-  <td>Lake Management Contact Number</td>
-  <td><input type="phone" name="managementContactNumber" placeholder="Contact Number" onChange={this.handleChange} value={this.state.managementContactNumber} /></td>
-  </tr>
-  <tr>
-  <td>HOA Contact</td>
-  <td><input type="text" name="hoaContact" placeholder="HOA Contact" onChange={this.handleChange} value={this.state.hoaContact} /></td>
-  </tr>
-  <tr>
-  <td>HOA Contact Number</td>
-  <td><input type="phone" name="hoaContactNumber" placeholder="Contact Number" onChange={this.handleChange} value={this.state.hoaContactNumber} /></td>
-  </tr>
-
-  </tbody>
-  </Table>
-
-</Col>
+        <Row style={{paddingTop: '10px'}}>
+          <FormGroup>
+            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Lake Name</b></Col>
+            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+            <FormControl name="lakeName" onChange={this.handleChange} type="text" placeholder="Lake Name" style={{ width: 350}} value={this.state.lakeName} /></Col>
+          </FormGroup>
+          </Row>
+          <Row style={{paddingTop: '10px'}}>
+            <FormGroup>
+              <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>City</b></Col>
+              <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+              <FormControl name="locationCity" onChange={this.handleChange} type="text" placeholder="Location"  style={{ width: 350}} value={this.state.locationCity} /></Col>
+            </FormGroup>
+            </Row>
+            <Row style={{paddingTop: '10px'}}>
+              <FormGroup>
+                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>State</b></Col>
+                <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                <FormControl name="locationState" onChange={this.handleChange} type="text" placeholder="Location" style={{ width: 350}} value={this.state.locationState} /></Col>
+              </FormGroup>
+              </Row>
+            <Row style={{paddingTop: '10px'}}>
+              <FormGroup>
+                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Management Contact</b></Col>
+                <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                <FormControl name="managementContact" onChange={this.handleChange} type="text" placeholder="Management Contact" style={{ width: 350}} value={this.state.managementContact} /></Col>
+              </FormGroup>
+              </Row>
+              <Row style={{paddingTop: '10px'}}>
+                <FormGroup>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Management Contact Number</b></Col>
+                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                  <FormControl name="managementContactNumber" onChange={this.handleChange} type="text" placeholder="Management Number" style={{ width: 350}} value={this.state.managementContactNumber} /></Col>
+                </FormGroup>
+                </Row>
+                <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>HOA Contact</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="hoaContact" onChange={this.handleChange} type="text" placeholder="HOA Contact" style={{ width: 350}} value={this.state.hoaContact} /></Col>
+                  </FormGroup>
                   </Row>
-
-
-                      <Row>
-                      <Col xs={10} sm={10} md={10}>
-                <Button onClick={this.handleSubmit} bsStyle="primary">Add sample</Button>
-
-                </Col></Row>
-                <hr></hr>
-              </form>
-        </section>
-
-        </Col>
-        </Row>
-
-        </Grid>
-      </Tab>
+                  <Row style={{paddingTop: '10px'}}>
+                    <FormGroup>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>HOA Contact Number</b></Col>
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                      <FormControl name="hoaContactNumber" onChange={this.handleChange} type="text" placeholder="HOA Number" style={{ width: 350}} value={this.state.hoaContactNumber} /></Col>
+                    </FormGroup>
+                    </Row>
 
 
 
 
 
 
+            <Row style={{paddingTop: '10px', textAlign: 'left'}}>
+            <Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Update Profile</Button>
+            </Row>
+          </form>
 
-    </Tabs>
+
+            </Col>
+            </Row>
+            <Row>
+            <Col span={24}>
+            <hr></hr>
+            </Col>
+            </Row>
 
 
-    </Col>
-    </Row>
-    </Grid>
 
-    </div>
+
+
+
+            </Col>
+          </Row>
+
+              </TabPane>
+
+
+            </Tabs>
+
+                  </Card>
+            </Col>
+            </Row>
+            </div>
+
+
+
+
+
+          </Layout>
+
         )
             }
           }

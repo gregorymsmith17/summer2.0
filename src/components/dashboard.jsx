@@ -134,6 +134,15 @@ zoom: 13
         key: 'tab1',
         noTitleKey: 'app',
 
+        //Inputs for Profile Page
+        lakeName: '',
+        locationCity: '',
+        locationState: '',
+        managementContact: '',
+        hoaContact: '',
+        managementContactNumber: '',
+        hoaContactNumber: '',
+
 
 
       }
@@ -471,6 +480,24 @@ zoom: 13
 
 
     });
+    const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+    profileRef.on('value', (snapshot) => {
+
+
+    this.setState({
+      lakeName: snapshot.child('lakeName').val(),
+      locationCity: snapshot.child('locationCity').val(),
+      locationState: snapshot.child('locationState').val(),
+      managementContact: snapshot.child('managementContact').val(),
+      hoaContact: snapshot.child('hoaContact').val(),
+      managementContactNumber: snapshot.child('managementContactNumber').val(),
+      hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+
+    });
+
+
+  });
+
     const colorsRef = fire.database().ref(`colors/${user.uid}`);
 
     colorsRef.on('value', (snapshot) => {
@@ -810,7 +837,7 @@ zoom: 13
           <div style={{position: 'relative'}}>
         <Col xs={18} sm={18} md={18} lg={18} xl={18}>
           <h1>Dashboard</h1>
-          <h3>Summer Lake Homeowners Association</h3>
+          <h3><b>{this.state.lakeName}</b></h3>
         </Col>
         <Col xs={6} sm={6} md={6} lg={6} xl={6} style={{ position: 'absolute',
       top: '0%',

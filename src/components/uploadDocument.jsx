@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Link, Route } from 'react-router-dom';
-import { Jumbotron, Grid, Table, Row, ButtonToolbar, MenuItem, DropdownButton, Col, Image, Button } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import firebase from 'firebase';
 import { fire } from '../fire';
 import FileUploader from "react-firebase-file-uploader";
@@ -13,7 +13,7 @@ import Dropzone from 'react-dropzone';
 import { TiArrowSortedDown, TiPencil, TiTrash, TiDownload } from "react-icons/ti";
 import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
 
-
+import { Row, Col, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
 
 const styles = {
   topPad: {
@@ -24,7 +24,7 @@ const styles = {
   },
 };
 
-
+const TabPane = Tabs.TabPane;
 
 export default class uploadDocument extends Component {
 
@@ -101,7 +101,7 @@ export default class uploadDocument extends Component {
      samplesRef.push(metaDataReport);
      });
   }
-  addDrawings = () => {
+  addDrawing = () => {
     this.setState({
       documentType: 'drawings',
       avatarURL: this.state.avatarURL,
@@ -189,7 +189,9 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     drawings: newState,
   });
 });
+
 });
+
 
 
   }
@@ -218,28 +220,40 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
   deleteDrawing(row, isSelected, e, id) {
     console.log(`${isSelected.id}`);
     return (
-      <TiTrash size={25} type="button"
+      <div style={{textAlign: 'center'}}>
+      <Icon type="delete" style={{fontSize: '24px'}}
       onClick={() => this.removeDrawing(`${isSelected.id}`)}>
         Click me
-      </TiTrash>
+      </Icon>
+      </div>
     )
   }
   deleteReport(row, isSelected, e, id) {
     console.log(`${isSelected.id}`);
     return (
-      <TiTrash size={25} type="button"
+      <div style={{textAlign: 'center'}}>
+      <Icon type="delete" style={{fontSize: '24px'}}
       onClick={() => this.removeReport(`${isSelected.id}`)}>
         Click me
-      </TiTrash>
+      </Icon>
+      </div>
+
     )
   }
 
   editRow(row, isSelected, e, id) {
-    console.log(`${isSelected.downloadLink}`);
+    console.log(`${isSelected.id}`);
     return (
-      <TiDownload size={25} onClick={()=> window.open(`${isSelected.downloadLink}`, "_blank")}><p>Download Page</p></TiDownload>
+        <div style={{textAlign: 'center'}}>
+      <Icon type="download" style={{fontSize: '24px'}}
+      onClick={() => window.open(`${isSelected.downloadLink}`, "_blank")}><p>Download Page</p>
+
+      </Icon>
+      </div>
     )
   }
+
+
 
 
 
@@ -264,107 +278,181 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
   render() {
     return (
-      <div>
-        <Grid >
-          <Row>
-        <form>
+      <Layout>
+
+        <div style={{ background: '#F0F0F0', padding: '5px' }}>
+        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+          <div style={{position: 'relative'}}>
+        <Col xs={24} sm={24} md={18} lg={18} xl={18}>
+          <h1><b>Upload Documents</b></h1>
+
+        </Col>
 
 
-        <h1>Upload Documents</h1>
-          {this.state.isUploading && <p>Progress: {this.state.progress}</p>}
-          <h3>{this.state.filename}</h3>
+      </div>
+        </Row>
+
+        </div>
+
+        <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+
+
+              <Card
+
+
+              >
+              <Tabs defaultActiveKey="1" >
+          <TabPane tab="Upload Documents" key="1">
+            <Row>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <Row>
+
+            <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
+
+                <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>UPLOAD DOCUMENTS</b></p>
+
+
+          </Col>
+        </Row>
+
+            <Row>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+
+              <Row>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+            <form>
+
+
+
+              {this.state.isUploading && <p>Progress: {this.state.progress}</p>}
+              <h3>{this.state.filename}</h3>
 
 
 
 
+                <div style={{ height: 150, width: 400, textAlign: 'center', border: '1px dashed blue', borderRadius: '5px'}}>
+
+                  <h3 style={{color: 'gray'}}><b>DRAG A FILE HERE!</b></h3>
+                    <Icon type="inbox" style={{fontSize: '36px'}}></Icon>
+                  <div style={{ dataAlign: 'center'}}>
+                <FileUploader
+                  name="avatar"
+                  style={{ height: 150, width: 400, align: 'center', valign:'bottom'}}
+
+                  filename={file => file.name.split('.')[0] }
+                  storageRef={firebase.storage().ref(this.state.documentType)}
+                  onUploadStart={this.handleUploadStart}
+                  onUploadError={this.handleUploadError}
+                  onUploadSuccess={this.handleUploadSuccess}
+                  onProgress={this.handleProgress}
+                />
+              </div>
+              </div>
+
+            </form>
+          </Col>
+            </Row>
+            <Row>
+
+              <Col xs={24} sm={24} md={6} lg={6} xl={6} style={styles.topPad}>
+            <Button bsStyle="primary" onClick={this.addReport}>Add Report</Button>
+            </Col>
+            <Col xs={24} sm={24} md={6} lg={6} xl={6} style={styles.topPad}>
+          <Button bsStyle="primary" onClick={this.addDrawing}>Add Drawings</Button>
+          </Col>
+    </Row>
+    <Row>
 
 
 
-            <div style={{ height: 80, width: 500, textAlign: 'center', border: '2px dashed black', borderRadius: '10px'}}>
-              <strong>Drag a file here!</strong>
-            <FileUploader
-              name="avatar"
-              style={{ height: 80, width: 500, dataAlign: 'center',}}
+            <Col xs={24} sm={24} md={24} lg={24} xl={24} style={styles.topPad}>
+              <h3>Reports</h3>
+            <BootstrapTable
+            data={ this.state.reports}
+            pagination
+            >
 
-              filename={file => file.name.split('.')[0] }
-              storageRef={firebase.storage().ref(this.state.documentType)}
-              onUploadStart={this.handleUploadStart}
-              onUploadError={this.handleUploadError}
-              onUploadSuccess={this.handleUploadSuccess}
-              onProgress={this.handleProgress}
-            />
-          </div>
+    <TableHeaderColumn
+      dataField='filename' isKey
+
+      filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort
+      >File Name</TableHeaderColumn>
+      <TableHeaderColumn
+            dataField='button'
+            dataFormat={this.editRow.bind(this)}
+            >Download File</TableHeaderColumn>
+      <TableHeaderColumn
+            dataField='button'
+            dataFormat={this.deleteReport.bind(this)}
+            >Delete File</TableHeaderColumn>
+            </BootstrapTable>
+          </Col>
+
+
+            <Col xs={24} sm={24} md={24} lg={24} xl={24} style={styles.topPad}>
+              <h3>Drawings</h3>
+            <BootstrapTable
+            data={ this.state.drawings}
+            pagination
+            >
+
+    <TableHeaderColumn
+      dataField='filename' isKey
+      dataSort
+      filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort
+      >File Name</TableHeaderColumn>
+      <TableHeaderColumn
+            dataField='button'
+            dataFormat={this.editRow.bind(this)}
+            >Download File</TableHeaderColumn>
+      <TableHeaderColumn
+            dataField='button'
+            dataFormat={this.deleteDrawing.bind(this)}
+            >Delete File</TableHeaderColumn>
 
 
 
-        </form>
+
+            </BootstrapTable>
+          </Col>
+              </Row>
+
+
+
+        </Col>
         </Row>
         <Row>
-
-          <Col xs={2} sm={2} md={2} style={styles.topPad}>
-        <Button bsStyle="primary" onClick={this.addPermit}>Add Report</Button>
+        <Col span={24}>
+        <hr></hr>
         </Col>
-        <Col smOffset={.1} xs={2} sm={2} md={2} style={styles.topPad}>
-      <Button bsStyle="primary" onClick={this.addDrawing}>Add Drawings</Button>
-      </Col>
-</Row>
-<Row>
-
-
-
-        <Col xs={8} sm={8} md={8} style={styles.topPad}>
-          <h3>Reports</h3>
-        <BootstrapTable
-        data={ this.state.reports}
-        pagination
-        >
-
-<TableHeaderColumn
-  dataField='filename' isKey
-
-  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort
-  >Sample Date</TableHeaderColumn>
-  <TableHeaderColumn
-        dataField='button'
-        dataFormat={this.editRow.bind(this)}
-        >Download File</TableHeaderColumn>
-  <TableHeaderColumn
-        dataField='button'
-        dataFormat={this.deleteReport.bind(this)}
-        >Delete File</TableHeaderColumn>
-        </BootstrapTable>
-      </Col>
-
-
-        <Col xs={8} sm={8} md={8} style={styles.topPad}>
-          <h3>Drawings</h3>
-        <BootstrapTable
-        data={ this.state.drawings}
-        pagination
-        >
-
-<TableHeaderColumn
-  dataField='filename' isKey
-  dataSort
-  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort
-  >Sample Date</TableHeaderColumn>
-  <TableHeaderColumn
-        dataField='button'
-        dataFormat={this.editRow.bind(this)}
-        >Download File</TableHeaderColumn>
-  <TableHeaderColumn
-        dataField='button'
-        dataFormat={this.deleteDrawing.bind(this)}
-        >Delete File</TableHeaderColumn>
+        </Row>
 
 
 
 
-        </BootstrapTable>
-      </Col>
-          </Row>
-          </Grid>
-      </div>
+
+
+        </Col>
+      </Row>
+
+          </TabPane>
+
+
+        </Tabs>
+
+              </Card>
+        </Col>
+        </Row>
+        </div>
+
+
+
+
+
+      </Layout>
+
     );
   }
 }

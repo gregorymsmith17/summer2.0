@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, Button, ResponsiveEmbed, ButtonToolbar, Form, Grid, Row, FormGroup, Tab, Radio, Tabs, Col, Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
@@ -15,6 +15,7 @@ import fileDownload from "js-file-download";
 
 import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
 
+import { Row, Col, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
 
 
 
@@ -22,8 +23,7 @@ import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, C
 
 
 
-
-
+const TabPane = Tabs.TabPane;
 
 
 
@@ -76,6 +76,19 @@ export default class chemicalApplications extends Component {
           dataList: [],
           filter: "",
           blobUrl: null,
+
+          //for drawers
+          visible: false,
+          visible1: false,
+
+          //Inputs for Profile Page
+          lakeName: '',
+          locationCity: '',
+          locationState: '',
+          managementContact: '',
+          hoaContact: '',
+          managementContactNumber: '',
+          hoaContactNumber: '',
 
 
 
@@ -216,6 +229,23 @@ export default class chemicalApplications extends Component {
 
 
         });
+        const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+        profileRef.on('value', (snapshot) => {
+
+
+        this.setState({
+          lakeName: snapshot.child('lakeName').val(),
+          locationCity: snapshot.child('locationCity').val(),
+          locationState: snapshot.child('locationState').val(),
+          managementContact: snapshot.child('managementContact').val(),
+          hoaContact: snapshot.child('hoaContact').val(),
+          managementContactNumber: snapshot.child('managementContactNumber').val(),
+          hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+
+        });
+
+
+      });
 
       });
 
@@ -262,6 +292,7 @@ export default class chemicalApplications extends Component {
 
         id: id,
         key: 4,
+        visible1: true,
 
         chemicalName: snapshot.child('chemicalName').val(),
         applicationArea: snapshot.child('applicationArea').val(),
@@ -328,6 +359,7 @@ export default class chemicalApplications extends Component {
 
       id: '',
       key: 3,
+      visible: true,
       chemicalName: '',
       applicationArea: '',
       applicationDescription: '',
@@ -424,6 +456,10 @@ writeData (e) {
 
   samplesRef.child(this.state.id).set(applicationInfo);
 
+  this.setState({
+    visible1: false,
+  })
+
 
 });
 }
@@ -457,20 +493,24 @@ rawMarkup(){
 editRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiPencil size={20} type="button"
+      <div style={{textAlign: 'center'}}>
+    <Icon type="edit" style={{fontSize: '24px'}}
     onClick={() => this.fillStates(`${isSelected.id}`)}>
       Click me
-    </TiPencil>
+    </Icon>
+    </div>
   )
 }
 
 deleteRow(row, isSelected, e, id) {
   console.log(`${isSelected.id}`);
   return (
-    <TiTrash size={20} type="button"
+    <div style={{textAlign: 'center'}}>
+    <Icon type="delete" style={{fontSize: '24px'}}
     onClick={() => this.removesample(`${isSelected.id}`)}>
       Click me
-    </TiTrash>
+    </Icon>
+    </div>
   )
 }
 
@@ -496,7 +536,21 @@ createCustomExportCSVButton = (onClick) => {
 }
 
 
-
+showDrawer = () => {
+  this.setState({
+    visible: true,
+  });
+};
+onClose = () => {
+  this.setState({
+    visible: false,
+  });
+};
+onClose1 = () => {
+  this.setState({
+    visible1: false,
+  });
+};
 
 
 
@@ -519,236 +573,256 @@ const options = {
 
 
         return (
-    <div>
+          <Layout>
 
-      <Grid>
-        <Row>
-          <Row>
-            <Col xs={6} md={6}>
-          <h3>Chemical Applications</h3>
+            <div style={{ background: '#F0F0F0', padding: '5px' }}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+              <div style={{position: 'relative'}}>
+            <Col xs={24} sm={24} md={18} lg={18} xl={18}>
+              <h1><b>Chemical Applications</b></h1>
+              <h3><b>{this.state.lakeName}</b></h3>
+            </Col>
+            <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{ textAlign: 'right'}}>
+          <Button size="large" type="primary" onClick={() => this.fillEmpty()}>+ Add Chemical Application</Button>
+            <Drawer
+              title= "Fill in Application Report"
+              placement={this.state.placement}
+              closable={false}
+              onClose={this.onClose}
+              visible={this.state.visible}
+              width={500}
+            >
+            <form>
+              <Row style={{textAlign: 'right'}}>
+              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Chemical Application</Icon>
+              </Row>
+              <Row>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Chemical Name</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="chemicalName" onChange={this.handleChange} type="text" placeholder="Normal text" value={this.state.chemicalName} /></Col>
+        </FormGroup>
+        </Row>
+              <Row>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Date</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="applicationDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.applicationDate} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Area</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="applicationArea" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.applicationArea} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Amount</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="applicationAmount" onChange={this.handleChange} type="text" placeholder="Applictaion Amount" value={this.state.applicationAmount} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Description</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="applicationDescription" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Description" value={this.state.applicationDescription} /></Col>
+        </FormGroup>
+        </Row>
+        <Row style={{paddingTop: '10px'}}>
+        <FormGroup>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Notes</b></Col>
+          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+          <FormControl name="applicationNotes" componentClass="textarea" style={{ height: 80, width: 335}} onChange={this.handleChange} type="textarea" placeholder="Notes" value={this.state.applicationNotes} /></Col>
+        </FormGroup>
+        </Row>
 
-          </Col>
-          <Col xs={6} md={6}>
-            <ButtonToolbar style={styles.topPad}>
-          <Button bsStyle="primary"  onClick={() => this.fillEmpty()} eventKey={3} bsSize="large">+ Create Application</Button>
-        </ButtonToolbar>
-          </Col>
-          </Row>
-          <Col xs={12} sm={10} md={10}>
-
-
-      <Tabs activeKey={this.state.key} onSelect={this.handleSelect} defaultActiveKey={1} id="uncontrolled-tab-example">
 
 
 
-        <Tab eventKey={1} title="+ Chemical Applications">
-          <Grid>
 
-          <Row style={styles.topPad}>
-
-
-
-            <Col xs={10} sm={10} md={10} lg={10}>
+        <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+        <Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Add Maintenance Log</Button>
+        </Row>
 
 
-              <BootstrapTable
-              data={ this.state.dataList }
-              options={options}
-              exportCSV
-              pagination
 
 
-              >
 
-              <TableHeaderColumn dataField='chemicalName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Chemical Name</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Date</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Area</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
-              <TableHeaderColumn dataField='applicationAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Amount</TableHeaderColumn>
+        </form>
 
 
-        <TableHeaderColumn
-              dataField='button'
-              width={45}
-              dataFormat={this.editRow.bind(this)}
-              ></TableHeaderColumn>
 
-          <TableHeaderColumn
-                dataField='button'
-                  width={45}
-                dataFormat={this.deleteRow.bind(this)}
-                ></TableHeaderColumn>
+            </Drawer>
+
+            <Drawer
+              title= "Edit Application Report"
+              placement={this.state.placement}
+              closable={false}
+              onClose={this.onClose1}
+              visible={this.state.visible1}
+              width={500}
+            >
+              <form>
+                <Row style={{textAlign: 'right'}}>
+                <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose1()}>+ Add Application Report</Icon>
+                </Row>
+                <Row>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Chemical Name</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="chemicalName" onChange={this.handleChange} type="text" placeholder="Normal text" value={this.state.chemicalName} /></Col>
+                  </FormGroup>
+                  </Row>
+                        <Row>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Date</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="applicationDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.applicationDate} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Area</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="applicationArea" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.applicationArea} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Amount</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="applicationAmount" onChange={this.handleChange} type="text" placeholder="Applictaion Amount" value={this.state.applicationAmount} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Description</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="applicationDescription" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Description" value={this.state.applicationDescription} /></Col>
+                  </FormGroup>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Notes</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                    <FormControl name="applicationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Notes" value={this.state.applicationNotes} /></Col>
+                  </FormGroup>
+                  </Row>
 
 
-              </BootstrapTable>
+
+
+        <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+        <Button type="primary" onClick={this.writeData} bsStyle="primary">Overwrite Application Report</Button>
+        </Row>
+
+
+
+
+
+        </form>
+            </Drawer>
+            </Col>
+
+          </div>
+            </Row>
+
+            </div>
+
+            <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+
+
+                  <Card
+
+
+                  >
+                  <Tabs defaultActiveKey="1" >
+              <TabPane tab="Application Reports" key="1">
+                <Row>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                <Row>
+
+                <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
+
+                    <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>CHEMICAL APPLICATIONS</b></p>
+
+
               </Col>
+            </Row>
 
+                <Row>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                  <BootstrapTable
+                  data={ this.state.dataList }
+                  options={options}
+                  exportCSV
+                  pagination
+
+
+                  >
+
+                  <TableHeaderColumn dataField='chemicalName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Chemical Name</TableHeaderColumn>
+                  <TableHeaderColumn dataField='applicationDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Date</TableHeaderColumn>
+                  <TableHeaderColumn dataField='applicationArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Area</TableHeaderColumn>
+                  <TableHeaderColumn dataField='applicationDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+                  <TableHeaderColumn dataField='applicationAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Amount</TableHeaderColumn>
+
+
+
+
+            <TableHeaderColumn
+                  width='100px'
+                  dataField='button'
+                  dataFormat={this.editRow.bind(this)}
+                  >Edit</TableHeaderColumn>
+
+              <TableHeaderColumn
+                    width='100px'
+                    dataField='button'
+                    dataFormat={this.deleteRow.bind(this)}
+                    >Delete</TableHeaderColumn>
+
+
+                  </BootstrapTable>
+
+
+            </Col>
+            </Row>
+            <Row>
+            <Col span={24}>
+            <hr></hr>
+            </Col>
+            </Row>
+
+
+
+
+
+
+            </Col>
           </Row>
-        </Grid>
-          </Tab>
+
+              </TabPane>
+
+
+            </Tabs>
+
+                  </Card>
+            </Col>
+            </Row>
+            </div>
 
 
 
 
 
+          </Layout>
 
-      <Tab eventKey={3} >
-        <Grid>
-          <Row>
-            <Col xs={10} md={10}>
-        <section className='add-item'>
-          <form onSubmit={this.handleSubmit}>
-            <Row>
-              <Col xs={4} sm={4} md={4}>
-                <h2>Chemical Application</h2>
-                </Col>
-
-                </Row>
-                <hr></hr>
-                <Row>
-                  <Col xs={8} sm={8} md={8}>
-
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Item</th>
-  <th>Description</th>
-
-
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Chemical Name</td>
-  <td><input type="text" name="chemicalName" placeholder="Chemical Name" onChange={this.handleChange} value={this.state.chemicalName} /></td>
-  </tr>
-  <tr>
-  <td>Application Date</td>
-  <td><input type="date" name="applicationDate" placeholder="Application Date" onChange={this.handleChange} value={this.state.applicationDate} /></td>
-  </tr>
-  <tr>
-  <td>Application Area</td>
-  <td><input type="text" name="applicationArea" placeholder="Application Area" onChange={this.handleChange} value={this.state.applicationArea} /></td>
-  </tr>
-  <tr>
-  <td>Application Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationDescription" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationDescription}></textarea></td>
-  </tr>
-  <tr>
-  <td>Application Amount</td>
-  <td><input type="text" name="applicationAmount" placeholder="Application Amount" onChange={this.handleChange} value={this.state.applicationAmount} /></td>
-  </tr>
-
-  <tr>
-  <td>Application Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationNotes" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationNotes}></textarea></td>
-  </tr>
-
-
-  </tbody>
-  </Table>
-
-</Col>
-                  </Row>
-
-                  <Row>
-                  <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.handleSubmit} bsStyle="primary">Add Application</Button>
-            </Col></Row>
-            <hr></hr>
-          </form>
-        </section>
-
-        </Col>
-        </Row>
-
-        </Grid>
-      </Tab>
-      <Tab eventKey={4} >
-        <Grid>
-          <Row>
-            <Col xs={10} md={10}>
-        <section className='add-item'>
-          <form onSubmit={this.writeData}>
-            <Row>
-              <Col xs={4} sm={4} md={4}>
-                <h2>Chemical Application</h2>
-                </Col>
-
-                </Row>
-                <hr></hr>
-                <Row>
-                  <Col xs={8} sm={8} md={8}>
-
-  <Table striped bordered condensed hover>
-  <thead>
-  <tr>
-  <th>Item</th>
-  <th>Description</th>
-
-
-  </tr>
-  </thead>
-  <tbody>
-  <tr>
-  <td>Chemical Name</td>
-  <td><input type="text" name="chemicalName" placeholder="Chemical Name" onChange={this.handleChange} value={this.state.chemicalName} /></td>
-  </tr>
-  <tr>
-  <td>Application Date</td>
-  <td><input type="date" name="applicationDate" placeholder="Application Date" onChange={this.handleChange} value={this.state.applicationDate} /></td>
-  </tr>
-  <tr>
-  <td>Application Area</td>
-  <td><input type="text" name="applicationArea" placeholder="Application Area" onChange={this.handleChange} value={this.state.applicationArea} /></td>
-  </tr>
-  <tr>
-  <td>Application Description</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationDescription" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationDescription}></textarea></td>
-  </tr>
-  <tr>
-  <td>Application Amount</td>
-  <td><input type="text" name="applicationAmount" placeholder="Application Amount" onChange={this.handleChange} value={this.state.applicationAmount} /></td>
-  </tr>
-
-  <tr>
-  <td>Application Notes</td>
-  <td><textarea  type="textArea"  style={{ height: 80, width: 600}}  name="applicationNotes" placeholder="Application Notes" onChange={this.handleChange} value={this.state.applicationNotes}></textarea></td>
-  </tr>
-
-
-  </tbody>
-  </Table>
-
-</Col>
-                  </Row>
-
-                  <Row>
-                  <Col xs={10} sm={10} md={10}>
-            <Button onClick={this.writeData} bsStyle="primary">Overwrite Application</Button>
-            </Col></Row>
-            <hr></hr>
-          </form>
-
-        </section>
-
-        </Col>
-        </Row>
-
-        </Grid>
-      </Tab>
-
-
-
-
-    </Tabs>
-
-
-    </Col>
-    </Row>
-    </Grid>
-
-    </div>
         )
             }
           }
