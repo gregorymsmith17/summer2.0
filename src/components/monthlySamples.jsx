@@ -122,13 +122,13 @@ export default class monthlySamples extends Component {
           //barLine
           barLine: '',
           lineLine: '',
-          graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey="salinity" position="top" /></Area>,
+          graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey="salinity" position="top" /></Area>,
 
-          graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey="tds" position="top" /></Area>,
+          graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey="tds" position="top" /></Area>,
 
-          graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey="tss" position="top" /></Bar>,
+          graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey="tss" position="top" /></Bar>,
 
-          graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Bar>,
+          graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Bar>,
 
 
           //Inputs for Profile Page
@@ -958,84 +958,84 @@ onClose1 = () => {
 graph1Line = () => {
   this.setState({
     graphType: 'Line',
-    graphingType1: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph1} position="top" /></Line>,
+    graphingType1: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Line>,
   });
 };
 
 graph1Area = () => {
   this.setState({
     graphType: 'Area',
-    graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph1} position="top" /></Area>,
+    graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Area>,
   });
 };
 
 graph1Bar = () => {
   this.setState({
     graphType: 'Bar',
-    graphingType1: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph1} position="top" /></Bar>,
+    graphingType1: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Bar>,
   });
 };
 
 graph2Line = () => {
   this.setState({
     graphType2: 'Line',
-    graphingType2: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph2} position="top" /></Line>,
+    graphingType2: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Line>,
   });
 };
 
 graph2Area = () => {
   this.setState({
     graphType2: 'Area',
-    graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph2} position="top" /></Area>,
+    graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Area>,
   });
 };
 
 graph2Bar = () => {
   this.setState({
     graphType2: 'Bar',
-    graphingType2: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph2} position="top" /></Bar>,
+    graphingType2: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#88AB75" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Bar>,
   });
 };
 
 graph3Line = () => {
   this.setState({
     graphType3: 'Line',
-    graphingType3: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph3} position="top" /></Line>,
+    graphingType3: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Line>,
   });
 };
 
 graph3Area = () => {
   this.setState({
     graphType3: 'Area',
-    graphingType3: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph3} position="top" /></Area>,
+    graphingType3: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Area>,
   });
 };
 
 graph3Bar = () => {
   this.setState({
     graphType3: 'Bar',
-    graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'10px'}} dataKey={this.state.parameterGraph3} position="top" /></Bar>,
+    graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#6689A1" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Bar>,
   });
 };
 
 graph4Line = () => {
   this.setState({
     graphType4: 'Line',
-    graphingType4: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Line>,
+    graphingType4: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Line>,
   });
 };
 
 graph4Area = () => {
   this.setState({
     graphType4: 'Area',
-    graphingType4: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Area>,
+    graphingType4: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Area>,
   });
 };
 
 graph4Bar = () => {
   this.setState({
     graphType4: 'Bar',
-    graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'10px'}} dataKey="turbidity" position="top" /></Bar>,
+    graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#995D81" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Bar>,
   });
 };
 

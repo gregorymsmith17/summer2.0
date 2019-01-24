@@ -596,25 +596,25 @@ const options = {
               <Row style={{textAlign: 'right'}}>
               <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Chemical Application</Icon>
               </Row>
-              <Row>
+              <Row style={{paddingTop: '10px'}}>
         <FormGroup>
           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Chemical Name</b></Col>
           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-          <FormControl name="chemicalName" onChange={this.handleChange} type="text" placeholder="Normal text" value={this.state.chemicalName} /></Col>
+          <FormControl name="chemicalName" onChange={this.handleChange} type="text" placeholder="Chemical Name" value={this.state.chemicalName} /></Col>
         </FormGroup>
         </Row>
-              <Row>
+              <Row style={{paddingTop: '10px'}}>
         <FormGroup>
           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Date</b></Col>
           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-          <FormControl name="applicationDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.applicationDate} /></Col>
+          <FormControl name="applicationDate" onChange={this.handleChange} type="date" placeholder="Application Date" value={this.state.applicationDate} /></Col>
         </FormGroup>
         </Row>
         <Row style={{paddingTop: '10px'}}>
         <FormGroup>
           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Area</b></Col>
           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-          <FormControl name="applicationArea" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.applicationArea} /></Col>
+          <FormControl name="applicationArea" onChange={this.handleChange} type="text" placeholder="Application Area" value={this.state.applicationArea} /></Col>
         </FormGroup>
         </Row>
         <Row style={{paddingTop: '10px'}}>
@@ -644,7 +644,7 @@ const options = {
 
 
         <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-        <Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Add Maintenance Log</Button>
+        <Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Add Chemical Application</Button>
         </Row>
 
 
@@ -669,25 +669,25 @@ const options = {
                 <Row style={{textAlign: 'right'}}>
                 <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose1()}>+ Add Application Report</Icon>
                 </Row>
-                <Row>
+                <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                     <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Chemical Name</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="chemicalName" onChange={this.handleChange} type="text" placeholder="Normal text" value={this.state.chemicalName} /></Col>
+                    <FormControl name="chemicalName" onChange={this.handleChange} type="text" placeholder="Chemical Name" value={this.state.chemicalName} /></Col>
                   </FormGroup>
                   </Row>
-                        <Row>
+                        <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                     <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Date</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="applicationDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.applicationDate} /></Col>
+                    <FormControl name="applicationDate" onChange={this.handleChange} type="date" placeholder="Application Date" value={this.state.applicationDate} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                     <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Area</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="applicationArea" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.applicationArea} /></Col>
+                    <FormControl name="applicationArea" onChange={this.handleChange} type="text" placeholder="Application Area" value={this.state.applicationArea} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
@@ -708,7 +708,7 @@ const options = {
                   <FormGroup>
                     <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Application Notes</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="applicationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Notes" value={this.state.applicationNotes} /></Col>
+                    <FormControl name="applicationNotes" componentClass="textarea" style={{ height: 80, width: 335}} onChange={this.handleChange} type="textarea" placeholder="Notes" value={this.state.applicationNotes} /></Col>
                   </FormGroup>
                   </Row>
 
@@ -766,11 +766,11 @@ const options = {
 
                   >
 
-                  <TableHeaderColumn dataField='chemicalName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Chemical Name</TableHeaderColumn>
-                  <TableHeaderColumn dataField='applicationDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Date</TableHeaderColumn>
-                  <TableHeaderColumn dataField='applicationArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Area</TableHeaderColumn>
-                  <TableHeaderColumn dataField='applicationDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
-                  <TableHeaderColumn dataField='applicationAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Amount</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='chemicalName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Chemical Name</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='applicationDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Date</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='applicationArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Area</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='applicationDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Description</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='applicationAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Application Amount</TableHeaderColumn>
 
 
 

@@ -157,6 +157,7 @@ export default class vendorContacts extends Component {
         samplesRef.push(vendorContact);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
+          visible: false,
           vendorName: '',
           vendorCompany: '',
           vendorCompanyDescription: '',
@@ -769,11 +770,11 @@ const options = {
 
                   >
 
-                  <TableHeaderColumn dataField='vendorName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Name</TableHeaderColumn>
-                  <TableHeaderColumn dataField='vendorCompany' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Company</TableHeaderColumn>
-                  <TableHeaderColumn dataField='vendorCompanyDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
-                  <TableHeaderColumn dataField='vendorEmail' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Email</TableHeaderColumn>
-                  <TableHeaderColumn dataField='vendorPhone' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Phone</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='vendorName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Name</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='vendorCompany' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Company</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='vendorCompanyDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='vendorEmail' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Email</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='vendorPhone' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Vendor Phone</TableHeaderColumn>
 
 
             <TableHeaderColumn

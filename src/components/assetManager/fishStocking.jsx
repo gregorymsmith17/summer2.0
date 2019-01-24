@@ -157,6 +157,7 @@ export default class fishStocking extends Component {
         samplesRef.push(stockingInfo);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
+          visible: false,
           fishName: '',
           stockingArea: '',
           stockingDescription: '',
@@ -599,14 +600,14 @@ const options = {
               <Row style={{textAlign: 'right'}}>
               <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Stocking Event</Icon>
               </Row>
-              <Row>
+              <Row style={{paddingTop: '10px'}}>
         <FormGroup>
           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Species Name</b></Col>
           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
           <FormControl name="fishName" onChange={this.handleChange} type="text" placeholder="Species Name" value={this.state.fishName} /></Col>
         </FormGroup>
         </Row>
-              <Row>
+              <Row style={{paddingTop: '10px'}}>
         <FormGroup>
           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
@@ -672,14 +673,14 @@ const options = {
                 <Row style={{textAlign: 'right'}}>
                 <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose1()}>+ Add Application Report</Icon>
                 </Row>
-                <Row>
+                <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                     <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Species Name</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                     <FormControl name="fishName" onChange={this.handleChange} type="text" placeholder="Species Name" value={this.state.fishName} /></Col>
                   </FormGroup>
                   </Row>
-                        <Row>
+                        <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                     <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
@@ -769,11 +770,11 @@ const options = {
 
                   >
 
-                  <TableHeaderColumn dataField='fishName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Fish Species</TableHeaderColumn>
-                  <TableHeaderColumn dataField='stockingDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Date</TableHeaderColumn>
-                  <TableHeaderColumn dataField='stockingArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Area</TableHeaderColumn>
-                  <TableHeaderColumn dataField='stockingDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Company Description</TableHeaderColumn>
-                  <TableHeaderColumn dataField='stockingAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Amount</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='fishName'  filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Fish Species</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='stockingDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Date</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='stockingArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Area</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='stockingDescription' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Description</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='stockingAmount' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Stocking Amount</TableHeaderColumn>
 
 
 

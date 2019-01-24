@@ -160,6 +160,7 @@ export default class maintenanceReports extends Component {
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
 
+          visible: false,
           sampleSuccess: 'Sample Added Successfully!',
           maintenanceDate: '',
           maintenanceWorker: '',
@@ -635,16 +636,16 @@ const options = {
               </Row>
               <Row>
         <FormGroup>
-          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-          <FormControl name="maintenanceDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.maintenanceDate} /></Col>
+          <FormControl name="maintenanceDate" onChange={this.handleChange} type="date" placeholder="Date" value={this.state.maintenanceDate} /></Col>
         </FormGroup>
         </Row>
         <Row style={{paddingTop: '10px'}}>
         <FormGroup>
-          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Taker</b></Col>
+          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Personnel</b></Col>
           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-          <FormControl name="maintenanceWorker" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.maintenanceWorker} /></Col>
+          <FormControl name="maintenanceWorker" onChange={this.handleChange} type="text" placeholder="Personnel" value={this.state.maintenanceWorker} /></Col>
         </FormGroup>
         </Row>
 
@@ -652,35 +653,35 @@ const options = {
         <FormGroup>
         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Mechanical Notes</b></Col>
         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="mechanicalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.mechanicalEquipmentNotes} /></Col>
+        <FormControl name="mechanicalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Mechanical Notes" value={this.state.mechanicalEquipmentNotes} /></Col>
         </FormGroup>
         </Row>
         <Row style={{paddingTop: '10px'}}>
         <FormGroup>
         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Electrical Notes</b></Col>
         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="electricalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.electricalEquipmentNotes} /></Col>
+        <FormControl name="electricalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Electrical Notes" value={this.state.electricalEquipmentNotes} /></Col>
         </FormGroup>
         </Row>
         <Row style={{paddingTop: '10px'}}>
         <FormGroup>
         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Aquatic Vegetation Notes</b></Col>
         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="aquaticVegetationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.aquaticVegetationNotes} /></Col>
+        <FormControl name="aquaticVegetationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Vegetation Notes" value={this.state.aquaticVegetationNotes} /></Col>
         </FormGroup>
         </Row>
         <Row style={{paddingTop: '10px'}}>
         <FormGroup>
-        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shorline Notes</b></Col>
+        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shoreline Notes</b></Col>
         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="shorelineNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.shorelineNotes} /></Col>
+        <FormControl name="shorelineNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Shoreline Notes" value={this.state.shorelineNotes} /></Col>
         </FormGroup>
         </Row>
         <Row style={{paddingTop: '10px'}}>
         <FormGroup>
-        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shorline Notes</b></Col>
+        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Misc. Notes</b></Col>
         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="miscNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.miscNotes} /></Col>
+        <FormControl name="miscNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Misc. Notes" value={this.state.miscNotes} /></Col>
         </FormGroup>
         </Row>
 
@@ -714,16 +715,16 @@ const options = {
                 </Row>
                 <Row>
                   <FormGroup>
-                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="maintenanceDate" onChange={this.handleChange} type="date" placeholder="Normal text" value={this.state.maintenanceDate} /></Col>
+                    <FormControl name="maintenanceDate" onChange={this.handleChange} type="date" placeholder="Date" value={this.state.maintenanceDate} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
-                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Taker</b></Col>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Personnel</b></Col>
                     <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="maintenanceWorker" onChange={this.handleChange} type="text" placeholder="Sample Taker" value={this.state.maintenanceWorker} /></Col>
+                    <FormControl name="maintenanceWorker" onChange={this.handleChange} type="text" placeholder="Personnel" value={this.state.maintenanceWorker} /></Col>
                   </FormGroup>
                   </Row>
 
@@ -731,35 +732,35 @@ const options = {
                   <FormGroup>
                   <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Mechanical Notes</b></Col>
                   <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="mechanicalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.mechanicalEquipmentNotes} /></Col>
+                  <FormControl name="mechanicalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Mechanical Notes" value={this.state.mechanicalEquipmentNotes} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                   <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Electrical Notes</b></Col>
                   <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="electricalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.electricalEquipmentNotes} /></Col>
+                  <FormControl name="electricalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Electrical Notes" value={this.state.electricalEquipmentNotes} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                   <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Aquatic Vegetation Notes</b></Col>
                   <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="aquaticVegetationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.aquaticVegetationNotes} /></Col>
+                  <FormControl name="aquaticVegetationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Vegetation Notes" value={this.state.aquaticVegetationNotes} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shorline Notes</b></Col>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shoreline Notes</b></Col>
                   <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="shorelineNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.shorelineNotes} /></Col>
+                  <FormControl name="shorelineNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Shoreline Notes" value={this.state.shorelineNotes} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shorline Notes</b></Col>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Misc. Notes</b></Col>
                   <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="miscNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Sample Notes" value={this.state.miscNotes} /></Col>
+                  <FormControl name="miscNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Misc. Notes" value={this.state.miscNotes} /></Col>
                   </FormGroup>
                   </Row>
 
@@ -817,13 +818,13 @@ const options = {
 
                   >
 
-                  <TableHeaderColumn width='130px' dataField='maintenanceDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Maintenance Date</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='maintenanceDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Maintenance Date</TableHeaderColumn>
 
-                  <TableHeaderColumn width='130px' dataField='mechanicalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Mechanical Notes</TableHeaderColumn>
-                  <TableHeaderColumn width='130px' dataField='electricalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Electrical Notes</TableHeaderColumn>
-                  <TableHeaderColumn width='130px' dataField='aquaticVegetationNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Aquatic Vegetation Notes</TableHeaderColumn>
-                  <TableHeaderColumn width='130px' dataField='shorelineNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Shoreline Notes</TableHeaderColumn>
-                  <TableHeaderColumn width='130px' dataField='miscNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Miscellaneous Notes</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'auto' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='mechanicalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Mechanical Notes</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='electricalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Electrical Notes</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='aquaticVegetationNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Aquatic Vegetation Notes</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='shorelineNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Shoreline Notes</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='miscNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Miscellaneous Notes</TableHeaderColumn>
 
             <TableHeaderColumn
                   width='100px'

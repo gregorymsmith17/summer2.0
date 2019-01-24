@@ -157,6 +157,7 @@ export default class equipmentList extends Component {
         samplesRef.push(equipmentList);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
+          visible: false,
           equipmentName: '',
           equipmentType: '',
           equipmentManf: '',
@@ -641,7 +642,7 @@ const options = {
             </Drawer>
 
             <Drawer
-              title= "Edit Vendor Contact"
+              title= "Edit Equipment Item"
               placement={this.state.placement}
               closable={false}
               onClose={this.onClose1}
@@ -743,11 +744,11 @@ const options = {
 
                   >
 
-                  <TableHeaderColumn dataField='equipmentName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Name</TableHeaderColumn>
-                  <TableHeaderColumn dataField='equipmentType' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Type</TableHeaderColumn>
-                  <TableHeaderColumn dataField='equipmentManf' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Manufacturer</TableHeaderColumn>
-                  <TableHeaderColumn dataField='equipmentArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Area</TableHeaderColumn>
-
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='equipmentName' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Name</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='equipmentType' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Type</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='equipmentManf' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Manufacturer</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px'  dataField='equipmentArea' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Area</TableHeaderColumn>
+                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='equipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Equipment Notes</TableHeaderColumn>
 
 
             <TableHeaderColumn
