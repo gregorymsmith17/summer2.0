@@ -839,11 +839,7 @@ zoom: 13
           <h1>Dashboard</h1>
           <h3><b>{this.state.lakeName}</b></h3>
         </Col>
-        <Col xs={6} sm={6} md={6} lg={6} xl={6} style={{ position: 'absolute',
-      top: '0%',
-      right: '0%', textAlign: 'right'}}><div><span>
-          <Icon style={{fontSize: '24px', position: 'absolute', right: '80%'}} type="notification" /><Icon style={{fontSize: '24px', position: 'absolute', right: '60%'}} type="user" /><div style={{fontSize: '16px', position: 'absolute', right: '15%'}}>Summer Lake</div></span></div>
-        </Col>
+        
 
 
 
