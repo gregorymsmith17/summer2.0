@@ -50,7 +50,7 @@ export default class monthlySamples extends Component {
           checkboxStatehardness: true,
           checkboxStateturbidity: true,
           checkboxStatedo: true,
-
+          checkboxStatetemp: true,
 
 
 
@@ -80,6 +80,17 @@ export default class monthlySamples extends Component {
 
           //colors for graph lines
           tempColor: '',
+          doColor: '',
+          conductivityColor: '',
+          tdsColor: '',
+          salinityColor: '',
+          pHColor: '',
+          turbidityColor: '',
+          nitrogenColor: '',
+          phosphorusColor: '',
+          totalHardnessColor: '',
+          tssColor: '',
+          sampleNotesColor: '',
 
 
           //this is the object array for the table
@@ -92,21 +103,23 @@ export default class monthlySamples extends Component {
 
 
           //these are for the graphs
-          tempPlot: 'temp',
-          doPlot: 'do',
-          conductivityPlot: 'conductivity',
-          tdsPlot: 'tds',
-          salinityPlot: 'salinity',
-          pHPlot: 'pH',
-          turbidityPlot: 'turbidity',
+          tempPlot: '',
+          doPlot: '',
+          conductivityPlot: '',
+          tdsPlot: '',
+          salinityPlot: '',
+          pHPlot: '',
+          turbidityPlot: '',
           nitrogenPlot: 'nitrogen',
           phosphorusPlot: 'phosphorus',
-          totalHardnessPlot: 'totalHardness',
-          tssPlot: 'tss',
+          totalHardnessPlot: '',
+          tssPlot: '',
 
           //for drawers
           visible: false,
           visible1: false,
+          visible2: false,
+
 
           //Graph 1
           parameterGraph1: 'salinity',
@@ -139,6 +152,10 @@ export default class monthlySamples extends Component {
           hoaContact: '',
           managementContactNumber: '',
           hoaContactNumber: '',
+
+          //testing
+          test: '<Area',
+          test1: '</Area>',
 
 
 
@@ -769,16 +786,16 @@ toggleNitrogen(event) {
     }
     toggleTemp(event) {
         this.setState({
-          checkboxStatenitrogen: !this.state.checkboxStatenitrogen
+          checkboxStatetemp: !this.state.checkboxStatetemp
         });
-        const checkboxState = this.state.checkboxStatenitrogen;
+        const checkboxState = this.state.checkboxStatetemp;
         if (checkboxState) {
           this.setState({
-            tempPlot: '',
+            tempPlot: 'temp',
           })
         } else {
           this.setState({
-            tempPlot: 'temp',
+            tempPlot: '',
           })
         }
       }
@@ -789,11 +806,11 @@ toggleNitrogen(event) {
           const checkboxState = this.state.checkboxStatetds;
           if (checkboxState) {
             this.setState({
-              tdsPlot: '',
+              tdsPlot: 'tds',
             })
           } else {
             this.setState({
-              tdsPlot: 'tds',
+              tdsPlot: '',
             })
           }
         }
@@ -804,11 +821,11 @@ toggleNitrogen(event) {
             const checkboxState = this.state.checkboxStatepH;
             if (checkboxState) {
               this.setState({
-                pHPlot: '',
+                pHPlot: 'pH',
               })
             } else {
               this.setState({
-                pHPlot: 'pH',
+                pHPlot: '',
               })
             }
           }
@@ -819,11 +836,11 @@ toggleNitrogen(event) {
               const checkboxState = this.state.checkboxStatetss;
               if (checkboxState) {
                 this.setState({
-                  tssPlot: '',
+                  tssPlot: 'tss',
                 })
               } else {
                 this.setState({
-                  tssPlot: 'tss',
+                  tssPlot: '',
                 })
               }
             }
@@ -834,11 +851,11 @@ toggleNitrogen(event) {
                 const checkboxState = this.state.checkboxStatesalinity;
                 if (checkboxState) {
                   this.setState({
-                    salinityPlot: '',
+                    salinityPlot: 'salinity',
                   })
                 } else {
                   this.setState({
-                    salinityPlot: 'salinity',
+                    salinityPlot: '',
                   })
                 }
               }
@@ -849,29 +866,68 @@ toggleNitrogen(event) {
                   const checkboxState = this.state.checkboxStatehardness;
                   if (checkboxState) {
                     this.setState({
-                      totalHardnessPlot: '',
+                      totalHardnessPlot: 'totalHardness',
                     })
                   } else {
                     this.setState({
-                      totalHardnessPlot: 'totalHardness',
+                      totalHardnessPlot: '',
                     })
                   }
                 }
                 toggleTurbidity(event) {
                     this.setState({
-                      checkboxStateturbidity: !this.state.checkboxStateturbidity
+                      checkboxStateturbidity: !this.state.checkboxStateturbidity,
+
                     });
                     const checkboxState = this.state.checkboxStateturbidity;
                     if (checkboxState) {
                       this.setState({
-                        turbidityPlot: '',
+                        turbidityPlot: 'turbidity',
+
                       })
                     } else {
                       this.setState({
-                        turbidityPlot: 'turbidity',
+                        turbidityPlot: '',
+
                       })
                     }
                   }
+                  toggleTurbidity(event) {
+                      this.setState({
+                        checkboxStateturbidity: !this.state.checkboxStateturbidity,
+
+                      });
+                      const checkboxState = this.state.checkboxStateturbidity;
+                      if (checkboxState) {
+                        this.setState({
+                          turbidityPlot: 'turbidity',
+
+                        })
+                      } else {
+                        this.setState({
+                          turbidityPlot: '',
+
+                        })
+                      }
+                    }
+                    toggleConductivity(event) {
+                        this.setState({
+                          checkboxStateconductivity: !this.state.checkboxStateconductivity,
+
+                        });
+                        const checkboxState = this.state.checkboxStateconductivity;
+                        if (checkboxState) {
+                          this.setState({
+                            conductivityPlot: 'conductivity',
+
+                          })
+                        } else {
+                          this.setState({
+                            conductivityPlot: '',
+
+                          })
+                        }
+                      }
                   toggleDO(event) {
                       this.setState({
                         checkboxStatedo: !this.state.checkboxStatedo
@@ -879,11 +935,11 @@ toggleNitrogen(event) {
                       const checkboxState = this.state.checkboxStatedo;
                       if (checkboxState) {
                         this.setState({
-                          doPlot: '',
+                          doPlot: 'do',
                         })
                       } else {
                         this.setState({
-                          doPlot: 'do',
+                          doPlot: '',
                         })
                       }
                     }
@@ -947,13 +1003,11 @@ showDrawer = () => {
 onClose = () => {
   this.setState({
     visible: false,
-  });
-};
-onClose1 = () => {
-  this.setState({
     visible1: false,
+    visible2: false,
   });
 };
+
 
 graph1Line = () => {
   this.setState({
@@ -1042,7 +1096,31 @@ graph4Bar = () => {
 
 
 
+editChart = (itemId) => {
+  let area = '';
 
+  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+  const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+
+
+  sampleRef.on('value', (snapshot) => {
+
+  let orders = snapshot.val();
+
+  let newState = [];
+
+  this.setState({
+
+    visible2: true,
+
+
+
+  })
+
+
+});
+});
+}
 
 
 
@@ -1110,7 +1188,7 @@ const doCheckbox = (
   <span>
     <input
     type="checkbox"
-    defaultChecked='true'
+
     onClick={this.toggleDO.bind(this)}
     />
   <label>DO</label>
@@ -1132,38 +1210,43 @@ const doCheckbox = (
      </span>
    );
    const tempCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTemp.bind(this)}/>
+     <span><input type="checkbox"  onClick={this.toggleTemp.bind(this)}/>
      <label>Temperature</label>
      </span>
    );
    const tdsCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTDS.bind(this)}/>
+     <span><input type="checkbox"  onClick={this.toggleTDS.bind(this)}/>
      <label>TDS</label>
      </span>
    );
    const pHCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.togglepH.bind(this)}/>
+     <span><input type="checkbox"  onClick={this.togglepH.bind(this)}/>
      <label>pH</label>
      </span>
    );
    const tssCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggletss.bind(this)}/>
+     <span><input type="checkbox"  onClick={this.toggletss.bind(this)}/>
      <label>TSS</label>
      </span>
    );
    const salinityCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.togglesalinity.bind(this)}/>
+     <span><input type="checkbox"  onClick={this.togglesalinity.bind(this)}/>
      <label>Salinity</label>
      </span>
    );
    const hardnessCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleHardness.bind(this)}/>
+     <span><input type="checkbox"  onClick={this.toggleHardness.bind(this)}/>
      <label>Total Hardness</label>
      </span>
    );
    const turbidityCheckbox = (
-     <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTurbidity.bind(this)}/>
+     <span><input type="checkbox"  onClick={this.toggleTurbidity.bind(this)}/>
      <label>Turbidity</label>
+     </span>
+   );
+   const conductivityCheckbox = (
+     <span><input type="checkbox"  onClick={this.toggleConductivity.bind(this)}/>
+     <label>Conductivity</label>
      </span>
    );
    const popover = {
@@ -1177,6 +1260,8 @@ const doCheckbox = (
       bottom: '0px',
       left: '0px',
     }
+
+
 
 
         return (
@@ -1322,13 +1407,13 @@ const doCheckbox = (
         title= "Edit Sample"
         placement={this.state.placement}
         closable={false}
-        onClose={this.onClose1}
+        onClose={this.onClose}
         visible={this.state.visible1}
         width={500}
       >
         <form>
           <Row style={{textAlign: 'right'}}>
-          <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose1()}>+ Add Sample</Icon>
+          <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Sample</Icon>
           </Row>
           <Row>
     <FormGroup>
@@ -1441,6 +1526,130 @@ const doCheckbox = (
 
   </form>
       </Drawer>
+      <Drawer
+        title= "Edit Chart"
+        placement={this.state.placement}
+        closable={false}
+        onClose={this.onClose}
+        visible={this.state.visible2}
+        width={500}
+      >
+        <form>
+          <Row style={{textAlign: 'right'}}>
+          <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Sample</Icon>
+          </Row>
+
+
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={24} md={6} lg={6} xl={6}><b>Turbidity</b></Col>
+    <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+    {turbidityCheckbox}
+  </Col>
+  <Col xs={24} sm={24} md={6} lg={6} xl={6}>
+    <div>
+      <TiBrush size={20}  onClick={ this.handleClick }>Color</TiBrush>
+    { this.state.displayColorPicker ? <div style={ popover }>
+      <div style={ cover } onClick={ this.handleClose }/>
+      <ChromePicker color={ this.state.turbidityColor } onChangeComplete={ this.tempColorChange } />
+    </div> : null }
+        </div>
+      </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Total Hardness</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {hardnessCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>pH</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {pHCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>TDS</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {tdsCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>TSS</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {tssCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Conductivity</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {conductivityCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>DO</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {doCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Temp</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {tempCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Salinity</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {salinityCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Phosphorus</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {phosphorusCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+  <Row style={{paddingTop: '10px'}}>
+  <FormGroup>
+    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Nitrogen</b></Col>
+    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+    {nitrogenCheckbox}
+  </Col>
+  </FormGroup>
+  </Row>
+
+
+
+  <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+  <Button type="primary" onClick={this.writeData} bsStyle="primary">Overwrite Sample</Button>
+  </Row>
+
+
+
+
+
+  </form>
+      </Drawer>
       </Col>
 
     </div>
@@ -1463,12 +1672,18 @@ const doCheckbox = (
           <Col xs={24} sm={24} md={24} lg={24} xl={24}>
           <Row>
 
-          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
+          <Col xs={24} sm={24} md={18} lg={18} xl={18} style={{paddingTop: '20px'}}>
 
-              <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>NITROGEN AND PHOSPHORUS</b></p>
+              <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>WATER QUALITY</b></p>
 
 
         </Col>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{paddingTop: '20px'}}>
+
+            <Button  type="default" onClick={() => this.editChart()}>+ Edit Chart</Button>
+
+
+      </Col>
       </Row>
 
           <Row>
@@ -1477,21 +1692,75 @@ const doCheckbox = (
               <AreaChart data={this.state.orders2}
         syncId="anyId">
         <defs>
-          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="colorNitrogen" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
             <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
           </linearGradient>
-          <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="colorPhosphorus" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
             <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#F64740" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#F64740" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorTDS" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#C4D6B0" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#C4D6B0" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorSalinity" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#EE964B" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#EE964B" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#949D6A" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#949D6A" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorHardness" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#4B4E6D" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#4B4E6D" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorpH" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#FFD97D" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#FFD97D" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#508CA4" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#508CA4" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorConductivity" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#F4AC45" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#F4AC45" stopOpacity={0}/>
+          </linearGradient>
+          <linearGradient id="colorTSS" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#694A38" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#694A38" stopOpacity={0}/>
           </linearGradient>
         </defs>
         <XAxis dataKey="sampleDate" />
         <YAxis domain={[0, 5]}/>
         <Tooltip />
 
-        <Area type="monotone" dataKey="nitrogen" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="nitrogen" position="top" /></Area>
-        <Area type="monotone" dataKey="phosphorus" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="phosphorus" position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.nitrogenPlot} stroke="#086788" fillOpacity={1} fill="url(#colorNitrogen)"><LabelList dataKey={this.state.nitrogenPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.phosphorusPlot} stroke="#F0C808" fillOpacity={1} fill="url(#colorPhosphorus)"><LabelList dataKey={this.state.phosphorusPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.tdsPlot} stroke="#C4D6B0" fillOpacity={1} fill="url(#colorTDS)"><LabelList dataKey={this.state.tdsPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.salinityPlot} stroke="#EE964B" fillOpacity={1} fill="url(#colorSalinity)"><LabelList dataKey={this.state.salinityPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.turbidityPlot} stroke="#949D6A" fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey={this.state.turbidityPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.totalHardnessPlot} stroke="#4B4E6D" fillOpacity={1} fill="url(#colorHardness)"><LabelList dataKey={this.state.totalHardnessPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.pHPlot} stroke="#FFD97D" fillOpacity={1} fill="url(#colorpH)"><LabelList dataKey={this.state.pHPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.tempPlot} stroke="#508CA4" fillOpacity={1} fill="url(#colorTemp)"><LabelList dataKey={this.state.tempPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.conductivityPlot} stroke="#F4AC45" fillOpacity={1} fill="url(#colorConductivity)"><LabelList dataKey={this.state.conductivityPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.tssPlot} stroke="#694A38" fillOpacity={1} fill="url(#colorTSS)"><LabelList dataKey={this.state.tssPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.doPlot} stroke="#F64740" fillOpacity={1} fill="url(#colorDO)"><LabelList dataKey={this.state.doPlot} position="top" /></Area>
+
+
+
+
+
         <Legend />
         <Brush></Brush>
       </AreaChart>
