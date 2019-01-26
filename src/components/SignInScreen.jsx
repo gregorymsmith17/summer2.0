@@ -18,6 +18,8 @@ import equipmentList from './assetManager/equipmentList';
 import chemicalApplications from './assetManager/chemicalApplications';
 import fishStocking from './assetManager/fishStocking';
 
+import reporting from './reporting';
+
 
 import lake from './images/lake.jpg';
 import lake2 from './images/lake2.png';
@@ -418,7 +420,7 @@ class SignInScreen extends React.Component {
 
     <Sider
       style={{
-       overflow: 'auto',position: 'fixed', height: '100vh', left: 0, backgroundColor: '#2E2E2E'
+       overflow: 'auto',position: 'fixed', height: '100vh', left: 0, backgroundColor: '#222222'
     }}
 
       breakpoint="md"
@@ -443,7 +445,7 @@ class SignInScreen extends React.Component {
 
         <Menu
           onClick={handleClick}
-          style={{ backgroundColor: '#2E2E2E', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'white', fontSize: '18px' }}
+          style={{ backgroundColor: '#222222', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'white', fontSize: '18px' }}
           mode="vertical">
           <SubMenu key="sub1" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/dashboard"><span><Icon type="dashboard" /><span><b>Dashboard</b></span></span></Link>}>
 
@@ -476,6 +478,10 @@ class SignInScreen extends React.Component {
           <Menu.Item key="11"><Link to="/profilePage">Profile Info</Link></Menu.Item>
         </SubMenu>
 
+        <SubMenu key="sub7" title={<span><Icon type="copy" /><span><b>Reporting</b></span></span>}>
+          <Menu.Item key="12"><Link to="/reporting">Monthly Reports</Link></Menu.Item>
+        </SubMenu>
+
 
 
           <SubMenu key="sub5" onSelect={() => firebase.auth().signOut()} title={<span><Icon type="logout" /><span><Button type="default" onClick={() => firebase.auth().signOut()}><b>Sign Out</b>
@@ -503,6 +509,7 @@ class SignInScreen extends React.Component {
           <Route path="/equipmentList" component={equipmentList} />
           <Route path="/chemicalApplications" component={chemicalApplications} />
           <Route path="/fishStocking" component={fishStocking} />
+          <Route path="/reporting" component={reporting} />
 
         </div>
       </Content>

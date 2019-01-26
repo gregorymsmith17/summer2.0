@@ -1,15 +1,15 @@
-tempColorChange = (color) => {
+tdsColorChange = (color) => {
 
     console.log(this.state.color);
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     const samplesRef = fire.database().ref(`colors/${user.uid}`);
     const orderID = fire.database().ref(`/colors/${user.uid}/${orderID}`);
     const sample = {
-      tempColor: color.hex
+      tdsColor: color.hex
     }
     samplesRef.set(sample);
     this.setState({
-      tempColor: color.hex,
+      tdsColor: color.hex,
      });
     });
 }

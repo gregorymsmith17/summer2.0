@@ -79,18 +79,18 @@ export default class monthlySamples extends Component {
           displayColorPicker: false,
 
           //colors for graph lines
-          tempColor: '',
-          doColor: '',
-          conductivityColor: '',
-          tdsColor: '',
-          salinityColor: '',
-          pHColor: '',
-          turbidityColor: '',
-          nitrogenColor: '',
-          phosphorusColor: '',
-          totalHardnessColor: '',
-          tssColor: '',
-          sampleNotesColor: '',
+          tempColor: '#4C5B5C',
+          doColor: '#6C698D',
+          conductivityColor: '#DD1C1A',
+          tdsColor: '#086788',
+          salinityColor: '#F0C808',
+          pHColor: '#4C5B5C',
+          turbidityColor: '#6C698D',
+          nitrogenColor: '#086788',
+          phosphorusColor: '#F0C808',
+          totalHardnessColor: '#DD1C1A',
+          tssColor: '#086788',
+          sampleNotesColor: '#',
 
 
           //this is the object array for the table
@@ -135,13 +135,12 @@ export default class monthlySamples extends Component {
           //barLine
           barLine: '',
           lineLine: '',
-          graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EB8258" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey="salinity" position="top" /></Area>,
+          graphingType1: '',
+          graphingType2: '',
+          graphingType3: '',
+          graphingType4: '',
 
-          graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#C4D6B0" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey="tds" position="top" /></Area>,
 
-          graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#694A38" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey="tss" position="top" /></Bar>,
-
-          graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#949D6A" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Bar>,
 
 
           //Inputs for Profile Page
@@ -156,6 +155,9 @@ export default class monthlySamples extends Component {
           //testing
           test: '<Area',
           test1: '</Area>',
+
+
+
 
 
 
@@ -203,8 +205,6 @@ export default class monthlySamples extends Component {
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
         const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
-        const orderID = fire.database().ref(`/monthlySamples/${user.uid}/${orderID}`);
-
 
         const sample = {
 
@@ -247,8 +247,6 @@ export default class monthlySamples extends Component {
           tss: '',
           sampleNotes: '',
 
-
-
         });
       });
     }
@@ -265,6 +263,16 @@ export default class monthlySamples extends Component {
 
       componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+          this.setState({
+            graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey="salinity" position="top" /></Area>,
+
+            graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey="tds" position="top" /></Area>,
+
+            graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke={this.state.tssColor} fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey="tss" position="top" /></Bar>,
+
+            graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke={this.state.turbidityColor} fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Bar>,
+
+          })
           const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
           samplesRef.on('value', (snapshot) => {
 
@@ -1012,84 +1020,84 @@ onClose = () => {
 graph1Line = () => {
   this.setState({
     graphType: 'Line',
-    graphingType1: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EE964B" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Line>,
+    graphingType1: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Line>,
   });
 };
 
 graph1Area = () => {
   this.setState({
     graphType: 'Area',
-    graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EE964B" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Area>,
+    graphingType1: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Area>,
   });
 };
 
 graph1Bar = () => {
   this.setState({
     graphType: 'Bar',
-    graphingType1: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke="#EE964B" fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Bar>,
+    graphingType1: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="salinity" stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph1} position="top" /></Bar>,
   });
 };
 
 graph2Line = () => {
   this.setState({
     graphType2: 'Line',
-    graphingType2: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#C4D6B0" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Line>,
+    graphingType2: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Line>,
   });
 };
 
 graph2Area = () => {
   this.setState({
     graphType2: 'Area',
-    graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#C4D6B0" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Area>,
+    graphingType2: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Area>,
   });
 };
 
 graph2Bar = () => {
   this.setState({
     graphType2: 'Bar',
-    graphingType2: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke="#C4D6B0" fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Bar>,
+    graphingType2: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tds" stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph2} position="top" /></Bar>,
   });
 };
 
 graph3Line = () => {
   this.setState({
     graphType3: 'Line',
-    graphingType3: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#694A38" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Line>,
+    graphingType3: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke={this.state.tssColor} fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Line>,
   });
 };
 
 graph3Area = () => {
   this.setState({
     graphType3: 'Area',
-    graphingType3: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#694A38" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Area>,
+    graphingType3: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke={this.state.tssColor}  fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Area>,
   });
 };
 
 graph3Bar = () => {
   this.setState({
     graphType3: 'Bar',
-    graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke="#694A38" fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Bar>,
+    graphingType3: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="tss" stroke={this.state.tssColor}  fillOpacity={1} fill="url(#colorTSS)" ><LabelList style={{fontSize:'11px'}} dataKey={this.state.parameterGraph3} position="top" /></Bar>,
   });
 };
 
 graph4Line = () => {
   this.setState({
     graphType4: 'Line',
-    graphingType4: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#949D6A" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Line>,
+    graphingType4: <Line strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke={this.state.turbidityColor}  fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Line>,
   });
 };
 
 graph4Area = () => {
   this.setState({
     graphType4: 'Area',
-    graphingType4: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#949D6A" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Area>,
+    graphingType4: <Area strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke={this.state.turbidityColor} fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Area>,
   });
 };
 
 graph4Bar = () => {
   this.setState({
     graphType4: 'Bar',
-    graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke="#949D6A" fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Bar>,
+    graphingType4: <Bar strokeWidth={3} barSize={15} type="monotone" dataKey="turbidity" stroke={this.state.turbidityColor} fillOpacity={1} fill="url(#colorTurbidity)" ><LabelList style={{fontSize:'11px'}} dataKey="turbidity" position="top" /></Bar>,
   });
 };
 
@@ -1693,69 +1701,75 @@ const doCheckbox = (
         syncId="anyId">
         <defs>
           <linearGradient id="colorNitrogen" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.nitrogenColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.nitrogenColor} stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorPhosphorus" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.phosphorusColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.phosphorusColor} stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#F64740" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#F64740" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.doColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.doColor} stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorTDS" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#C4D6B0" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#C4D6B0" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.tdsColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.tdsColor}  stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorSalinity" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#EE964B" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#EE964B" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.salinityColor}  stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.salinityColor}  stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#949D6A" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#949D6A" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.turbidityColor}  stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.turbidityColor}stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorHardness" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#4B4E6D" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#4B4E6D" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.totalHardnessColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.totalHardnessColor} stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorpH" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#FFD97D" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#FFD97D" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.pHColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.pHColor} stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#508CA4" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#508CA4" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.tempColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.tempColor} stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorConductivity" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#F4AC45" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#F4AC45" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.conductivityColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.conductivityColor} stopOpacity={0}/>
           </linearGradient>
           <linearGradient id="colorTSS" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#694A38" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#694A38" stopOpacity={0}/>
+            <stop offset="5%" stopColor={this.state.tssColor} stopOpacity={0.8}/>
+            <stop offset="95%" stopColor={this.state.tssColor} stopOpacity={0}/>
           </linearGradient>
         </defs>
         <XAxis dataKey="sampleDate" />
         <YAxis domain={[0, 5]}/>
         <Tooltip />
 
-        <Area type="monotone" dataKey={this.state.nitrogenPlot} stroke="#086788" fillOpacity={1} fill="url(#colorNitrogen)"><LabelList dataKey={this.state.nitrogenPlot} position="top" /></Area>
-        <Area type="monotone" dataKey={this.state.phosphorusPlot} stroke="#F0C808" fillOpacity={1} fill="url(#colorPhosphorus)"><LabelList dataKey={this.state.phosphorusPlot} position="top" /></Area>
-        <Area type="monotone" dataKey={this.state.tdsPlot} stroke="#C4D6B0" fillOpacity={1} fill="url(#colorTDS)"><LabelList dataKey={this.state.tdsPlot} position="top" /></Area>
-        <Area type="monotone" dataKey={this.state.salinityPlot} stroke="#EE964B" fillOpacity={1} fill="url(#colorSalinity)"><LabelList dataKey={this.state.salinityPlot} position="top" /></Area>
-        <Area type="monotone" dataKey={this.state.turbidityPlot} stroke="#949D6A" fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey={this.state.turbidityPlot} position="top" /></Area>
-        <Area type="monotone" dataKey={this.state.totalHardnessPlot} stroke="#4B4E6D" fillOpacity={1} fill="url(#colorHardness)"><LabelList dataKey={this.state.totalHardnessPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.nitrogenPlot} stroke={this.state.nitrogenColor} fillOpacity={1} fill="url(#colorNitrogen)"><LabelList dataKey={this.state.nitrogenPlot} position="top" /></Area>
 
-        <Area type="monotone" dataKey={this.state.pHPlot} stroke="#FFD97D" fillOpacity={1} fill="url(#colorpH)"><LabelList dataKey={this.state.pHPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.phosphorusPlot} stroke={this.state.phosphorusColor} fillOpacity={1} fill="url(#colorPhosphorus)"><LabelList dataKey={this.state.phosphorusPlot} position="top" /></Area>
 
-        <Area type="monotone" dataKey={this.state.tempPlot} stroke="#508CA4" fillOpacity={1} fill="url(#colorTemp)"><LabelList dataKey={this.state.tempPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.tdsPlot} stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)"><LabelList dataKey={this.state.tdsPlot} position="top" /></Area>
 
-        <Area type="monotone" dataKey={this.state.conductivityPlot} stroke="#F4AC45" fillOpacity={1} fill="url(#colorConductivity)"><LabelList dataKey={this.state.conductivityPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.salinityPlot} stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)"><LabelList dataKey={this.state.salinityPlot} position="top" /></Area>
 
-        <Area type="monotone" dataKey={this.state.tssPlot} stroke="#694A38" fillOpacity={1} fill="url(#colorTSS)"><LabelList dataKey={this.state.tssPlot} position="top" /></Area>
-        <Area type="monotone" dataKey={this.state.doPlot} stroke="#F64740" fillOpacity={1} fill="url(#colorDO)"><LabelList dataKey={this.state.doPlot} position="top" /></Area>
+        <Area type="monotone" dataKey={this.state.turbidityPlot} stroke={this.state.turbidityColor}fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey={this.state.turbidityPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.totalHardnessPlot} stroke={this.state.totalHardnessColor} fillOpacity={1} fill="url(#colorHardness)"><LabelList dataKey={this.state.totalHardnessPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.pHPlot} stroke={this.state.pHColor} fillOpacity={1} fill="url(#colorpH)"><LabelList dataKey={this.state.pHPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.tempPlot} stroke={this.state.tempColor} fillOpacity={1} fill="url(#colorTemp)"><LabelList dataKey={this.state.tempPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.conductivityPlot} stroke={this.state.conductivityColor} fillOpacity={1} fill="url(#colorConductivity)"><LabelList dataKey={this.state.conductivityPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.tssPlot} stroke={this.state.tssColor} fillOpacity={1} fill="url(#colorTSS)"><LabelList dataKey={this.state.tssPlot} position="top" /></Area>
+
+        <Area type="monotone" dataKey={this.state.doPlot} stroke={this.state.doColor} fillOpacity={1} fill="url(#colorDO)"><LabelList dataKey={this.state.doPlot} position="top" /></Area>
 
 
 
