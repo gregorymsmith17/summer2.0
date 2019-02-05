@@ -565,7 +565,8 @@ deleteRow(row, isSelected, e, id) {
 createCustomExportCSVButton = (onClick) => {
   return (
     <ExportCSVButton
-      btnText='Down CSV'
+      fileName= 'custom.csv'
+      btnText='Download Excel'
       onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
   );
 }

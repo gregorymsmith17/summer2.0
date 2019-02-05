@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { BrowserRouter, Route } from 'react-router-dom';
 import { fire, facebookProvider } from './fire';
 import './App.css'
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 
 import SignInScreen from './components/SignInScreen'
 

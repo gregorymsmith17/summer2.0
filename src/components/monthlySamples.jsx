@@ -228,7 +228,7 @@ export default class monthlySamples extends Component {
 
 
 
-
+        console.log(sample)
         samplesRef.push(sample);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
@@ -246,6 +246,9 @@ export default class monthlySamples extends Component {
           totalHardness: '',
           tss: '',
           sampleNotes: '',
+          visible: false,
+          visible1: false,
+          visible2: false,
 
         });
       });
@@ -281,6 +284,7 @@ export default class monthlySamples extends Component {
             let filter = [];
             let orders = snapshot.val();
             let orders2 = snapshot.val();
+
 
             let newState = [];
             let newState2 = [];
@@ -350,7 +354,11 @@ export default class monthlySamples extends Component {
             dataList: newState,
             color: this.state.color,
 
+
           });
+
+          console.log(this.state.orders2);
+          console.log(this.state.dataList);
 
         });
 
@@ -1682,20 +1690,29 @@ const doCheckbox = (
 
           <Col xs={24} sm={24} md={18} lg={18} xl={18} style={{paddingTop: '20px'}}>
 
-              <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>WATER QUALITY</b></p>
+              <p style={{lineHeight: '0px', paddingLeft: '55px', fontSize: '32px'}}><b>WATER QUALITY</b></p>
 
 
         </Col>
-        <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{paddingTop: '20px'}}>
+        <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{paddingTop: '10px'}}>
 
             <Button  type="default" onClick={() => this.editChart()}>+ Edit Chart</Button>
 
 
       </Col>
       </Row>
+      <Row>
 
-          <Row>
-          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+      <Col xs={24} sm={24} md={18} lg={18} xl={18} style={{paddingTop: '20px'}}>
+
+
+
+
+  </Col>
+  </Row>
+
+          <Row >
+          <Col xs={24} sm={24} md={24} lg={24} xl={24} >
             <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={200}>
               <AreaChart data={this.state.orders2}
         syncId="anyId">
@@ -1746,7 +1763,7 @@ const doCheckbox = (
           </linearGradient>
         </defs>
         <XAxis dataKey="sampleDate" />
-        <YAxis domain={[0, 5]}/>
+        <YAxis domain={[0, 'dataMax + 4']}/>
         <Tooltip />
 
         <Area type="monotone" dataKey={this.state.nitrogenPlot} stroke={this.state.nitrogenColor} fillOpacity={1} fill="url(#colorNitrogen)"><LabelList dataKey={this.state.nitrogenPlot} position="top" /></Area>

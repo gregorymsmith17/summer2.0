@@ -142,16 +142,6 @@ zoom: 13
         hoaContact: '',
         managementContactNumber: '',
         hoaContactNumber: '',
-        isLoading: true,
-        dataSource: [],
-        latitude: null,
-        longitude: null,
-        error: null,
-        weather: '',
-        center: {
-          lat: 37.987636425563075,
-          lng: -121.63235758701154
-        },
 
 
 
@@ -277,76 +267,23 @@ zoom: 13
             nitrogenAverage: (nitrogenAverage),
           })
         });
-        console.log(nitrogenAverage);
-        if (nitrogenAverage.length == 0) {
-          console.log("do nothing")
-        }
-        if (nitrogenAverage.length == 1) {
-          console.log("do one thing")
-          let nitrogenData = [];
-          for (let i=0; i < nitrogenAverage.length; i++) {
-          //push send this data to the back of the chartData variable above.
-          nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
 
-        }
+        let nitrogenData = [];
+        for (let i=0; i < nitrogenAverage.length; i++) {
+        //push send this data to the back of the chartData variable above.
+        nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
 
-          let nitrogenReverse2 = nitrogenAverage.reverse();
-          let nitrogenGraph = ([{nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
-          console.log(nitrogenGraph)
-
-          let nitrogenReverse = nitrogenData.reverse();
-          let nitrogen = ([nitrogenReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-          console.log(nitrogenReverse[0])
-          this.setState({
-            nitrogenLatest: nitrogenReverse[0],
-            nitrogenAvg: nitrogen,
-            nitrogenGraph: nitrogenGraph,
-          })
-        }
-        if (nitrogenAverage.length == 2) {
-          let nitrogenData = [];
-          for (let i=0; i < nitrogenAverage.length; i++) {
-          //push send this data to the back of the chartData variable above.
-          nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
-
-        }
+      }
 
 
-        let nitrogenReverse2 = nitrogenAverage.reverse();
+      let nitrogenReverse2 = nitrogenAverage.reverse();
 
 
-        let nitrogenGraph = ([{nitrogen: nitrogenReverse2[1].nitrogen, date: nitrogenReverse2[1].date}, {nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
-        console.log(nitrogenGraph)
+      let nitrogenGraph = ([{nitrogen: nitrogenReverse2[2].nitrogen, date: nitrogenReverse2[2].date}, {nitrogen: nitrogenReverse2[1].nitrogen, date: nitrogenReverse2[1].date}, {nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
+      console.log(nitrogenGraph)
 
 
 
-
-          let nitrogenReverse = nitrogenData.reverse();
-          let nitrogen = ([nitrogenReverse[0], nitrogenReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-          console.log(nitrogenReverse[0])
-          this.setState({
-            nitrogenLatest: nitrogenReverse[0],
-            nitrogenAvg: nitrogen,
-            nitrogenGraph: nitrogenGraph,
-          })
-        }
-        if (nitrogenAverage.length > 2) {
-          console.log("do one three things or more")
-          let nitrogenData = [];
-          for (let i=0; i < nitrogenAverage.length; i++) {
-          //push send this data to the back of the chartData variable above.
-          nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
-
-        }
-
-
-        let nitrogenReverse2 = nitrogenAverage.reverse();
-
-
-        let nitrogenGraph = ([{nitrogen: nitrogenReverse2[2].nitrogen, date: nitrogenReverse2[2].date}, {nitrogen: nitrogenReverse2[1].nitrogen, date: nitrogenReverse2[1].date}, {nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
-        console.log(nitrogenGraph)
 
         let nitrogenReverse = nitrogenData.reverse();
         let nitrogen = ([nitrogenReverse[0], nitrogenReverse[1], nitrogenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
@@ -357,7 +294,6 @@ zoom: 13
           nitrogenAvg: nitrogen,
           nitrogenGraph: nitrogenGraph,
         })
-        }
         snapshot.forEach(ss => {
             phosphorusAverage.push({phosphorus: ss.child('phosphorus').val(), date: ss.child('sampleDate').val()} );
             phosphorusAverage.sort(function(a, b) {
@@ -370,90 +306,33 @@ zoom: 13
               phosphorusAverage: (phosphorusAverage),
             })
           });
-          console.log(phosphorusAverage);
-          if (phosphorusAverage.length == 0) {
-            console.log("do nothing")
-          }
-          if (phosphorusAverage.length == 1) {
-            console.log("do one thing")
-            let phosphorusData = [];
-            for (let i=0; i < phosphorusAverage.length; i++) {
-            //push send this data to the back of the chartData variable above.
-            phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
-
-          }
-
-            let phosphorusReverse2 = phosphorusAverage.reverse();
-            let phosphorusGraph = ([{phosphorus: phosphorusReverse2[0].phosphorus, date: phosphorusReverse2[0].date} ]);
-            console.log(phosphorusGraph)
-
-            let phosphorusReverse = phosphorusData.reverse();
-            let phosphorus = ([phosphorusReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-            console.log(phosphorusReverse[0])
-            this.setState({
-              phosphorusLatest: phosphorusReverse[0],
-              phosphorusAvg: phosphorus,
-              phosphorusGraph: phosphorusGraph,
-            })
-          }
-          if (phosphorusAverage.length == 2) {
-            let phosphorusData = [];
-            for (let i=0; i < phosphorusAverage.length; i++) {
-            //push send this data to the back of the chartData variable above.
-            phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
-
-          }
 
 
           let phosphorusReverse2 = phosphorusAverage.reverse();
-
-
-          let phosphorusGraph = ([{phosphorus: phosphorusReverse2[1].phosphorus, date: phosphorusReverse2[1].date}, {phosphorus: phosphorusReverse2[0].phosphorus, date: phosphorusReverse2[0].date} ]);
-          console.log(phosphorusGraph)
-
-
-
-
-            let phosphorusReverse = phosphorusData.reverse();
-            let phosphorus = ([phosphorusReverse[0], phosphorusReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-            console.log(phosphorusReverse[0])
-            this.setState({
-              phosphorusLatest: phosphorusReverse[0],
-              phosphorusAvg: phosphorus,
-              phosphorusGraph: phosphorusGraph,
-            })
-          }
-          if (phosphorusAverage.length > 2) {
-            console.log("do one three things or more")
-            let phosphorusData = [];
-            for (let i=0; i < phosphorusAverage.length; i++) {
-            //push send this data to the back of the chartData variable above.
-            phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
-
-          }
-
-
-          let phosphorusReverse2 = phosphorusAverage.reverse();
-
 
           let phosphorusGraph = ([{phosphorus: phosphorusReverse2[2].phosphorus, date: phosphorusReverse2[2].date}, {phosphorus: phosphorusReverse2[1].phosphorus, date: phosphorusReverse2[1].date}, {phosphorus: phosphorusReverse2[0].phosphorus, date: phosphorusReverse2[0].date} ]);
-          console.log(phosphorusGraph)
 
-          let phosphorusReverse = phosphorusData.reverse();
+
+
+          let phosphorusData = [];
+          for (let i=0; i < phosphorusAverage.length; i++) {
+          //push send this data to the back of the chartData variable above.
+          phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
+
+        }
+          let phosphorusReverse = phosphorusData;
           let phosphorus = ([phosphorusReverse[0], phosphorusReverse[1], phosphorusReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-          console.log(phosphorusReverse[0])
+          console.log(phosphorusReverse)
           this.setState({
             phosphorusLatest: phosphorusReverse[0],
             phosphorusAvg: phosphorus,
             phosphorusGraph: phosphorusGraph,
           })
-          }
+
+
 
           snapshot.forEach(ss => {
-              dissolvedOxygenAverage.push({do: ss.child('do').val(), date: ss.child('sampleDate').val()} );
+              dissolvedOxygenAverage.push({dissolvedOxygen: ss.child('do').val(), date: ss.child('sampleDate').val()} );
               dissolvedOxygenAverage.sort(function(a, b) {
                 if (a.date === b.date) {
                   return 0;
@@ -464,174 +343,67 @@ zoom: 13
                 dissolvedOxygenAverage: (dissolvedOxygenAverage),
               })
             });
-            console.log(dissolvedOxygenAverage);
-            if (dissolvedOxygenAverage.length == 0) {
-              console.log("do nothing")
-            }
-            if (dissolvedOxygenAverage.length == 1) {
-              console.log("do one thing")
-              let dissolvedoxygenData = [];
-              for (let i=0; i < dissolvedOxygenAverage.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              dissolvedoxygenData.push(parseFloat(dissolvedOxygenAverage[i].do));
 
-            }
+            let dissolvedOxygenData = [];
+            for (let i=0; i < dissolvedOxygenAverage.length; i++) {
+            //push send this data to the back of the chartData variable above.
+            dissolvedOxygenData.push(parseFloat(dissolvedOxygenAverage[i].dissolvedOxygen));
 
-              let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
-              let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[0].do, date: dissolvedOxygenReverse2[0].date} ]);
-              console.log(dissolvedOxygenGraph)
+          }
+            let dissolvedOxygenReverse = dissolvedOxygenData.reverse();
 
-              let dissolvedOxygenReverse = dissolvedoxygenData.reverse();
-              let dissolvedOxygen = ([dissolvedOxygenReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
+            let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
 
-              console.log(dissolvedOxygenReverse[0])
-              this.setState({
-                dissolvedOxygenLatest: dissolvedOxygenReverse[0],
-                dissolvedOxygenAvg: dissolvedOxygen,
-                dissolvedOxygenGraph: dissolvedOxygenGraph,
-              })
-            }
-            if (dissolvedOxygenAverage.length == 2) {
-              console.log("do two things")
-              let dissolvedoxygenData = [];
-              for (let i=0; i < dissolvedOxygenAverage.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              dissolvedoxygenData.push(parseFloat(dissolvedOxygenAverage[i].do));
+            let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[2].dissolvedOxygen, date: dissolvedOxygenReverse2[2].date}, {do: dissolvedOxygenReverse2[1].dissolvedOxygen, date: dissolvedOxygenReverse2[1].date}, {do: dissolvedOxygenReverse2[0].dissolvedOxygen, date: dissolvedOxygenReverse2[0].date} ]);
+            console.log(dissolvedOxygenGraph)
 
-            }
 
-              let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
-              let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[0].do, date: dissolvedOxygenReverse2[0].date}, {do: dissolvedOxygenReverse2[1].do, date: dissolvedOxygenReverse2[1].date} ]);
-              console.log(dissolvedOxygenGraph)
 
-              let dissolvedOxygenReverse = dissolvedoxygenData.reverse();
-              let dissolvedOxygen = ([dissolvedOxygenReverse[0], dissolvedOxygenReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
+            let dissolvedOxygen = ([dissolvedOxygenReverse[0], dissolvedOxygenReverse[1], dissolvedOxygenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
 
-              console.log(dissolvedOxygenReverse[0])
-              this.setState({
-                dissolvedOxygenLatest: dissolvedOxygenReverse[0],
-                dissolvedOxygenAvg: dissolvedOxygen,
-                dissolvedOxygenGraph: dissolvedOxygenGraph,
-              })
-            }
-            if (phosphorusAverage.length > 2) {
-              console.log("do one three things or more")
-              let dissolvedoxygenData = [];
-              for (let i=0; i < dissolvedOxygenAverage.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              dissolvedoxygenData.push(parseFloat(dissolvedOxygenAverage[i].do));
-
-            }
-
-              let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
-              let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[0].do, date: dissolvedOxygenReverse2[0].date}, {do: dissolvedOxygenReverse2[1].do, date: dissolvedOxygenReverse2[1].date}, {do: dissolvedOxygenReverse2[2].do, date: dissolvedOxygenReverse2[2].date} ]);
-              console.log(dissolvedOxygenGraph)
-
-              let dissolvedOxygenReverse = dissolvedoxygenData.reverse();
-              let dissolvedOxygen = ([dissolvedOxygenReverse[0], dissolvedOxygenReverse[1], dissolvedOxygenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-              console.log(dissolvedOxygenReverse[0])
-              this.setState({
-                dissolvedOxygenLatest: dissolvedOxygenReverse[0],
-                dissolvedOxygenAvg: dissolvedOxygen,
-                dissolvedOxygenGraph: dissolvedOxygenGraph,
-              })
-
-            }
+            console.log(phosphorusReverse)
+            this.setState({
+              dissolvedOxygenLatest: dissolvedOxygenReverse[0],
+              dissolvedOxygenAvg: dissolvedOxygen,
+              dissolvedOxygenGraph: dissolvedOxygenGraph,
+            })
 
             snapshot.forEach(ss => {
-                salinityAverage.push({salinity: ss.child('salinity').val(), date: ss.child('sampleDate').val()} );
-                salinityAverage.sort(function(a, b) {
+                tssAverage.push({tss: ss.child('tss').val(), date: ss.child('sampleDate').val()} );
+                tssAverage.sort(function(a, b) {
                   if (a.date === b.date) {
                     return 0;
                   }
                   return a.date > b.date ? 1 : -1;
               });
                 this.setState({
-                  salinityAverage: (salinityAverage),
+                  tssAverage: (tssAverage),
                 })
               });
-              console.log(salinityAverage);
-              if (salinityAverage.length == 0) {
-                console.log("do nothing")
-              }
-              if (salinityAverage.length == 1) {
-                console.log("do one thing")
-                let salinityData = [];
-                for (let i=0; i < salinityAverage.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                salinityData.push(parseFloat(salinityAverage[i].salinity));
 
-              }
+              let tssData = [];
+              for (let i=0; i < tssAverage.length; i++) {
+              //push send this data to the back of the chartData variable above.
+              tssData.push(parseFloat(tssAverage[i].tss));
 
-                let salinityReverse2 = salinityAverage.reverse();
-                let salinityGraph = ([{salinity: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
-                console.log(salinityGraph)
+            }
+              let tssReverse = tssData.reverse();
 
-                let salinityReverse = salinityData.reverse();
-                let salinity = ([salinityReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
+              let tssReverse2 = tssAverage.reverse();
 
-                console.log(salinityReverse[0])
-                this.setState({
-                  salinityLatest: salinityReverse[0],
-                  salinityAvg: salinity,
-                  salinityGraph: salinityGraph,
-                })
-              }
-              if (salinityAverage.length == 2) {
-                let salinityData = [];
-                for (let i=0; i < salinityAverage.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                salinityData.push(parseFloat(salinityAverage[i].salinity));
-
-              }
-
-
-              let salinityReverse2 = salinityAverage.reverse();
-
-
-              let salinityGraph = ([{salinity: salinityReverse2[1].salinity, date: salinityReverse2[1].date}, {salinity: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
-              console.log(salinityGraph)
+              let tssGraph = ([{tss: tssReverse2[2].tss, date: tssReverse2[2].date}, {tss: tssReverse2[1].tss, date: tssReverse2[1].date}, {tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
+              console.log(tssGraph)
 
 
 
+              let tss = ([tssReverse[0], tssReverse[1], tssReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
 
-                let salinityReverse = salinityData.reverse();
-                let salinity = ([salinityReverse[0], salinityReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-                console.log(salinityReverse[0])
-                this.setState({
-                  salinityLatest: salinityReverse[0],
-                  salinityAvg: salinity,
-                  salinityGraph: salinityGraph,
-                })
-              }
-              if (salinityAverage.length > 2) {
-                console.log("do one three things or more")
-                let salinityData = [];
-                for (let i=0; i < salinityAverage.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                salinityData.push(parseFloat(salinityAverage[i].salinity));
-
-              }
-
-
-              let salinityReverse2 = salinityAverage.reverse();
-
-
-              let salinityGraph = ([{salinity: salinityReverse2[2].salinity, date: salinityReverse2[2].date}, {salinity: salinityReverse2[1].salinity, date: salinityReverse2[1].date}, {salinity: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
-              console.log(salinityGraph)
-
-              let salinityReverse = salinityData.reverse();
-              let salinity = ([salinityReverse[0], salinityReverse[1], salinityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-              console.log(salinityReverse[0])
+              console.log(phosphorusReverse)
               this.setState({
-                salinityLatest: salinityReverse[0],
-                salinityAvg: salinity,
-                salinityGraph: salinityGraph,
+                tssLatest: tssReverse[0],
+                tssAvg: tss,
+                tssGraph: tssGraph,
               })
-              }
               snapshot.forEach(ss => {
                   turbidityAverage.push({turbidity: ss.child('turbidity').val(), date: ss.child('sampleDate').val()} );
                   turbidityAverage.sort(function(a, b) {
@@ -644,194 +416,72 @@ zoom: 13
                     turbidityAverage: (turbidityAverage),
                   })
                 });
-                console.log(turbidityAverage);
-                if (turbidityAverage.length == 0) {
-                  console.log("do nothing")
-                }
-                if (turbidityAverage.length == 1) {
-                  console.log("do one thing")
-                  let turbidityData = [];
-                  for (let i=0; i < turbidityAverage.length; i++) {
-                  //push send this data to the back of the chartData variable above.
-                  turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
 
-                }
+                let turbidityData = [];
+                for (let i=0; i < turbidityAverage.length; i++) {
+                //push send this data to the back of the chartData variable above.
+                turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
 
-                  let turbidityReverse2 = turbidityAverage.reverse();
-                  let turbidityGraph = ([{turbidity: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
-                  console.log(turbidityGraph)
-
-                  let turbidityReverse = turbidityData.reverse();
-                  let turbidity = ([turbidityReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-                  console.log(turbidityReverse[0])
-                  this.setState({
-                    turbidityLatest: turbidityReverse[0],
-                    turbidityAvg: turbidity,
-                    turbidityGraph: turbidityGraph,
-                  })
-                }
-                if (turbidityAverage.length == 2) {
-                  let turbidityData = [];
-                  for (let i=0; i < turbidityAverage.length; i++) {
-                  //push send this data to the back of the chartData variable above.
-                  turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
-
-                }
-
-
-                let turbidityReverse2 = turbidityAverage.reverse();
-
-
-                let turbidityGraph = ([{turbidity: turbidityReverse2[1].turbidity, date: turbidityReverse2[1].date}, {turbidity: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
-                console.log(turbidityGraph)
-
-
-
-
-                  let turbidityReverse = turbidityData.reverse();
-                  let turbidity = ([turbidityReverse[0], turbidityReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-                  console.log(turbidityReverse[0])
-                  this.setState({
-                    turbidityLatest: turbidityReverse[0],
-                    turbidityAvg: turbidity,
-                    turbidityGraph: turbidityGraph,
-                  })
-                }
-                if (turbidityAverage.length > 2) {
-                  console.log("do one three things or more")
-                  let turbidityData = [];
-                  for (let i=0; i < turbidityAverage.length; i++) {
-                  //push send this data to the back of the chartData variable above.
-                  turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
-
-                }
-
-
-                let turbidityReverse2 = turbidityAverage.reverse();
-
-
-                let turbidityGraph = ([{turbidity: turbidityReverse2[2].turbidity, date: turbidityReverse2[2].date}, {turbidity: turbidityReverse2[1].turbidity, date: turbidityReverse2[1].date}, {turbidity: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
-                console.log(turbidityGraph)
-
+              }
                 let turbidityReverse = turbidityData.reverse();
-                let turbidity = ([turbidityReverse[0], turbidityReverse[1], turbidityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
 
-                console.log(turbidityReverse[0])
+                let turbidityReverse2 = turbidityAverage.reverse();
+
+                let turbidityGraph = ([{do: turbidityReverse2[2].turbidity, date: turbidityReverse2[2].date}, {do: turbidityReverse2[1].turbidity, date: turbidityReverse2[1].date}, {do: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
+                console.log(turbidityGraph)
+
+
+
+                let turbidity = ([turbidityReverse[0], turbidityReverse[1], turbidityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
+
+                console.log(phosphorusReverse)
                 this.setState({
                   turbidityLatest: turbidityReverse[0],
                   turbidityAvg: turbidity,
                   turbidityGraph: turbidityGraph,
                 })
-                }
 
                 snapshot.forEach(ss => {
-                    tssAverage.push({tss: ss.child('tss').val(), date: ss.child('sampleDate').val()} );
-                    tssAverage.sort(function(a, b) {
+                    salinityAverage.push({salinity: ss.child('salinity').val(), date: ss.child('sampleDate').val()} );
+                    salinityAverage.sort(function(a, b) {
                       if (a.date === b.date) {
                         return 0;
                       }
                       return a.date > b.date ? 1 : -1;
                   });
                     this.setState({
-                      tssAverage: (tssAverage),
+                      salinityAverage: (salinityAverage),
                     })
                   });
-                  console.log(tssAverage);
-                  if (tssAverage.length == 0) {
-                    console.log("do nothing")
-                  }
-                  if (tssAverage.length == 1) {
-                    console.log("do one thing")
-                    let tssData = [];
-                    for (let i=0; i < tssAverage.length; i++) {
-                    //push send this data to the back of the chartData variable above.
-                    tssData.push(parseFloat(tssAverage[i].tss));
 
-                  }
+                  let salinityData = [];
+                  for (let i=0; i < salinityAverage.length; i++) {
+                  //push send this data to the back of the chartData variable above.
+                  salinityData.push(parseFloat(salinityAverage[i].salinity));
 
-                    let tssReverse2 = tssAverage.reverse();
-                    let tssGraph = ([{tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
-                    console.log(tssGraph)
+                }
+                  let salinityReverse = salinityData.reverse();
 
-                    let tssReverse = tssData.reverse();
-                    let tss = ([tssReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
+                  let salinityReverse2 = salinityAverage.reverse();
 
-                    console.log(tssReverse[0])
-                    this.setState({
-                      tssLatest: tssReverse[0],
-                      tssAvg: tss,
-                      tssGraph: tssGraph,
-                    })
-                  }
-                  if (tssAverage.length == 2) {
-                    let tssData = [];
-                    for (let i=0; i < tssAverage.length; i++) {
-                    //push send this data to the back of the chartData variable above.
-                    tssData.push(parseFloat(tssAverage[i].tss));
-
-                  }
-
-
-                  let tssReverse2 = tssAverage.reverse();
-
-
-                  let tssGraph = ([{tss: tssReverse2[1].tss, date: tssReverse2[1].date}, {tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
-                  console.log(tssGraph)
+                  let salinityGraph = ([{do: salinityReverse2[2].salinity, date: salinityReverse2[2].date}, {do: salinityReverse2[1].salinity, date: salinityReverse2[1].date}, {do: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
+                  console.log(salinityGraph)
 
 
 
+                  let salinity = ([salinityReverse[0], salinityReverse[1], salinityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
 
-                    let tssReverse = tssData.reverse();
-                    let tss = ([tssReverse[0], tssReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-                    console.log(tssReverse[0])
-                    this.setState({
-                      tssLatest: tssReverse[0],
-                      tssAvg: tss,
-                      tssGraph: tssGraph,
-                    })
-                  }
-                  if (tssAverage.length > 2) {
-                    console.log("do one three things or more")
-                    let tssData = [];
-                    for (let i=0; i < tssAverage.length; i++) {
-                    //push send this data to the back of the chartData variable above.
-                    tssData.push(parseFloat(tssAverage[i].tss));
-
-                  }
-
-
-                  let tssReverse2 = tssAverage.reverse();
-
-
-                  let tssGraph = ([{tss: tssReverse2[2].tss, date: tssReverse2[2].date}, {tss: tssReverse2[1].tss, date: tssReverse2[1].date}, {tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
-                  console.log(tssGraph)
-
-                  let tssReverse = tssData.reverse();
-                  let tss = ([tssReverse[0], tssReverse[1], tssReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-                  console.log(tssReverse[0])
+                  console.log(salinityReverse)
                   this.setState({
-                    tssLatest: tssReverse[0],
-                    tssAvg: tss,
-                    tssGraph: tssGraph,
+                    salinityLatest: salinityReverse[0],
+                    salinityAvg: salinity,
+                    salinityGraph: salinityGraph,
                   })
-                  }
-
-
-
-
-
-
-
 
 
     });
     const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
     profileRef.on('value', (snapshot) => {
-      var that = this;
 
 
     this.setState({
@@ -842,40 +492,8 @@ zoom: 13
       hoaContact: snapshot.child('hoaContact').val(),
       managementContactNumber: snapshot.child('managementContactNumber').val(),
       hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-      latitude: snapshot.child('latitude').val(),
-      longitude: snapshot.child('longitude').val(),
-      center: {
-        lat: snapshot.child('latitude').val(),
-        lng: snapshot.child('longitude').val()
-      },
 
     });
-    console.log(this.state.center);
-              var myLat = `${this.state.latitude}`;
-                var myLon = `${this.state.longitude}`;
-             let API_WEATHER = `http://api.openweathermap.org/data/2.5/weather?lat=${myLat}&lon=${myLon}&units=imperial&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`;
-
-             fetch(API_WEATHER)
-          .then(response => response.json())
-          .then(responseJson => {
-            console.log(responseJson);
-            console.log(responseJson.weather);
-            console.log(responseJson.name);
-            this.setState({
-              isLoading: false,
-              dataSource: responseJson,
-              currentCity: this.state.lakeName,
-              currentTemp: responseJson.main.temp,
-              currentIcon: 'http://openweathermap.org/img/w/' + responseJson.weather[0].icon + '.png',
-              currentDescription: responseJson.weather[0].main,
-              currentHumidity: responseJson.main.humidity,
-
-
-            });
-          })
-          .catch(error => {
-            console.log(error);
-          });
 
 
   });
@@ -894,12 +512,49 @@ zoom: 13
     });
 
   });
+    let weatherData = [];
+    let city = '';
+    let temp = '';
+    let icon = '';
+    let description = '';
+    let humidity = '';
+
+    let api_callWeather =  await fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${'37.997'}&lon=${'-121.71'}&units=${'imperial'}&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`);
+
+
+    let weatherResponse = await api_callWeather.json();
+
+    let symbol = weatherResponse.weather[0].icon;
+
+
+    console.log(weatherResponse)
+
+    this.setState({
+      currentCity: weatherResponse.name,
+      currentTemp: weatherResponse.main.temp,
+      currentIcon: 'http://openweathermap.org/img/w/' + weatherResponse.weather[0].icon + '.png',
+
+      currentDescription: weatherResponse.weather[0].main,
+      currentHumidity: weatherResponse.main.humidity,
+
+    })
 
 
 
 
 
 
+
+
+
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+      const samplesRef = fire.database().ref(`dailySamples/${user.uid}`);
+      samplesRef.on('value', (snapshot) => {
+
+
+    });
+  });
   }
 
 
@@ -1094,27 +749,6 @@ zoom: 13
      this.setState({ [type]: key });
    }
 
-
-   getLocation(){
-
-       // Get the current position of the user
-       navigator.geolocation.getCurrentPosition(
-       (position) => {
-           this.setState(
-           (prevState) => ({
-               latitude: 30,
-               longitude: 20
-               }), () => { this.getWeather(); }
-           );
-       },
-           (error) => this.setState({ weather: error.message }),
-           { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-       );
-   }
-
-
-
-
   render() {
 
     const doCheckbox = (
@@ -1204,7 +838,6 @@ zoom: 13
         <Col xs={18} sm={18} md={18} lg={18} xl={18}>
           <h1>Dashboard</h1>
           <h3><b>{this.state.lakeName}</b></h3>
-
         </Col>
 
 
@@ -1212,42 +845,6 @@ zoom: 13
 
 
       </div>
-        </Row>
-        </div>
-        <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-        <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-         <Card  style={{textAlign: 'left'}} bordered={true} >
-           <div style={{textAlign: 'center'}}>
-           <h3>{this.state.currentCity}</h3>
-             <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
-             <h3>{this.state.currentDescription}</h3>
-             <p>Temperature: {this.state.currentTemp} F</p>
-             <p>Humidity: {this.state.currentHumidity}%</p>
-             </div>
-         </Card>
-        </Col>
-
-        <Col xs={24} sm={24} md={16} lg={16} xl={16}>
-         <Card  style={{textAlign: 'left'}} bordered={true} >
-           <div style={{ height: '29vh', width: '100%' }}>
-             <GoogleMapReact
-               bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
-               center={this.state.center}
-               defaultZoom={this.props.zoom}
-             >
-               <AnyReactComponent
-                 lat={this.state.latitude}
-                 lng={this.state.longitude}
-                 text={this.state.lakeName}
-               />
-             </GoogleMapReact>
-           </div>
-         </Card>
-
-        </Col>
-
-
         </Row>
         </div>
 
@@ -1266,11 +863,11 @@ zoom: 13
           <div style={{ position: 'absolute',
         top: '0%',
         left: '0%', backgroundColor: 'lightBlue', height: '100%', width: '4%', zIndex: 1}} />
-      <Card  style={{textAlign: 'left'}} bordered={true}>
+        <Card  style={{textAlign: 'left'}} bordered={true}>
+          <h3>{this.state.nitrogenLatest} mg/L</h3>
+          <hr></hr>
           <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
           <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-          <hr></hr>
-          <h3>{this.state.nitrogenLatest} mg/L</h3>
         </Card>
         </div>
       </Col>
@@ -1280,12 +877,10 @@ zoom: 13
         top: '0%',
         left: '0%', backgroundColor: '#086788', height: '100%', width: '4%', zIndex: 1}} />
         <Card  style={{textAlign: 'left'}} bordered={true}>
-          <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
-          <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-          <hr></hr>
           <h3>{this.state.phosphorusLatest} mg/L</h3>
-
-
+          <hr></hr>
+            <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
+            <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
         </Card>
         </div>
       </Col>
@@ -1295,10 +890,10 @@ zoom: 13
         top: '0%',
         left: '0%', backgroundColor: '#F0C808', height: '100%', width: '4%', zIndex: 1}} />
       <Card  style={{textAlign: 'left'}} bordered={true}>
-        <p style={{lineHeight: '2px'}}><b>DISSOLVED OXYGEN</b></p>
-        <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-          <hr></hr>
           <h3>{this.state.dissolvedOxygenLatest} mg/L</h3>
+          <hr></hr>
+            <p style={{lineHeight: '2px'}}><b>DISSOLVED OXYGEN</b></p>
+            <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
         </Card>
         </div>
       </Col>
@@ -1317,10 +912,10 @@ zoom: 13
   top: '0%',
   left: '0%', backgroundColor: '#5C80BC', height: '100%', width: '4%', zIndex: 1}} />
   <Card  style={{textAlign: 'left'}} bordered={true}>
+    <h3>{this.state.tssLatest} mg/L</h3>
+    <hr></hr>
     <p style={{lineHeight: '2px'}}><b>TSS</b></p>
     <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-    <hr></hr>
-    <h3>{this.state.tssLatest} mg/L</h3>
   </Card>
   </div>
 </Col>
@@ -1330,10 +925,10 @@ zoom: 13
   top: '0%',
   left: '0%', backgroundColor: '#30323D', height: '100%', width: '4%', zIndex: 1}} />
   <Card  style={{textAlign: 'left'}} bordered={true}>
-    <p style={{lineHeight: '2px'}}><b>TURBIDITY</b></p>
-    <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-    <hr></hr>
     <h3>{this.state.turbidityLatest} mg/L</h3>
+    <hr></hr>
+      <p style={{lineHeight: '2px'}}><b>TURBIDITY</b></p>
+      <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
   </Card>
   </div>
 </Col>
@@ -1343,12 +938,10 @@ zoom: 13
   top: '0%',
   left: '0%', backgroundColor: '#CDD1C4', height: '100%', width: '4%', zIndex: 1}} />
 <Card  style={{textAlign: 'left'}} bordered={true}>
-  <p style={{lineHeight: '2px'}}><b>SALINITY</b></p>
-  <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-    <hr></hr>
     <h3>{this.state.salinityLatest} ppt</h3>
-
-
+    <hr></hr>
+      <p style={{lineHeight: '2px'}}><b>SALINITY</b></p>
+      <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
   </Card>
   </div>
 </Col>
@@ -1527,14 +1120,14 @@ zoom: 13
 
 
   <Row>
-  <Col span={15}>
+  <Col span={16}>
 
       <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
       <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
       <p style={{lineHeight: '2px'}}>AVERAGE</p>
 
 </Col>
-<Col span={7}>
+<Col span={8}>
 
     <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.nitrogenAvg}mg/L</b></p>
 
@@ -1580,14 +1173,14 @@ zoom: 13
 <Card  bordered={true}>
 
   <Row>
-  <Col span={15}>
+  <Col span={16}>
 
       <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
       <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
       <p style={{lineHeight: '2px'}}>AVERAGE</p>
 
   </Col>
-  <Col span={7}>
+  <Col span={8}>
 
     <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.phosphorusAvg}mg/L</b></p>
 
@@ -1630,14 +1223,14 @@ zoom: 13
 
 
   <Row>
-  <Col span={15}>
+  <Col span={16}>
 
       <p style={{lineHeight: '2px'}}><b>DISSOLVED O<sub>2</sub></b></p>
       <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
       <p style={{lineHeight: '2px'}}>AVERAGE</p>
 
   </Col>
-  <Col span={7}>
+  <Col span={8}>
 
     <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.dissolvedOxygenAvg}mg/L</b></p>
 
@@ -1679,7 +1272,42 @@ zoom: 13
 </Row>
 </div>
 
+<div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+<Col xs={24} sm={24} md={8} lg={8} xl={8}>
+ <Card  style={{textAlign: 'left'}} bordered={true} >
+   <div style={{textAlign: 'center'}}>
+   <h3>{this.state.currentCity}</h3>
+     <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
+     <h3>{this.state.currentDescription}</h3>
+     <p>Temperature: {this.state.currentTemp} F</p>
+     <p>Humidity: {this.state.currentHumidity}%</p>
+     </div>
+ </Card>
+</Col>
 
+<Col xs={24} sm={24} md={16} lg={16} xl={16}>
+ <Card  style={{textAlign: 'left'}} bordered={true} >
+   <div style={{ height: '29vh', width: '100%' }}>
+     <GoogleMapReact
+       bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
+       defaultCenter={this.props.center}
+       defaultZoom={this.props.zoom}
+     >
+       <AnyReactComponent
+         lat={37.987636425563075}
+         lng={-121.63235758701154}
+         text={'Summer Lake'}
+       />
+     </GoogleMapReact>
+   </div>
+ </Card>
+
+</Col>
+
+
+</Row>
+</div>
 
 
 

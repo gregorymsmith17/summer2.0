@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
@@ -15,7 +15,7 @@ import fileDownload from "js-file-download";
 
 import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
+import { Row, Col, Popover, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
 
 
 
@@ -39,7 +39,17 @@ const styles = {
   },
 };
 
+const gpsURL = (
+  <div>
+    <a style={{ textDecoration: 'none', color: 'Blue' }} target="_blank" href="https://www.gps-coordinates.net/"><span><Icon type="search" /><span>Click Here for Coordinates</span></span></a>
+  </div>
+);
 
+const gpsLink = (
+  <Popover content={gpsURL} title="Find GPS Cordinates" trigger="hover">
+    <Icon style={{color: 'blue'}} type="info-circle" />
+  </Popover>
+)
 
 
 
@@ -59,6 +69,8 @@ export default class profilePage extends Component {
           hoaContact: '',
           managementContactNumber: '',
           hoaContactNumber: '',
+          latitude: '',
+          longitude: '',
 
 
           //Misc. for chaing taps and id's
@@ -126,7 +138,7 @@ export default class profilePage extends Component {
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
         const samplesRef = fire.database().ref(`profileInformation/${user.uid}`);
-        const orderID = fire.database().ref(`/profileInformation/${user.uid}/${orderID}`);
+
 
 
         const profileInformation = {
@@ -138,6 +150,9 @@ export default class profilePage extends Component {
           hoaContact: this.state.hoaContact,
           managementContactNumber: this.state.managementContactNumber,
           hoaContactNumber: this.state.hoaContactNumber,
+          latitude: this.state.latitude,
+          longitude: this.state.longitude,
+
 
           id: this.state.id,
         }
@@ -173,9 +188,6 @@ export default class profilePage extends Component {
           profileRef.on('value', (snapshot) => {
 
 
-  
-
-
           this.setState({
             lakeName: snapshot.child('lakeName').val(),
             locationCity: snapshot.child('locationCity').val(),
@@ -184,6 +196,8 @@ export default class profilePage extends Component {
             hoaContact: snapshot.child('hoaContact').val(),
             managementContactNumber: snapshot.child('managementContactNumber').val(),
             hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+            latitude: snapshot.child('latitude').val(),
+            longitude: snapshot.child('longitude').val(),
 
           });
 
@@ -213,6 +227,8 @@ export default class profilePage extends Component {
           hoaContact: '',
           managementContactNumber: '',
           hoaContactNumber: '',
+          latitude: '',
+          longitude: '',
 
         });
 
@@ -230,6 +246,8 @@ export default class profilePage extends Component {
           hoaContact: orders[order].hoaContact,
           managementContactNumber: orders[order].managementContactNumber,
           hoaContactNumber: orders[order].hoaContactNumber,
+          latitude: orders[order].latitude,
+          longitude: orders[order].longitude,
 
         });
       }
@@ -245,6 +263,8 @@ export default class profilePage extends Component {
         hoaContact: snapshot.child('hoaContact').val(),
         managementContactNumber: snapshot.child('managementContactNumber').val(),
         hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+        latitude: snapshot.child('latitude').val(),
+        longitude: snapshot.child('longitude').val(),
 
 
       })
@@ -270,7 +290,8 @@ export default class profilePage extends Component {
     sampleRef.child("hoaContact").set(this.state.hoaContact);
     sampleRef.child("managementContactNumber").set(this.state.managementContactNumber);
     sampleRef.child("hoaContactNumber").set(this.state.hoaContactNumber);
-
+    sampleRef.child("latitude").set(this.state.latitude);
+    sampleRef.child("longitude").set(this.state.longitude);
 
     });
   }
@@ -299,6 +320,8 @@ export default class profilePage extends Component {
         hoaContact: orders[order].hoaContact,
         managementContactNumber: orders[order].managementContactNumber,
         hoaContactNumber: orders[order].hoaContactNumber,
+        latitude: orders[order].latitude,
+        longitude: orders[order].longitude,
 
 
       });
@@ -314,6 +337,9 @@ export default class profilePage extends Component {
               hoaContact: '',
               managementContactNumber: '',
               hoaContactNumber: '',
+              latitude: '',
+              longitude: '',
+
             })
         });
   });
@@ -341,6 +367,8 @@ export default class profilePage extends Component {
           hoaContact: orders[order].hoaContact,
           managementContactNumber: orders[order].managementContactNumber,
           hoaContactNumber: orders[order].hoaContactNumber,
+          latitude: orders[order].latitude,
+          longitude: orders[order].longitude,
 
         });
       }
@@ -356,7 +384,8 @@ export default class profilePage extends Component {
         hoaContact: snapshot.child('hoaContact').val(),
         managementContactNumber: snapshot.child('managementContactNumber').val(),
         hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-
+        latitude: snapshot.child('latitude').val(),
+        longitude: snapshot.child('longitude').val(),
       })
 
 });
@@ -401,6 +430,9 @@ writeData (e) {
     hoaContact: this.state.hoaContact,
     managementContactNumber: this.state.managementContactNumber,
     hoaContactNumber: this.state.hoaContactNumber,
+    latitude: this.state.latitude,
+    longitude: this.state.longitude,
+
   }
 
   samplesRef.child(this.state.id).set(profileInformation);
@@ -592,6 +624,22 @@ const options = {
                       <FormControl name="hoaContactNumber" onChange={this.handleChange} type="text" placeholder="HOA Number" style={{ width: 350}} value={this.state.hoaContactNumber} /></Col>
                     </FormGroup>
                     </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                      <FormGroup>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Latitude</b>   {gpsLink}</Col>
+                        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                        <FormControl name="latitude" onChange={this.handleChange} type="number" placeholder="Latitude" style={{ width: 350}} value={this.state.latitude} /></Col>
+                      </FormGroup>
+                      </Row>
+                      <Row style={{paddingTop: '10px'}}>
+                        <FormGroup>
+                          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Longitude</b> {gpsLink}
+                        </Col>
+                          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                          <FormControl name="longitude" onChange={this.handleChange} type="number" placeholder="Longitude" style={{ width: 350}} value={this.state.longitude} /></Col>
+                        </FormGroup>
+
+                        </Row>
 
 
 

@@ -196,6 +196,7 @@ export default class reporting extends Component {
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleSelect = this.handleSelect.bind(this);
       this.writeData = this.writeData.bind(this);
+      this.filter = this.filter.bind(this);
 
 
 
@@ -479,6 +480,7 @@ export default class reporting extends Component {
 
 });
 
+
   });
 }
 fillStates1(itemId) {
@@ -524,6 +526,20 @@ fillStates1(itemId) {
   })
 
 });
+domtoimage.toBlob(document.getElementById('my-node'))
+    .then((blob) => {
+
+
+        console.log(blob);
+        const blobUrl = URL.createObjectURL(blob);
+
+        console.log(blobUrl);
+
+        this.setState({
+          blobUrl: blobUrl,
+        })
+
+    });
 
 });
 }
@@ -730,8 +746,22 @@ this.setState({
 
 preview = () => {
   this.setState({
-    key: "5",
+    key: "7",
   })
+  domtoimage.toBlob(document.getElementById('my-node'))
+      .then((blob) => {
+
+
+          console.log(blob);
+          const blobUrl = URL.createObjectURL(blob);
+
+          console.log(blobUrl);
+
+          this.setState({
+            blobUrl: blobUrl,
+          })
+
+      });
 }
 
 editChart = (itemId) => {
@@ -965,12 +995,39 @@ toggleNitrogen(event) {
 
 
 
+                    filter = (url) => {
 
+
+
+                      domtoimage.toBlob(document.getElementById('my-node'))
+                          .then((blob) => {
+
+
+                              console.log(blob);
+                              const blobUrl = URL.createObjectURL(blob);
+
+                              console.log(blobUrl);
+
+                              this.setState({
+                                blobUrl: blobUrl,
+                              })
+
+                          });
+
+
+                    }
 
 
 
 
     render() {
+      let { file } = this.state
+      console.log(this.state.file);
+      let url = file && URL.createObjectURL(file)
+
+
+      let img = document.createElement("my-node");
+
       function handleButtonClick(e) {
 
         console.log('click left button', e);
@@ -1098,6 +1155,98 @@ const doCheckbox = (
     bottom: '0px',
     left: '0px',
   }
+
+  const chart = (
+
+
+    <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={200}>
+    <AreaChart data={this.state.WQdataList}
+syncId="anyId">
+<defs>
+<linearGradient id="colorNitrogen" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.nitrogenColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.nitrogenColor} stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorPhosphorus" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.phosphorusColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.phosphorusColor} stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.doColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.doColor} stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorTDS" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.tdsColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.tdsColor}  stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorSalinity" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.salinityColor}  stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.salinityColor}  stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.turbidityColor}  stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.turbidityColor}stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorHardness" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.totalHardnessColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.totalHardnessColor} stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorpH" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.pHColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.pHColor} stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.tempColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.tempColor} stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorConductivity" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.conductivityColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.conductivityColor} stopOpacity={0}/>
+</linearGradient>
+<linearGradient id="colorTSS" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="5%" stopColor={this.state.tssColor} stopOpacity={0.8}/>
+  <stop offset="95%" stopColor={this.state.tssColor} stopOpacity={0}/>
+</linearGradient>
+</defs>
+<XAxis dataKey="sampleDate" />
+<YAxis domain={[0, 5]}/>
+<Tooltip />
+
+<Area type="monotone" dataKey={this.state.nitrogenPlot} stroke={this.state.nitrogenColor} fillOpacity={1} fill="url(#colorNitrogen)"><LabelList dataKey={this.state.nitrogenPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.phosphorusPlot} stroke={this.state.phosphorusColor} fillOpacity={1} fill="url(#colorPhosphorus)"><LabelList dataKey={this.state.phosphorusPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.tdsPlot} stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)"><LabelList dataKey={this.state.tdsPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.salinityPlot} stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)"><LabelList dataKey={this.state.salinityPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.turbidityPlot} stroke={this.state.turbidityColor}fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey={this.state.turbidityPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.totalHardnessPlot} stroke={this.state.totalHardnessColor} fillOpacity={1} fill="url(#colorHardness)"><LabelList dataKey={this.state.totalHardnessPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.pHPlot} stroke={this.state.pHColor} fillOpacity={1} fill="url(#colorpH)"><LabelList dataKey={this.state.pHPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.tempPlot} stroke={this.state.tempColor} fillOpacity={1} fill="url(#colorTemp)"><LabelList dataKey={this.state.tempPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.conductivityPlot} stroke={this.state.conductivityColor} fillOpacity={1} fill="url(#colorConductivity)"><LabelList dataKey={this.state.conductivityPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.tssPlot} stroke={this.state.tssColor} fillOpacity={1} fill="url(#colorTSS)"><LabelList dataKey={this.state.tssPlot} position="top" /></Area>
+
+<Area type="monotone" dataKey={this.state.doPlot} stroke={this.state.doColor} fillOpacity={1} fill="url(#colorDO)"><LabelList dataKey={this.state.doPlot} position="top" /></Area>
+
+
+
+
+
+<Legend />
+
+<Brush
+
+></Brush>
+</AreaChart>
+</ResponsiveContainer>
+
+);
 
 
 
@@ -1261,7 +1410,7 @@ const doCheckbox = (
               </Row>
                     <Row style={{paddingTop: '10px'}}>
               <FormGroup>
-                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
+                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Date</b></Col>
                 <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                 <FormControl name="reportDate" onChange={this.handleChange} type="date" placeholder="Report Date" value={this.state.reportDate} /></Col>
               </FormGroup>
@@ -1320,7 +1469,7 @@ const doCheckbox = (
                 </Row>
                       <Row style={{paddingTop: '10px'}}>
                 <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Date</b></Col>
                   <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                   <FormControl name="reportDate" onChange={this.handleChange} type="date" placeholder="Report Date" value={this.state.reportDate} /></Col>
                 </FormGroup>
@@ -1446,7 +1595,7 @@ const doCheckbox = (
 
               <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
 
-                  <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>REPORT PREVIEW</b></p>
+                  <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>REPORT</b></p>
 
 
             </Col>
@@ -1468,7 +1617,7 @@ const doCheckbox = (
                     </Row>
                           <Row style={{paddingTop: '10px'}}>
                     <FormGroup>
-                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Date</b></Col>
                       <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                       <FormControl name="reportDate" onChange={this.handleChange} type="date" placeholder="Report Date" value={this.state.reportDate} /></Col>
                     </FormGroup>
@@ -1513,93 +1662,7 @@ const doCheckbox = (
 
                       <Row>
                       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                        <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={200}>
-                          <AreaChart data={this.state.orders2}
-                    syncId="anyId">
-                    <defs>
-                      <linearGradient id="colorNitrogen" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.nitrogenColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.nitrogenColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorPhosphorus" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.phosphorusColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.phosphorusColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.doColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.doColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTDS" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.tdsColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.tdsColor}  stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorSalinity" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.salinityColor}  stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.salinityColor}  stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.turbidityColor}  stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.turbidityColor}stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorHardness" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.totalHardnessColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.totalHardnessColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorpH" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.pHColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.pHColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.tempColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.tempColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorConductivity" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.conductivityColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.conductivityColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTSS" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.tssColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.tssColor} stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="sampleDate" />
-                    <YAxis domain={[0, 5]}/>
-                    <Tooltip />
-
-                    <Area type="monotone" dataKey={this.state.nitrogenPlot} stroke={this.state.nitrogenColor} fillOpacity={1} fill="url(#colorNitrogen)"><LabelList dataKey={this.state.nitrogenPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.phosphorusPlot} stroke={this.state.phosphorusColor} fillOpacity={1} fill="url(#colorPhosphorus)"><LabelList dataKey={this.state.phosphorusPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.tdsPlot} stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)"><LabelList dataKey={this.state.tdsPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.salinityPlot} stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)"><LabelList dataKey={this.state.salinityPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.turbidityPlot} stroke={this.state.turbidityColor}fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey={this.state.turbidityPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.totalHardnessPlot} stroke={this.state.totalHardnessColor} fillOpacity={1} fill="url(#colorHardness)"><LabelList dataKey={this.state.totalHardnessPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.pHPlot} stroke={this.state.pHColor} fillOpacity={1} fill="url(#colorpH)"><LabelList dataKey={this.state.pHPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.tempPlot} stroke={this.state.tempColor} fillOpacity={1} fill="url(#colorTemp)"><LabelList dataKey={this.state.tempPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.conductivityPlot} stroke={this.state.conductivityColor} fillOpacity={1} fill="url(#colorConductivity)"><LabelList dataKey={this.state.conductivityPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.tssPlot} stroke={this.state.tssColor} fillOpacity={1} fill="url(#colorTSS)"><LabelList dataKey={this.state.tssPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.doPlot} stroke={this.state.doColor} fillOpacity={1} fill="url(#colorDO)"><LabelList dataKey={this.state.doPlot} position="top" /></Area>
-
-
-
-
-
-                    <Legend />
-
-                    <Brush hidden startIndex={this.state.startIndex} endIndex={this.state.endIndex}
-                      onChange={this.handleSelectIndex.bind(this)}
-
-                      ></Brush>
-                  </AreaChart>
-                   </ResponsiveContainer>
+                        <div id="my-node">{chart}</div>
 
                   </Col>
                   </Row>
@@ -1638,14 +1701,14 @@ const doCheckbox = (
         </Row>
 
             </TabPane>
-            <TabPane tab="" key="6">
+            <TabPane tab="Report" key="6">
               <Row>
               <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Row>
 
               <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
 
-                  <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>REPORT PREVIEW</b></p>
+                  <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>REPORT</b></p>
 
 
             </Col>
@@ -1656,7 +1719,7 @@ const doCheckbox = (
 
                 <form>
                   <Row style={{textAlign: 'right'}}>
-                  <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Report</Icon>
+                  <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.preview()}></Icon>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                     <FormGroup>
@@ -1667,7 +1730,7 @@ const doCheckbox = (
                     </Row>
                           <Row style={{paddingTop: '10px'}}>
                     <FormGroup>
-                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Stocking Date</b></Col>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Date</b></Col>
                       <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                       <FormControl name="reportDate" onChange={this.handleChange} type="date" placeholder="Report Date" value={this.state.reportDate} /></Col>
                     </FormGroup>
@@ -1712,93 +1775,169 @@ const doCheckbox = (
 
                       <Row>
                       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                        <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={200}>
-                          <AreaChart data={this.state.orders2}
-                    syncId="anyId">
-                    <defs>
-                      <linearGradient id="colorNitrogen" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.nitrogenColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.nitrogenColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorPhosphorus" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.phosphorusColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.phosphorusColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.doColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.doColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTDS" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.tdsColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.tdsColor}  stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorSalinity" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.salinityColor}  stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.salinityColor}  stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.turbidityColor}  stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.turbidityColor}stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorHardness" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.totalHardnessColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.totalHardnessColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorpH" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.pHColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.pHColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.tempColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.tempColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorConductivity" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.conductivityColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.conductivityColor} stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorTSS" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={this.state.tssColor} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={this.state.tssColor} stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="sampleDate" />
-                    <YAxis domain={[0, 5]}/>
-                    <Tooltip />
+                        <div id="my-node">{chart}</div>
 
-                    <Area type="monotone" dataKey={this.state.nitrogenPlot} stroke={this.state.nitrogenColor} fillOpacity={1} fill="url(#colorNitrogen)"><LabelList dataKey={this.state.nitrogenPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.phosphorusPlot} stroke={this.state.phosphorusColor} fillOpacity={1} fill="url(#colorPhosphorus)"><LabelList dataKey={this.state.phosphorusPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.tdsPlot} stroke={this.state.tdsColor} fillOpacity={1} fill="url(#colorTDS)"><LabelList dataKey={this.state.tdsPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.salinityPlot} stroke={this.state.salinityColor} fillOpacity={1} fill="url(#colorSalinity)"><LabelList dataKey={this.state.salinityPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.turbidityPlot} stroke={this.state.turbidityColor}fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey={this.state.turbidityPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.totalHardnessPlot} stroke={this.state.totalHardnessColor} fillOpacity={1} fill="url(#colorHardness)"><LabelList dataKey={this.state.totalHardnessPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.pHPlot} stroke={this.state.pHColor} fillOpacity={1} fill="url(#colorpH)"><LabelList dataKey={this.state.pHPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.tempPlot} stroke={this.state.tempColor} fillOpacity={1} fill="url(#colorTemp)"><LabelList dataKey={this.state.tempPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.conductivityPlot} stroke={this.state.conductivityColor} fillOpacity={1} fill="url(#colorConductivity)"><LabelList dataKey={this.state.conductivityPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.tssPlot} stroke={this.state.tssColor} fillOpacity={1} fill="url(#colorTSS)"><LabelList dataKey={this.state.tssPlot} position="top" /></Area>
-
-                    <Area type="monotone" dataKey={this.state.doPlot} stroke={this.state.doColor} fillOpacity={1} fill="url(#colorDO)"><LabelList dataKey={this.state.doPlot} position="top" /></Area>
+                  </Col>
+                  </Row>
+                    </FormGroup>
+                    </Row>
 
 
 
 
 
-                    <Legend />
+            <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+            <Button type="primary" onClick={this.writeData} bsStyle="primary">Overwrite Report</Button>
+            </Row>
 
-                    <Brush hidden startIndex={this.state.startIndex} endIndex={this.state.endIndex}
-                      onChange={this.handleSelectIndex.bind(this)}
 
-                      ></Brush>
-                  </AreaChart>
-                   </ResponsiveContainer>
+
+
+
+            </form>
+
+
+          </Col>
+          </Row>
+          <Row>
+          <Col span={24}>
+          <hr></hr>
+          </Col>
+          </Row>
+
+
+
+
+
+
+          </Col>
+        </Row>
+
+            </TabPane>
+
+            <TabPane tab="Preview" key="7">
+              <Row>
+              <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Row>
+
+              <Col xs={18} sm={18} md={18} lg={18} xl={18} style={{paddingTop: '20px'}}>
+
+                  <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>REPORT PREVIEW</b></p>
+
+
+            </Col>
+            <Col xs={6} sm={6} md={6} lg={6} xl={6} style={{paddingTop: '20px'}}>
+
+            <button onClick={() => { this.pdfExportComponent.save(); }}>
+                        Export PDF
+                    </button>
+                  </Col>
+
+          </Row>
+          <Row>
+          <Col span={24}>
+          <hr></hr>
+          </Col>
+          </Row>
+
+              <Row>
+              <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                <PDFExport          fileName={this.state.reportDate +' ' + 'Report'}
+                              title=""
+                              style={{
+                                  margin: '30px',
+                                  padding: '100px'}}
+                              paperSize={'Letter'}
+                              forcePageBreak=".page-break"
+                              margin={30}
+                              ref={(component) => this.pdfExportComponent = component}
+                          >
+
+                <form>
+
+                  <Row style={{paddingTop: '10px'}}>
+                    <FormGroup>
+
+                      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '20px'}}><b>{this.state.reportTitle}</b></p>
+                       </Col>
+                    </FormGroup>
+                    </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                      <FormGroup>
+
+                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                          <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '20px'}}><b>{this.state.lakeName}</b></p>
+                         </Col>
+                      </FormGroup>
+                      </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                      <FormGroup>
+
+                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                          <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '20px'}}><b>{this.state.reportDate}</b></p>
+                         </Col>
+                      </FormGroup>
+                      </Row>
+                      <Row style={{paddingTop: '10px'}}>
+                        <FormGroup>
+
+                          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                            <Table striped bordered condensed hover>
+  <thead>
+    <tr>
+      <th style={{ fontSize: '18px', width: '100px'}}>Item</th>
+      <th style={{ fontSize: '18px', width: '450px'}}>Description</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ fontSize: '15px', width: '100px'}}><b>Report Overview</b></td>
+      <td style={{ fontSize: '15px', width: '500px'}}>{this.state.reportOverview}</td>
+    </tr>
+    <tr>
+      <td style={{ fontSize: '15px', width: '100px'}}><b>Report Analysis</b></td>
+      <td style={{ fontSize: '15px', width: '500px'}}>{this.state.reportAnalysis}</td>
+    </tr>
+
+  </tbody>
+</Table>
+
+
+
+
+                           </Col>
+                        </FormGroup>
+                        </Row>
+
+
+
+                    
+
+                    <Row style={{paddingTop: '10px'}}>
+                    <FormGroup>
+                      <Row>
+
+                      <Col xs={18} sm={18} md={18} lg={18} xl={18} style={{paddingTop: '20px'}}>
+
+                          <p style={{lineHeight: '2px', paddingLeft: '55px', fontSize: '32px'}}><b>WATER QUALITY</b></p>
+
+
+                    </Col>
+                    <Col xs={6} sm={6} md={6} lg={6} xl={6} style={{paddingTop: '20px'}}>
+
+
+
+
+                  </Col>
+                  </Row>
+
+                      <Row>
+                      <Col xs={16} sm={16} md={16} lg={16} xl={16}>
+                        <ResponsiveContainer width="100%" aspect={8/3.0} height={600}>
+                        <img src={this.state.blobUrl} />
+                        </ResponsiveContainer>
 
                   </Col>
                   </Row>
@@ -1818,6 +1957,9 @@ const doCheckbox = (
 
 
             </form>
+
+
+          </PDFExport>
 
 
           </Col>

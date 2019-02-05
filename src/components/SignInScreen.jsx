@@ -8,6 +8,10 @@ import './SignInScreen.css';
 
 import Dashboard from './dashboard';
 import monthlySamples from './monthlySamples';
+import monthlySamples2 from './monthlySamples2';
+import monthlySamples3 from './monthlySamples2';
+import testingPage from './testingPage';
+
 
 import uploadDocument from './uploadDocument';
 import profilePage from './profilePage';
@@ -19,6 +23,9 @@ import chemicalApplications from './assetManager/chemicalApplications';
 import fishStocking from './assetManager/fishStocking';
 
 import reporting from './reporting';
+
+
+
 
 
 import lake from './images/lake.jpg';
@@ -268,6 +275,11 @@ class SignInScreen extends React.Component {
     });
   }
 
+  dashboardRef = () => {
+    return (
+      <Route path="/dashboard" component={Dashboard} />
+    )
+  }
 
 
   render() {
@@ -374,9 +386,7 @@ class SignInScreen extends React.Component {
 
             </SubMenu>
 
-            <SubMenu key="sub2" title={<span><Icon type="form" /><span>Sampling</span></span>}>
-              <Menu.Item key="3"><Link to="/monthlySamples">Monthly Samples</Link></Menu.Item>
-
+            <SubMenu key="sub2" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/monthlySamples"><span><Icon type="form" /><span>Sampling</span></span></Link>}>
 
             </SubMenu>
 
@@ -393,13 +403,18 @@ class SignInScreen extends React.Component {
             </SubMenu>
 
 
-          <SubMenu key="sub5" title={<span><Icon type="file" /><span>Documents</span></span>}>
-            <Menu.Item key="11"><Link to="/uploadDocument">Documents</Link></Menu.Item>
-          </SubMenu>
+            <SubMenu key="sub5" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/uploadDocument"><span><Icon type="file" /><span>Documents</span></span></Link>}>
 
-          <SubMenu key="sub6" title={<span><Icon type="user" /><span>Profile</span></span>}>
-            <Menu.Item key="12"><Link to="/profilePage">Profile</Link></Menu.Item>
-          </SubMenu>
+            </SubMenu>
+
+            <SubMenu key="sub6" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/profilePage"><span><Icon type="user" /><span>Profile</span></span></Link>}>
+
+            </SubMenu>
+
+            <SubMenu key="sub7" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/reporting"><span><Icon type="form" /><span>Reporting</span></span></Link>}>
+
+            </SubMenu>
+
 
 
 
@@ -447,20 +462,23 @@ class SignInScreen extends React.Component {
           onClick={handleClick}
           style={{ backgroundColor: '#222222', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'white', fontSize: '18px' }}
           mode="vertical">
-          <SubMenu key="sub1" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/dashboard"><span><Icon type="dashboard" /><span><b>Dashboard</b></span></span></Link>}>
+
+          <SubMenu key="sub1" onClick={this.dashboardRef}
+            title={<span>
+            <Link style={{ width: '100%', textDecoration: 'none', color: 'white' }} to="/dashboard">
+            <span><Icon type="dashboard" /><span>Dashboard <Icon style={{  paddingLeft: '75px', fontSize: 1}}type="right" /></span></span>
+            </Link></span>}>
 
           </SubMenu>
 
-          <SubMenu key="sub2" title={<span><Icon type="form" /><span><b>Sampling</b></span></span>}>
-            <Menu.Item key="3"><Link to="/monthlySamples">Monthly Samples</Link></Menu.Item>
-
+          <SubMenu key="sub2" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/monthlySamples"><span><Icon type="form" /><span>Sampling<Icon style={{  paddingLeft: '80px', fontSize: 1}}type="right" /></span></span></Link>}>
 
           </SubMenu>
 
 
 
 
-          <SubMenu key="sub4" title={<span><Icon type="setting" /><span><b>Asset Manager</b></span></span>}>
+          <SubMenu key="sub4" title={<span><Icon type="setting" /><span>Asset Manager</span></span>}>
             <Menu.Item key="6"><Link to="/maintenanceReports">Maintenance Reports</Link></Menu.Item>
             <Menu.Item key="7"><Link to="/vendorContacts">Vendor Contacts</Link></Menu.Item>
               <Menu.Item key="8"><Link to="/equipmentList">Equipment List</Link></Menu.Item>
@@ -470,21 +488,33 @@ class SignInScreen extends React.Component {
           </SubMenu>
 
 
-        <SubMenu key="sub5" title={<span><Icon type="file" /><span><b>Documents</b></span></span>}>
-          <Menu.Item key="11"><Link to="/uploadDocument">Documents</Link></Menu.Item>
-        </SubMenu>
+          <SubMenu key="sub5" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/uploadDocument"><span><Icon type="file" /><span>Documents<Icon style={{  paddingLeft: '100px', fontSize: 1}}type="right" /></span></span></Link>}>
 
-        <SubMenu key="sub6" title={<span><Icon type="user" /><span><b>Profile</b></span></span>}>
-          <Menu.Item key="11"><Link to="/profilePage">Profile Info</Link></Menu.Item>
-        </SubMenu>
+          </SubMenu>
 
-        <SubMenu key="sub7" title={<span><Icon type="copy" /><span><b>Reporting</b></span></span>}>
-          <Menu.Item key="12"><Link to="/reporting">Monthly Reports</Link></Menu.Item>
-        </SubMenu>
+          <SubMenu key="sub6" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/profilePage"><span><Icon type="user" /><span>Profile<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
+
+          </SubMenu>
+
+          <SubMenu key="sub7" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/reporting"><span><Icon type="form" /><span>Reporting<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
+
+          </SubMenu>
+
+          <SubMenu key="sub8" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/monthlySamples2"><span><Icon type="form" /><span>Samples2<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
+
+          </SubMenu>
+          <SubMenu key="sub8" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/monthlySamples3"><span><Icon type="form" /><span>Testing<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
+
+          </SubMenu>
+
+          <SubMenu key="sub9" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/testingPage"><span><Icon type="form" /><span>Testing Page<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
+
+          </SubMenu>
 
 
 
-          <SubMenu key="sub5" onSelect={() => firebase.auth().signOut()} title={<span><Icon type="logout" /><span><Button type="default" onClick={() => firebase.auth().signOut()}><b>Sign Out</b>
+
+          <SubMenu key="sub10" onSelect={() => firebase.auth().signOut()} title={<span><Icon type="logout" /><span><Button type="default" onClick={() => firebase.auth().signOut()}><b>Sign Out</b>
 
           </Button></span></span>}>
 
@@ -510,6 +540,9 @@ class SignInScreen extends React.Component {
           <Route path="/chemicalApplications" component={chemicalApplications} />
           <Route path="/fishStocking" component={fishStocking} />
           <Route path="/reporting" component={reporting} />
+          <Route path="/monthlySamples2" component={monthlySamples2} />
+          <Route path="/monthlySamples3" component={monthlySamples3} />
+          <Route path="/testingPage" component={testingPage} />
 
         </div>
       </Content>
