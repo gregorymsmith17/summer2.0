@@ -14,6 +14,8 @@ import testingPage from './testingPage';
 
 
 import uploadDocument from './uploadDocument';
+import uploadDrawings from './uploadDrawings';
+import uploadManuals from './uploadManuals';
 import profilePage from './profilePage';
 
 import maintenanceReports from './assetManager/maintenanceReports';
@@ -250,6 +252,35 @@ class SignInScreen extends React.Component {
     this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
         (user) => this.setState({isSignedIn: !!user})
     );
+this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+    profileRef.on('value', (snapshot) => {
+      var that = this;
+
+
+    this.setState({
+      lakeName: snapshot.child('lakeName').val(),
+      locationCity: snapshot.child('locationCity').val(),
+      locationState: snapshot.child('locationState').val(),
+      managementContact: snapshot.child('managementContact').val(),
+      hoaContact: snapshot.child('hoaContact').val(),
+      managementContactNumber: snapshot.child('managementContactNumber').val(),
+      hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+      latitude: snapshot.child('latitude').val(),
+      longitude: snapshot.child('longitude').val(),
+      center: {
+        lat: snapshot.child('latitude').val(),
+        lng: snapshot.child('longitude').val()
+      },
+
+    });
+
+
+
+
+
+  });
+});
   }
 
   // Make sure we un-register Firebase observers when the component unmounts.
@@ -368,6 +399,7 @@ class SignInScreen extends React.Component {
 
       <Layout>
 
+
         <div id="myDIV" style={{position: 'fixed'}}>
           <Button size="large" width={5} type="primary" icon="menu" onClick={this.showDrawer1}/>
 
@@ -403,7 +435,11 @@ class SignInScreen extends React.Component {
             </SubMenu>
 
 
-            <SubMenu key="sub5" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/uploadDocument"><span><Icon type="file" /><span>Documents</span></span></Link>}>
+            <SubMenu key="sub5" title={<span><Icon type="file-text" /><span>Document Manager</span></span>}>
+              <Menu.Item key="11"><Link to="/uploadDocument">Reports</Link></Menu.Item>
+              <Menu.Item key="12"><Link to="/uploadDrawings">Drawings</Link></Menu.Item>
+              <Menu.Item key="13"><Link to="/uploadManuals">Manuals</Link></Menu.Item>
+
 
             </SubMenu>
 
@@ -488,7 +524,13 @@ class SignInScreen extends React.Component {
           </SubMenu>
 
 
-          <SubMenu key="sub5" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/uploadDocument"><span><Icon type="file" /><span>Documents<Icon style={{  paddingLeft: '100px', fontSize: 1}}type="right" /></span></span></Link>}>
+
+
+          <SubMenu key="sub5" title={<span><Icon type="file-text" /><span>Document Manager</span></span>}>
+            <Menu.Item key="11"><Link to="/uploadDocument">Reports</Link></Menu.Item>
+            <Menu.Item key="12"><Link to="/uploadDrawings">Drawings</Link></Menu.Item>
+            <Menu.Item key="13"><Link to="/uploadManuals">Manuals</Link></Menu.Item>
+
 
           </SubMenu>
 
@@ -500,12 +542,7 @@ class SignInScreen extends React.Component {
 
           </SubMenu>
 
-          <SubMenu key="sub8" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/monthlySamples2"><span><Icon type="form" /><span>Samples2<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
 
-          </SubMenu>
-          <SubMenu key="sub8" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/monthlySamples3"><span><Icon type="form" /><span>Testing<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
-
-          </SubMenu>
 
           <SubMenu key="sub9" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/testingPage"><span><Icon type="form" /><span>Testing Page<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
 
@@ -526,6 +563,35 @@ class SignInScreen extends React.Component {
         </Menu>
     </Sider>
     <Layout style={{margin: this.state.margin, backgroundColor: '#F0F0F0'}}>
+      <Header style={{ backgroundColor: '#ECECEC'}}>
+
+
+
+
+          <div style={{ background: '#F0F0F0', padding: '5px' }}>
+          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+            <div style={{position: 'relative'}}>
+          <Col xs={16} sm={16} md={16} lg={16} xl={16}>
+            <div style={{fontSize: '36px'}}><b>Limno Analytics</b></div>
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8} xl={8} onClick={this.showDrawer}style={{ position: 'absolute',
+        top: '0%',
+        right: '0%', textAlign: 'right'}}>
+
+          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'right'}}>
+            <div style={{fontSize: '20px'}}><b>Log In</b></div>
+            </Col>
+          </Col>
+
+
+
+        </div>
+          </Row>
+          </div>
+
+
+
+      </Header>
 
       <Content style={{ backgroundColor: '#F0F0F0', margin: '24px 16px 0' }}>
         <div style={{ padding: 5, backgroundColor: '#F0F0F0', background: '#F0F0F0', minHeight: 360 }}>
@@ -543,6 +609,8 @@ class SignInScreen extends React.Component {
           <Route path="/monthlySamples2" component={monthlySamples2} />
           <Route path="/monthlySamples3" component={monthlySamples3} />
           <Route path="/testingPage" component={testingPage} />
+          <Route path="/uploadDrawings" component={uploadDrawings} />
+          <Route path="/uploadManuals" component={uploadManuals} />
 
         </div>
       </Content>

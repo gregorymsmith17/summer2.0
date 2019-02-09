@@ -11,7 +11,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import { TiArrowSortedDown, TiBrush, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
 
 import domtoimage from 'dom-to-image';
-import { ChromePicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 import fileDownload from "js-file-download";
 
 
@@ -157,6 +157,12 @@ export default class testingPage extends Component {
           tableKeys1: [],
           tableData: [],
           graphInfo: '',
+          graphInfoReverse: '',
+          graphKeys: [],
+          table1Keys: '',
+          tableData: {},
+          columnData: [{}
+                            ],
 
 
 
@@ -263,13 +269,19 @@ export default class testingPage extends Component {
 
 
 
-      componentDidMount() {
+      componentDidMount(itemId) {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
           console.log(user.uid);
+
+
+
+
           this.setState({
             userID: user.uid,
+
           })
+
 
 
 
@@ -285,6 +297,8 @@ export default class testingPage extends Component {
               Parameter_Name: parameterList[order].Parameter_Name,
               Parameter_Units: parameterList[order].Parameter_Units,
               Parameter_Input: parameterList[order].Parameter_Input,
+              dataType: parameterList[order].dataType,
+              color: parameterList[order].color,
 
             });
             console.log(newState);
@@ -314,139 +328,173 @@ export default class testingPage extends Component {
           }
 
 
-          console.log(this.snapshotToArray(snapshot));
+
 
           let snapArray = this.snapshotToArray(snapshot);
 
-          this.setState({
-            graphInfo: this.snapshotToArray(snapshot),
-          })
-          console.log(this.state.graphInfo);
+          let graphInfo = this.snapshotToArray(snapshot);
+          let graphInfoReverse = this.snapshotToArray(snapshot);
 
 
-
-
-          snapArray.sort(function(a, b) {
-
+          graphInfo.sort(function(a, b) {
             if (a.date === b.date) {
               return 0;
             }
             return a.date > b.date ? 1 : -1;
         });
 
-          let snapDate = snapArray.date;
-          console.log(snapDate);
+        graphInfoReverse.sort(function(a, b) {
+          if (b.date === a.date) {
+            return 0;
+          }
+          return b.date > a.date ? 1 : -1;
+      });
 
-          let snap = snapArray[0];
+      if (snapArray.length == 0) {
+        console.log("do nothing")
+      }
 
-          delete snap.key;
-          delete snap.date;
+      if (snapArray.length > 0) {
+        let snapArrayReverse = snapArray.reverse();
+        let graphKeys = Object.keys(snapArrayReverse[0]);
 
-          let snapTable = snapArray[0];
-
-
-          let snapTable1 = snapArray[0];
-
-          let tableArray = this.snapshotToArray(snapshot);
-          let table = tableArray[0];
-          delete table.key;
-          delete table.date;
-
-          let tableKeys = Object.keys(tableArray[0]);
-
-          console.log(tableKeys);
+        graphKeys = graphKeys.filter(e => e !== 'id');
+        graphKeys = graphKeys.filter(e => e !== 'key');
+        graphKeys = graphKeys.filter(e => e !== 'date');
 
 
-
-          console.log(Object.keys(snapTable));
+        console.log(graphKeys);
 
 
 
+        let tableData1 = [];
+        for (let i=0; i < graphInfoReverse.length; i++) {
+        //push send this data to the back of the chartData variable above.
+        tableData1.push(Object.keys(graphInfoReverse[i]));
+
+        }
+        console.log(tableData1);
+
+        let tableData2 = tableData1.map(function(a){return a.length;});
+tableData2.indexOf(Math.max.apply(Math, tableData2));
+
+let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+
+          console.log(tableData2);
+          console.log(indexOfMaxValue);
+
+          let table1Keys = Object.keys(graphInfoReverse[indexOfMaxValue]);
+          table1Keys = table1Keys.filter(e => e !== 'id');
+          console.log(table1Keys);
 
 
-          console.log(snap);
 
 
-          let arrayKeys = Object.keys(snapArray[0]);
+            this.setState({
+              graphInfo: graphInfo,
+              graphInfoReverse: graphInfoReverse,
+              graphKeys: graphKeys,
+              table1Keys: table1Keys,
 
-          this.setState({
-            graphingKeys: arrayKeys,
-            graphingData: snapArray,
-            tableKeys: tableKeys,
+
+            })
+            console.log(this.state.graphInfo);
+            console.log(this.state.graphInfoReverse);
+            console.log(this.state.graphKeys);
+            console.log(this.state.columnData);
+
+            let tableData = [];
+            for (let i=0; i < table1Keys.length; i++) {
+            //push send this data to the back of the chartData variable above.
+            tableData.push({dataField: table1Keys[i], text: table1Keys[i]});
+
+            }
+
+            tableData.push({dataField: 'delete',
+             text: 'Delete',
+             formatter: this.deleteRow.bind(this),
+
+            })
+
+            var arr = snapshot.val();
+
+            var arr1 = Object.keys(arr);
+
+
+            console.log(arr1);
+
+
+
+
+
+            console.log(tableData);
+
+            this.setState({
+              columnData: tableData,
+
+            })
+
+            console.log(this.state.tableData);
+
+
+
+
+
+
+
+
+          }
+
+
+
+
+
+
+
+
+
 
           })
 
-          console.log(this.state.tableKeys);
-          console.log(this.state.graphingData);
+          const parameter2ist1Ref = fire.database().ref(`parameterSample/${user.uid}`);
+          parameter2ist1Ref.on('value', (snapshot) => {
+            let parameterList2 = snapshot.val();
+            console.log(parameterList2);
 
           })
+
+
+
+
+
+
     })
   }
 
 
 
     fillStates(itemId) {
-      let area = '';
+
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
-      const sampleRef = fire.database().ref(`/parameterInformation/${user.uid}/${itemId}`);
+
       const sample1Ref = fire.database().ref(`/parameterList/${user.uid}/${itemId}`);
 
-      sampleRef.on('value', (snapshot) => {
+      let id = fire.database().ref().child(`/parameterList/${user.uid}/${itemId}`).key;
+
+      sample1Ref.on('value', (snapshot) => {
 
         this.setState({
-          visible1: true,
+          Parameter_Name: snapshot.child('Parameter_Name').val(),
+          Parameter_Units: snapshot.child('Parameter_Units').val(),
+          color: snapshot.child('color').val(),
+          dataType: snapshot.child('dataType').val(),
+          id: id,
 
 
         });
 
-      let orders = snapshot.val();
-      let id = fire.database().ref().child(`/monthlySamples/${user.uid}/${itemId}`).key;
 
-      let newState = [];
-      for (let order in orders) {
-        newState.push({
-          id: order,
-
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
-          sampleNotes: orders[order].sampleNotes,
-
-        });
-      }
-      this.setState({
-
-        id: id,
-
-
-        sampleDate: snapshot.child('sampleDate').val(),
-        sampleTaker: snapshot.child('sampleTaker').val(),
-        temp: snapshot.child('temp').val(),
-        do: snapshot.child('do').val(),
-        conductivity: snapshot.child('conductivity').val(),
-        tds: snapshot.child('tds').val(),
-        salinity: snapshot.child('salinity').val(),
-        pH: snapshot.child('pH').val(),
-        turbidity: snapshot.child('turbidity').val(),
-        nitrogen: snapshot.child('nitrogen').val(),
-        phosphorus: snapshot.child('phosphorus').val(),
-        totalHardness: snapshot.child('totalHardness').val(),
-        tss: snapshot.child('tss').val(),
-        sampleNotes: snapshot.child('sampleNotes').val(),
-
-
-      })
 
 
 });
@@ -822,6 +870,8 @@ fillParameterInfo = (e) => {
     Parameter_Name: this.state.Parameter_Name,
     Parameter_Units: this.state.Parameter_Units,
     Parameter_Input: this.state.Parameter_Input,
+    color: this.state.color,
+    dataType: this.state.dataType,
   }
 
   parameterListRef.push(parameterInfo);
@@ -829,7 +879,38 @@ fillParameterInfo = (e) => {
   this.setState({
     Parameter_Name: '',
     Parameter_Units: '',
+    Parameter_Input: '',
+    color: '',
+    dataType: '',
   });
+
+});
+}
+
+editParameterInfo = (e) => {
+  e.preventDefault();
+  //fire.database().ref('samples') refers to the main title of the fire database.
+  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+
+  const sampleRef = fire.database().ref(`/parameterList/${user.uid}/${this.state.id}`);
+
+
+
+  sampleRef.child("Parameter_Name").set(this.state.Parameter_Name);
+  sampleRef.child("Parameter_Units").set(this.state.Parameter_Units);
+  sampleRef.child("Parameter_Input").set(this.state.Parameter_Input);
+  sampleRef.child("dataType").set(this.state.dataType);
+  sampleRef.child("color").set(this.state.color);
+
+
+
+
+
+
+
+  //this.setState is used to clear the text boxes after the form has been submitted.
+
 
 });
 }
@@ -852,6 +933,7 @@ handleSampleChange = idx => evt => {
     const parameterListRef = fire.database().ref(`parameterSample/${user.uid}`);
 
     const date = {date: this.state.sampleDate};
+    const color = {color: this.state.color};
     const parameterInfo = {
 
       list: this.state.Parameter_List.map((parameter) => {
@@ -894,7 +976,7 @@ console.log(this.state.parameters);
 
 var arr = this.state.Parameter_List;
 var object = arr.reduce(
-    (obj, item) => Object.assign(obj, {date: this.state.sampleDate, id: item.id, [item.Parameter_Name]: item.Parameter_Input}) ,{});
+    (obj, item) => Object.assign(obj, {date: this.state.sampleDate, color: this.state.color, id: item.id, [item.Parameter_Name]: item.Parameter_Input}) ,{});
 
 console.log(object);
 
@@ -928,6 +1010,15 @@ parameterListRef.push(object);
 
   }
 
+  removesample1(itemId) {
+
+   const sampleRef = fire.database().ref(`/parameterList/${this.state.userID}/${itemId}`);
+
+   sampleRef.remove();
+
+
+ }
+
    deleteRow(row, isSelected, e, id, key) {
 
     return (
@@ -940,7 +1031,21 @@ parameterListRef.push(object);
     )
   }
 
+  deleteRow1(row, isSelected, e, id, key) {
 
+   return (
+     <div style={{textAlign: 'center'}}>
+     <Icon type="delete" style={{fontSize: '24px'}}
+     onClick={() => this.removesample1(isSelected.id)}>
+       Click me
+     </Icon>
+     </div>
+   )
+ }
+
+ handleChangeComplete = (color) => {
+    this.setState({ color: color.hex });
+  };
 
 
 
@@ -950,6 +1055,10 @@ parameterListRef.push(object);
 
 
       render() {
+
+
+
+
 
 
 
@@ -1021,6 +1130,7 @@ parameterListRef.push(object);
             onChange={this.handleChange} /></Col>
             </FormGroup>
             </Row>
+
             {this.state.Parameter_List.map((parameter, idx) => {
 
                           return (
@@ -1080,26 +1190,7 @@ parameterListRef.push(object);
                 <Row >
                 <Col xs={24} sm={24} md={24} lg={24} xl={24} >
 
-                  <form>
-                <Row style={{paddingTop: '10px'}}>
-                <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Parameter Name</b></Col>
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="Parameter_Name" onChange={this.handleChange} type="text" placeholder="Name" style={{ width: 350}} value={this.state.Parameter_Name} /></Col>
-                </FormGroup>
-                </Row>
-                <Row style={{paddingTop: '10px'}}>
-                  <FormGroup>
-                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Parameter Units</b></Col>
-                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="Parameter_Units" onChange={this.handleChange} type="text" placeholder="Units"  style={{ width: 350}} value={this.state.Parameter_Units} /></Col>
-                  </FormGroup>
-                  </Row>
 
-                  <Row style={{paddingTop: '10px', textAlign: 'left'}}>
-                  <Button type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
-                  </Row>
-                </form>
 
 
             </Col>
@@ -1115,18 +1206,55 @@ parameterListRef.push(object);
               <Row >
               <Col xs={24} sm={24} md={24} lg={24} xl={24} >
                 <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={200}>
-                  <ComposedChart data={this.state.graphingData}
+                  <ComposedChart data={this.state.graphInfo}
             syncId="anyId">
 
             <XAxis dataKey="date" />
             <YAxis />
             <Tooltip />
 
-
-              {this.state.graphingKeys.map(txt => {
+            <defs>
+              {this.state.Parameter_List.map(parameter => {
                 return (
-                  <Line type="monotone" dataKey={txt}  fillOpacity={1} stroke="#0000FF" fill="url(#colorNitrogen)"><LabelList dataKey={txt} position="top" /></Line>
+
+                    <linearGradient id={parameter.Parameter_Name} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={parameter.color} stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor={parameter.color} stopOpacity={0}/>
+                    </linearGradient>
+
+
                 )
+              })}
+</defs>
+
+
+
+
+              {this.state.Parameter_List.map(parameter => {
+
+                if (parameter.dataType == 'Bar') {
+                  console.log('something 1')
+                  const CustomTag = Bar;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Line') {
+                  console.log('something 2')
+                  const CustomTag = Line;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Area') {
+                  console.log('something 3')
+                  const CustomTag = Area;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                  )
+                }
+
+
               })}
 
 
@@ -1149,33 +1277,12 @@ parameterListRef.push(object);
 
 
 
-<Griddle data={this.state.graphInfo} />
-<BootstrapTable
-  keyField='date'
-  data={ this.state.graphInfo }
-  columns={ [
-    {
-    dataField: 'date',
-    text: 'Product ID'
-  },
-  {
-  dataField: 'key',
-  text: 'Product ID'
-  },
-  {
-    dataField: 'Nitrogen',
-    text: 'Product Name'
-  },
-  {
-    dataField: 'Phosphorus',
-    text: 'Product Price'
-  },
-  {dataField: 'delete',
-   text: 'Delete',
-   formatter: this.deleteRow.bind(this),
 
-  }] }
-  />
+
+
+
+
+
 
 
 
@@ -1188,7 +1295,36 @@ parameterListRef.push(object);
           </Row>
 
               </TabPane>
+
               <TabPane tab="DATA TABLE" key="2">
+
+                <Row>
+                <Col span={24} style={{paddingTop: '15px'}}>
+
+                    <p style={{lineHeight: '2px'}}><b>DATA TABLE</b></p>
+
+                    <hr></hr>
+                </Col>
+                </Row>
+
+                <Row>
+
+
+                <BootstrapTable
+                  keyField='date'
+                  data={ this.state.graphInfoReverse }
+                  columns={
+
+
+
+                    this.state.columnData
+
+                     }
+                  />
+                </Row>
+              </TabPane>
+
+              <TabPane tab="CONSTITUENTS" key="3">
                 <Row>
                 <Col span={24} style={{paddingTop: '15px'}}>
 
@@ -1197,9 +1333,76 @@ parameterListRef.push(object);
                     <hr></hr>
               </Col>
             </Row>
+            <Row>
+              <form>
+            <Row style={{paddingTop: '10px'}}>
+            <FormGroup>
+              <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Parameter Name</b></Col>
+              <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+              <FormControl name="Parameter_Name" onChange={this.handleChange} type="text" placeholder="Name" style={{ width: 350}} value={this.state.Parameter_Name} /></Col>
+            </FormGroup>
+            </Row>
+            <Row style={{paddingTop: '10px'}}>
+              <FormGroup>
+                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Parameter Units</b></Col>
+                <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                <FormControl name="Parameter_Units" onChange={this.handleChange} type="text" placeholder="Units"  style={{ width: 350}} value={this.state.Parameter_Units} /></Col>
+              </FormGroup>
+              </Row>
+              <Row style={{paddingTop: '10px'}}>
+                <FormGroup>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Data Type</b></Col>
+                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                  <FormControl name="dataType" onChange={this.handleChange} type="text" placeholder="Data Type"  style={{ width: 350}} value={this.state.dataType} /></Col>
+                </FormGroup>
+                </Row>
+              <Row>
+            <FormGroup>
+            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+              <SketchPicker
+            color={ this.state.color }
+            onChangeComplete={ this.handleChangeComplete }
+          />
+      </Col>
+    </FormGroup>
+            </Row>
 
-                <Row>
+              <Row style={{paddingTop: '10px', textAlign: 'left'}}>
+              <Button type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
+
+            <Button type="primary" onClick={this.editParameterInfo} bsStyle="primary">Edit Parameter</Button>
+              </Row>
+            </form>
+          </Row>
+
+                <Row style={{paddingTop: '10px'}}>
                 <Col span={24}>
+
+                  <BootstrapTable
+                    keyField='date'
+                    data={ this.state.Parameter_List }
+                    columns={
+
+
+
+                      [{dataField: 'Parameter_Name', text: 'Parameter'},
+                      {dataField: 'Parameter_Units', text: 'Units'},
+                      {dataField: 'color', text: 'Color'},
+                      {dataField: 'dataType', text: 'Data Type'},
+                      {dataField: 'delete',
+                       text: 'Delete',
+                       formatter: this.deleteRow1.bind(this),
+
+                     },
+                     {dataField: 'Edit',
+                      text: 'Edit',
+                      formatter: this.editRow.bind(this),
+
+                     }]
+
+                       }
+                    />
 
 
             </Col>
@@ -1208,6 +1411,10 @@ parameterListRef.push(object);
 
 
               </TabPane>
+
+
+
+
 
             </Tabs>
 

@@ -31,7 +31,7 @@ const styles = {
 
 const TabPane = Tabs.TabPane;
 
-export default class uploadDocument extends Component {
+export default class uploadManuals extends Component {
 
   constructor() {
       super();
@@ -82,7 +82,7 @@ this.handleChange = this.handleChange.bind(this);
       userID: user.uid,
 
     })
-    const samplesRef = fire.database().ref(`Reports/${user.uid}`);
+    const samplesRef = fire.database().ref(`Manuals/${user.uid}`);
     samplesRef.on('value', (snapshot) => {
     let reports = snapshot.val();
     console.log(reports);
@@ -109,21 +109,21 @@ this.handleChange = this.handleChange.bind(this);
 
 
 
-  removeReport(itemId) {
+  removeManuals(itemId) {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/Reports/${user.uid}/${itemId}`);
+    const sampleRef = fire.database().ref(`/Manuals/${user.uid}/${itemId}`);
     sampleRef.remove();
   });
   }
 
 
 
-  deleteReport(row, isSelected, e, id) {
+  deleteManuals(row, isSelected, e, id) {
 
     return (
       <div style={{textAlign: 'center'}}>
       <Icon type="delete" style={{fontSize: '24px'}}
-      onClick={() => this.removeReport(`${isSelected.id}`)}>
+      onClick={() => this.removeManuals(`${isSelected.id}`)}>
         Click me
       </Icon>
       </div>
@@ -160,7 +160,7 @@ this.handleChange = this.handleChange.bind(this);
 
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
         var filename = this.state.file.name;
-        var storageRef = firebase.storage().ref('/Reports/' + filename);
+        var storageRef = firebase.storage().ref('/Manuals/' + filename);
         var uploadTask = storageRef.put(this.state.file);
         var filename = this.state.file.name;
 
@@ -194,7 +194,7 @@ this.handleChange = this.handleChange.bind(this);
           console.log('File available at', downloadURL);
           this.setState({ downloadURL: downloadURL, documentType: 'Reports', })
 
-           const samplesRef = fire.database().ref(`Reports/${user.uid}`);
+           const samplesRef = fire.database().ref(`Manuals/${user.uid}`);
            const metaDataReport = {
              downloadLink: this.state.downloadURL,
              filename: this.state.file.name,
@@ -234,7 +234,7 @@ onChangeFile(event) {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
       var filename = this.state.file.name;
-      var storageRef = firebase.storage().ref('/Reports/' + filename);
+      var storageRef = firebase.storage().ref('/Manuals/' + filename);
       var uploadTask = storageRef.put(this.state.file);
       var filename = this.state.file.name;
 
@@ -268,7 +268,7 @@ onChangeFile(event) {
         console.log('File available at', downloadURL);
         this.setState({ downloadURL: downloadURL, documentType: 'Reports', })
 
-         const samplesRef = fire.database().ref(`Reports/${user.uid}`);
+         const samplesRef = fire.database().ref(`Manuals/${user.uid}`);
          const metaDataReport = {
            downloadLink: this.state.downloadURL,
            filename: this.state.file.name,
@@ -300,9 +300,9 @@ editRow(row, isSelected, e, id) {
 fillStates = (itemId) => {
   let area = '';
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const sampleRef = fire.database().ref(`/Reports/${user.uid}/${itemId}`);
+  const sampleRef = fire.database().ref(`/Manuals/${user.uid}/${itemId}`);
 
-  let id = fire.database().ref().child(`/Reports/${user.uid}/${itemId}`).key;
+  let id = fire.database().ref().child(`/Manuals/${user.uid}/${itemId}`).key;
 
   sampleRef.on('value', (snapshot) => {
 
@@ -317,7 +317,7 @@ fillStates = (itemId) => {
     });
 
   let orders = snapshot.val();
-  let id = fire.database().ref().child(`/Reports/${user.uid}/${itemId}`).key;
+  let id = fire.database().ref().child(`/Manuals/${user.uid}/${itemId}`).key;
 
   let newState = [];
   for (let order in orders) {
@@ -354,7 +354,7 @@ writeData = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`Reports/${user.uid}`);
+  const samplesRef = fire.database().ref(`Manuals/${user.uid}`);
 
 
 
@@ -422,7 +422,7 @@ onClose = () => {
 
 
     <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-    <Button type="primary" onClick={this.writeData} bsStyle="primary">Edit File Name</Button>
+    <Button type="primary" onClick={this.writeData} bsStyle="primary">Edit Manual Name</Button>
     </Row>
 
 
@@ -442,7 +442,7 @@ onClose = () => {
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <div style={{position: 'relative'}}>
         <Col xs={24} sm={24} md={18} lg={18} xl={18}>
-          <h1><b>REPORTS</b></h1>
+          <h1><b>MANUALS</b></h1>
 
         </Col>
 
@@ -468,7 +468,7 @@ onClose = () => {
 
             <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
 
-                <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>UPLOAD REPORTS</b></p>
+                <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>UPLOAD MANUALS</b></p>
 
 
 
@@ -477,25 +477,23 @@ onClose = () => {
 
 
 
-              <Row style={{paddingTop: '15px', align: 'center',}}>
+              <Row style={{paddingTop: '15px', dataAlign: 'center',}}>
 
-                <Col  xs={24} sm={24} md={{ span: 18, offset: 4 }} lg={{ span: 18, offset: 4  }} xl={{ span: 18, offset: 4  }}>
-
-
+<Col  xs={24} sm={24} md={{ span: 18, offset: 4 }} lg={{ span: 18, offset: 4  }} xl={{ span: 18, offset: 4  }}>
 
 
-                      <div
+                    <div
                       onMouseEnter={this.hoverOn}
                       onMouseLeave={this.hoverOff}
                       onClick={()=>{this.upload.click()}}
                       style={{
     border: this.state.border,
-    position: 'relative',
+
     transition: 'border-color 0.3s',
     cursor: 'pointer',
     borderRadius: '4px',
     textAlign: 'center',
-    width: '90%',
+    width: '80%',
     height: '100%',
 
     backgroundColor: '#fafafa',
@@ -504,27 +502,22 @@ onClose = () => {
     verticalAlign: 'middle', textAlign: 'center',}}>
 
                   <Icon style={{fontSize: '54px', color: '#1890ff', paddingTop: '5px'}} type="inbox" />
-                  <p><b>Drop a Report!</b></p>
+                  <p><b>Drop your Manuals!</b></p>
                     <p className="ant-upload-text">Click or drag file to this area to upload</p>
 
                   </div>
                 </div>
-                </Col>
-
-
                 <div >
-
-                  <Col style={{paddingTop: '15px', textAlign: 'center',}} xs={24} sm={24} md={24} lg={24} xl={24} >
+                <Row style={{paddingTop: '15px', textAlign: 'center', dataAlign: 'center'}}>
 
                   <b><Progress style={{display: this.state.progressDisplay}} type="dashboard" percent={this.state.upload} /></b>
-                  </Col>
-                  <Col style={{paddingTop: '15px', textAlign: 'center',}} xs={24} sm={24} md={24} lg={24} xl={24} >
-              <b>{this.state.fileText}</b>
-              </Col>
+
+              </Row>
+              <Row style={{paddingTop: '15px', textAlign: 'center', dataAlign: 'center'}}><b>{this.state.fileText}</b></Row>
               </div>
 
 
-
+          </Col>
 
             </Row>
 
@@ -535,7 +528,7 @@ onClose = () => {
 
 
             <Col xs={24} sm={24} md={24} lg={24} xl={24} style={styles.topPad}>
-              <h3>Reports</h3>
+              <h3>Manuals</h3>
             <BootstrapTable
             data={ this.state.reports}
             pagination
@@ -552,7 +545,7 @@ onClose = () => {
             >Download File</TableHeaderColumn>
           <TableHeaderColumn width='80px'
             dataField='button'
-            dataFormat={this.deleteReport.bind(this)}
+            dataFormat={this.deleteManuals.bind(this)}
             >Delete File</TableHeaderColumn>
             <TableHeaderColumn
             dataField='button'
