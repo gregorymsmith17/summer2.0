@@ -3,8 +3,6 @@ import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormG
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
-import './maintenanceReport.css';
-
 import { PDFExport } from '@progress/kendo-react-pdf';
 import { fire } from '../../fire';
 
@@ -39,7 +37,7 @@ const styles = {
 
 
 
-export default class equipmentList extends Component {
+export default class maintenanceReports extends Component {
 
 
     constructor(props) {
@@ -134,10 +132,6 @@ export default class equipmentList extends Component {
           columnData: [{}
                             ],
 
-          reportValues: [],
-          reportKeys: [],
-          reportData: [],
-
 
 
         }
@@ -216,7 +210,7 @@ export default class equipmentList extends Component {
 
 
 
-          const parameterListRef = fire.database().ref(`equipmentList/${user.uid}`);
+          const parameterListRef = fire.database().ref(`maintenceList/${user.uid}`);
           parameterListRef.on('value', (snapshot) => {
             let parameterList = snapshot.val();
             console.log(parameterList);
@@ -236,7 +230,7 @@ export default class equipmentList extends Component {
           })
           })
 
-          const parameterList1Ref = fire.database().ref(`equipmentItems/${user.uid}`);
+          const parameterList1Ref = fire.database().ref(`maintenceReport/${user.uid}`);
           parameterList1Ref.on('value', (snapshot) => {
             let parameterList1 = snapshot.val();
             console.log(parameterList1);
@@ -313,10 +307,7 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
 
           let table1Keys = Object.keys(graphInfoReverse[indexOfMaxValue]);
           table1Keys = table1Keys.filter(e => e !== 'id');
-          table1Keys = table1Keys.filter(e => e !== 'key');
           console.log(table1Keys);
-
-
 
 
 
@@ -333,13 +324,12 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
             console.log(this.state.graphInfoReverse);
             console.log(this.state.graphKeys);
             console.log(this.state.columnData);
-            console.log(this.state.Parameter_List);
 
             let tableData = [];
             for (let i=0; i < table1Keys.length; i++) {
             //push send this data to the back of the chartData variable above.
             tableData.push({dataField: table1Keys[i], text: table1Keys[i],
-            headerStyle:{ whiteSpace: 'auto' }, style:{whiteSpace: 'auto'}, width: '150px',
+            headerStyle:{ whiteSpace: 'auto' }, style:{whiteSpace: 'normal'}, width: '150px',
 
           });
 
@@ -350,15 +340,12 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
              formatter: this.deleteRow.bind(this),
 
             })
-            tableData.push({dataField: 'edit',
-             text: 'Edit',
-             formatter: this.editEquipment.bind(this),
+
+            tableData.push({dataField: 'Download',
+             text: 'Download',
+             formatter: this.previewReport.bind(this),
 
             })
-
-
-
-
 
             var arr = snapshot.val();
 
@@ -399,58 +386,8 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
 
 
           })
-          const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
-          profileRef.on('value', (snapshot) => {
-            var that = this;
 
-
-          this.setState({
-            lakeName: snapshot.child('lakeName').val(),
-            locationCity: snapshot.child('locationCity').val(),
-            locationState: snapshot.child('locationState').val(),
-            managementContact: snapshot.child('managementContact').val(),
-            hoaContact: snapshot.child('hoaContact').val(),
-            managementContactNumber: snapshot.child('managementContactNumber').val(),
-            hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-            latitude: snapshot.child('latitude').val(),
-            longitude: snapshot.child('longitude').val(),
-            center: {
-              lat: snapshot.child('latitude').val(),
-              lng: snapshot.child('longitude').val()
-            },
-
-          });
-          console.log(this.state.center);
-                    var myLat = `${this.state.latitude}`;
-                      var myLon = `${this.state.longitude}`;
-                   let API_WEATHER = `http://api.openweathermap.org/data/2.5/weather?lat=${myLat}&lon=${myLon}&units=imperial&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`;
-
-                   fetch(API_WEATHER)
-                .then(response => response.json())
-                .then(responseJson => {
-                  console.log(responseJson);
-                  console.log(responseJson.weather);
-                  console.log(responseJson.name);
-                  this.setState({
-                    isLoading: false,
-                    dataSource: responseJson,
-                    currentCity: this.state.lakeName,
-                    currentTemp: responseJson.main.temp,
-                    currentIcon: 'http://openweathermap.org/img/w/' + responseJson.weather[0].icon + '.png',
-                    currentDescription: responseJson.weather[0].main,
-                    currentHumidity: responseJson.main.humidity,
-
-
-                  });
-                })
-                .catch(error => {
-                  console.log(error);
-                });
-
-
-        });
-
-          const parameter2ist1Ref = fire.database().ref(`equipmentItems/${user.uid}`);
+          const parameter2ist1Ref = fire.database().ref(`maintenceReport/${user.uid}`);
           parameter2ist1Ref.on('value', (snapshot) => {
             let parameterList2 = snapshot.val();
             console.log(parameterList2);
@@ -472,9 +409,9 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
 
-      const sample1Ref = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
+      const sample1Ref = fire.database().ref(`/maintenceList/${user.uid}/${itemId}`);
 
-      let id = fire.database().ref().child(`/equipmentList/${user.uid}/${itemId}`).key;
+      let id = fire.database().ref().child(`/maintenceList/${user.uid}/${itemId}`).key;
 
       sample1Ref.on('value', (snapshot) => {
 
@@ -484,7 +421,7 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
           id: id,
           overwriteDisplay: null,
           addDisplay: 'none',
-          
+          visible1: true,
 
 
         });
@@ -496,54 +433,6 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
 
     });
   }
-
-  fillEquipment(itemId) {
-
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-
-    const sample1Ref = fire.database().ref(`/equipmentItems/${user.uid}/${itemId}`);
-
-    let id = fire.database().ref().child(`/equipmentItems/${user.uid}/${itemId}`).key;
-
-    sample1Ref.on('value', (snapshot) => {
-
-      let information = snapshot.val();
-        console.log(information);
-        delete information.id;
-
-        console.log(Object.keys(information));
-        let keys = Object.keys(information);
-
-        console.log(keys);
-
-        console.log(Object.values(information));
-        let values = Object.values(information);
-
-        console.log(values);
-
-        let tableData1 = [];
-        for (let i=0; i < values.length; i++) {
-        //push send this data to the back of the chartData variable above.
-        tableData1.push({Maintenance_Item: keys[i], Maintenance_Input: values[i]});
-
-        }
-        console.log(tableData1);
-
-        this.setState({
-          id: id,
-          Parameter_List: tableData1,
-          reportValues: values,
-          reportKeys: keys,
-          visible1: true,
-        })
-
-
-
-});
-
-  });
-}
 
 
 
@@ -681,18 +570,6 @@ editRow(row, isSelected, e, id) {
   )
 }
 
-editEquipment(row, isSelected, e, id) {
-
-  return (
-      <div style={{textAlign: 'center'}}>
-    <Icon type="edit" style={{fontSize: '24px'}}
-    onClick={() => this.fillEquipment(`${isSelected.key}`)}>
-      Click me
-    </Icon>
-    </div>
-  )
-}
-
 
 
 
@@ -748,7 +625,7 @@ fillParameterInfo = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const parameterListRef = fire.database().ref(`equipmentList/${user.uid}`);
+  const parameterListRef = fire.database().ref(`maintenceList/${user.uid}`);
 
   const parameterInfo = {
     Maintenance_Item: this.state.Maintenance_Item,
@@ -771,7 +648,7 @@ editParameterInfo = (e) => {
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
 
-  const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${this.state.id}`);
+  const sampleRef = fire.database().ref(`/maintenceList/${user.uid}/${this.state.id}`);
 
 
 
@@ -804,29 +681,22 @@ handleSampleChange = idx => evt => {
 
   };
 
-  handleTableChange = idx => evt => {
-    const newParameters = this.state.Parameter_List.map((parameter, sidx) => {
-      if (idx !== sidx) return parameter;
-      return { ...parameter, Maintenance_Input: evt.target.value };
-    });
-    this.setState({ Parameter_List: newParameters });
-    console.log(this.state.Parameter_List);
-
-
-    };
-
   sampleSubmit = (e) => {
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const parameterListRef = fire.database().ref(`equipmentItems/${user.uid}`);
+    const parameterListRef = fire.database().ref(`maintenceReport/${user.uid}`);
+
+    const maintenanceDate = {maintenanceDate: this.state.maintenanceDate};
 
     const parameterInfo = {
+
       list: this.state.Parameter_List.map((parameter) => {
 
                         return (
                         {
                         Maintenance_Item: parameter.Maintenance_Item,
+
                         Maintenance_Input: parameter.Maintenance_Input,
                       }
                         )
@@ -845,6 +715,10 @@ handleSampleChange = idx => evt => {
 
   })
 
+  let newArray = array.unshift(maintenanceDate);
+
+
+
 
 console.log(array);
 this.setState({
@@ -857,73 +731,15 @@ console.log(this.state.parameters);
 
 var arr = this.state.Parameter_List;
 var object = arr.reduce(
-    (obj, item) => Object.assign(obj, {id: item.id, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+    (obj, item) => Object.assign(obj, {maintenanceDate: this.state.maintenanceDate, id: item.id, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
 
 console.log(object);
+
+
 
 parameterListRef.push(object);
 
-    //this.setState is used to clear the text boxes after the form has been submitted.
-    this.setState({
-      Maintenance_Item: '',
-      Maintenance_Input: '',
 
-      visible: false,
-      visible1: false,
-      visible2: false,
-
-    });
-
-  });
-  }
-
-  sampleOverwrite = (e) => {
-    e.preventDefault();
-    //fire.database().ref('samples') refers to the main title of the fire database.
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const parameterListRef = fire.database().ref(`equipmentItems/${user.uid}`);
-
-    const parameterInfo = {
-      list: this.state.Parameter_List.map((parameter) => {
-
-                        return (
-                        {
-                        Maintenance_Item: parameter.Maintenance_Item,
-                        Maintenance_Input: parameter.Maintenance_Input,
-                      }
-                        )
-                      })
-
-    }
-    console.log(parameterInfo.list);
-
-  let kvArray = parameterInfo.list;
-
-  let array = kvArray.map(parameter => {
-    var rObj = {};
-    rObj[parameter.Maintenance_Item] = parameter.Maintenance_Input;
-    return rObj;
-
-
-  })
-
-
-console.log(array);
-this.setState({
-  parameters: array,
-})
-console.log(this.state.parameters);
-
-
-
-
-var arr = this.state.Parameter_List;
-var object = arr.reduce(
-    (obj, item) => Object.assign(obj, {id: this.state.id, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
-
-console.log(object);
-
-parameterListRef.child(this.state.id).set(object);
 
     //this.setState is used to clear the text boxes after the form has been submitted.
     this.setState({
@@ -938,14 +754,11 @@ parameterListRef.child(this.state.id).set(object);
 
   });
   }
-
-
-
 
 
    removesample(itemId) {
 
-    const sampleRef = fire.database().ref(`/equipmentItems/${this.state.userID}/${itemId}`);
+    const sampleRef = fire.database().ref(`/maintenceReport/${this.state.userID}/${itemId}`);
 
     sampleRef.remove();
 
@@ -954,7 +767,7 @@ parameterListRef.child(this.state.id).set(object);
 
   removesample1(itemId) {
 
-   const sampleRef = fire.database().ref(`/equipmentList/${this.state.userID}/${itemId}`);
+   const sampleRef = fire.database().ref(`/maintenceList/${this.state.userID}/${itemId}`);
 
    sampleRef.remove();
 
@@ -978,7 +791,7 @@ parameterListRef.child(this.state.id).set(object);
    return (
      <div style={{textAlign: 'center'}}>
      <Icon type="delete" style={{fontSize: '24px'}}
-     onClick={() => this.removesample1(isSelected.key)}>
+     onClick={() => this.removesample1(isSelected.id)}>
        Click me
      </Icon>
      </div>
@@ -1000,7 +813,7 @@ this.setState({
    return (
        <div style={{textAlign: 'center'}}>
      <Icon type="download" style={{fontSize: '24px'}}
-     onClick={() => this.reviewReport(`${isSelected.key}`)}>
+     onClick={() => this.reviewReport(`${isSelected.id}`)}>
        Click me
      </Icon>
      </div>
@@ -1008,69 +821,9 @@ this.setState({
  }
 
 reviewReport = (itemId) => {
-
-  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-
-  const sample1Ref = fire.database().ref(`/equipmentItems/${user.uid}/${itemId}`);
-
-  let id = fire.database().ref().child(`/equipmentItems/${user.uid}/${itemId}`).key;
-
-  sample1Ref.on('value', (snapshot) => {
-
-
-
-
-    let information = snapshot.val();
-      console.log(information);
-      delete information.id;
-
-      console.log(Object.keys(information));
-      let keys = Object.keys(information);
-
-      console.log(keys);
-
-      console.log(Object.values(information));
-      let values = Object.values(information);
-
-      console.log(values);
-
-      let tableData1 = [];
-      for (let i=0; i < values.length; i++) {
-      //push send this data to the back of the chartData variable above.
-      tableData1.push({reportKey: keys[i], reportValue: values[i]});
-
-      }
-      console.log(tableData1);
-
-      this.setState({
-        reportData: tableData1,
-        reportValues: values,
-        reportKeys: keys,
-      })
-
-
-
-
-
-    this.setState({
-
-
-      id: id,
-
-        key: "3",
-
-
-    });
-
-
-
-
-});
-
-});
-
-
+  this.setState({
+    key: "3",
+  })
 }
 
 
@@ -1156,13 +909,13 @@ filter = (url) => {
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <div style={{position: 'relative'}}>
             <Col xs={24} sm={24} md={18} lg={18} xl={18}>
-              <h1><b>Equipment Manager</b></h1>
+              <h1><b>Monthly Samples</b></h1>
               <h3><b>{this.state.lakeName}</b></h3>
             </Col>
             <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{ textAlign: 'right'}}>
-          <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Equipment</Button>
+          <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Maintenance Log</Button>
             <Drawer
-              title= "Fill in Equipment Form"
+              title= "Fill in Maintenance Form"
               placement={this.state.placement}
               closable={false}
               onClose={this.onClose}
@@ -1171,54 +924,17 @@ filter = (url) => {
             >
             <form>
               <Row style={{textAlign: 'right'}}>
-              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Equipment Item</Icon>
+              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Maintenance Item</Icon>
               </Row>
-
-
-            {this.state.Parameter_List.map((parameter, idx) => {
-
-                          return (
-                            <Row style={{paddingTop: '10px'}}>
-                      <FormGroup>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
-                        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                        <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 60, width: 300}}
-                          onChange={this.handleSampleChange(idx)}  placeholder="Item" value={parameter.Maintenance_Input} /></Col>
-                      </FormGroup>
-                    </Row>
-                    )})};
-
-
-
-
-
-            <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-            <Button type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Item</Button>
+              <Row>
+            <FormGroup>
+            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
+            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+            <FormControl name='maintenanceDate' type='date' placeholder="Maintenance Date" value={this.state.maintenanceDate}
+            onChange={this.handleChange} /></Col>
+            </FormGroup>
             </Row>
 
-
-
-
-
-            </form>
-
-
-
-            </Drawer>
-            <Drawer
-              title= "Fill in Equipment Form"
-              placement={this.state.placement}
-              closable={false}
-              onClose={this.onClose}
-              visible={this.state.visible1}
-              width={500}
-            >
-            <form>
-              <Row style={{textAlign: 'right'}}>
-              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Equipment Item</Icon>
-              </Row>
-
-
             {this.state.Parameter_List.map((parameter, idx) => {
 
                           return (
@@ -1226,8 +942,8 @@ filter = (url) => {
                       <FormGroup>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                        <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 60, width: 300}}
-                          onChange={this.handleTableChange(idx)}  placeholder="Item" value={parameter.Maintenance_Input} /></Col>
+                        <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}}
+                          onChange={this.handleSampleChange(idx)}  placeholder="Normal text" value={parameter.Maintenance_Input} /></Col>
                       </FormGroup>
                       </Row>
                     )})};
@@ -1237,7 +953,7 @@ filter = (url) => {
 
 
             <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-            <Button type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Item</Button>
+            <Button type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add sample</Button>
             </Row>
 
 
@@ -1273,7 +989,7 @@ filter = (url) => {
                   <Tabs defaultActiveKey="1" activeKey={this.state.key} onChange={this.handleSelect} >
 
 
-              <TabPane tab="EQUIPMENT LIST" key="1">
+              <TabPane tab="MAINTENANCE LOGS" key="1">
 
                 <Row>
                 <Col span={24} style={{paddingTop: '15px'}}>
@@ -1314,7 +1030,7 @@ filter = (url) => {
               <form>
             <Row style={{paddingTop: '10px'}}>
             <FormGroup>
-              <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>EQUIPMENT ITEMS</b></Col>
+              <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Parameter Name</b></Col>
               <Col xs={24} sm={18} md={18} lg={18} xl={18}>
               <FormControl name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Name" style={{ width: 350}} value={this.state.Maintenance_Item} /></Col>
             </FormGroup>
@@ -1342,7 +1058,7 @@ filter = (url) => {
 
 
 
-                      [{dataField: 'Maintenance_Item', text: 'Equipment Item'},
+                      [{dataField: 'Maintenance_Item', text: 'Parameter'},
 
                       {dataField: 'delete',
                        text: 'Delete',
@@ -1366,7 +1082,213 @@ filter = (url) => {
 
               </TabPane>
 
+              <TabPane tab="test" key="3">
+                <Button onClick={this.filter}>IMAGE THAT SHIT</Button>
+                <div id="my-node">
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
 
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                <Row>
+                  <Col>
+                    <p><b>I feel like this should be working, but maybe not.
+                    I feel like this should be working, but maybe not.
+                  I feel like this should be working, but maybe not.
+                I feel like this should be working, but maybe not.
+              I feel like this should be working, but maybe not.
+            I feel like this should be working, but maybe not.
+          </b></p>
+                  </Col>
+
+
+                </Row>
+                </div>
+
+                <Row>
+
+                <Col xs={18} sm={18} md={18} lg={18} xl={18} style={{paddingTop: '20px'}}>
+
+                    <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>REPORT PREVIEW</b></p>
+
+
+              </Col>
+              <Col xs={6} sm={6} md={6} lg={6} xl={6} style={{paddingTop: '20px'}}>
+
+              <button onClick={() => { this.pdfExportComponent.save(); }}>
+                          Export PDF
+                      </button>
+                    </Col>
+
+            </Row>
+
+                <PDFExport          fileName={this.state.reportDate +' ' + 'Report'}
+                              title=""
+                              style={{
+                                  margin: '30px',
+                                  padding: '100px'}}
+                              paperSize={'Letter'}
+                              forcePageBreak=".page-break"
+                              margin={30}
+                              ref={(component) => this.pdfExportComponent = component}
+                          >
+
+                <img src={this.state.blobUrl} />
+
+              </PDFExport>
+
+                  </TabPane>
 
 
 

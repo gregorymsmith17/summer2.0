@@ -32,49 +32,27 @@ const styles = StyleSheet.create({
 
     backgroundColor: '#E4E4E4'
   },
-  body: {
-    paddingTop: 35,
-    paddingBottom: 65,
-    paddingHorizontal: 35,
-  },
-  title: {
-    fontSize: 24,
-
-  },
-  author: {
-    fontSize: 12,
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 18,
-
-
-  },
-  text: {
-    margin: 12,
-    fontSize: 14,
-
-  },
-  image: {
-    marginVertical: 15,
-    marginHorizontal: 100,
-  },
-  header: {
-    fontSize: 12,
-    marginBottom: 20,
-
-  },
-  pageNumber: {
+  section: {
     position: 'absolute',
-    fontSize: 12,
-    bottom: 30,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    color: 'grey',
-  },
+    left: 20,
+    top: 20,
+    fontSize: 35,
+    fontFamily: 'Muli',
 
+  },
+  section1: {
+    position: 'absolute',
+    top: 20,
+    left: 300,
+
+    fontSize: 35,
+    fontFamily: 'Muli',
+
+  }
+  ,
+  text: {
+    fontFamily: 'Roboto',
+  }
 });
 
 const Heading = styled.Text`
@@ -110,7 +88,6 @@ export default class monthlySamples extends Component {
           sampleTitle: '',
           sampleID: '',
           sampleMisc: '',
-          units: '',
           dataType: '',
           color: '#000000',
 
@@ -265,7 +242,6 @@ export default class monthlySamples extends Component {
               table1Keys = table1Keys.filter(e => e !== 'key');
               table1Keys = table1Keys.filter(e => e !== 'key');
 
-
               if (this.state.turnedOffKeys.length == 0) {
                 console.log("do nothing again")
               }
@@ -352,15 +328,6 @@ export default class monthlySamples extends Component {
                 width: 60,
 
 
-              })
-              tableKeys.push({
-
-                title: 'Preview',
-                dataIndex: '',
-                fixed: 'right',
-                key: 'z',
-                render: this.previewReport.bind(this),
-                width: 60,
               })
               console.log(data);
               let reverseData = data.reverse();
@@ -617,18 +584,6 @@ getColumnSearchProps = (dataIndex) => ({
    sampleRef.remove();
  }
 
- deleteRow1 = (row, isSelected, e, id, key) =>
- {
-   return (
-     <div style={{textAlign: 'center'}}>
-     <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
-     onClick={() => this.removesample1(isSelected.key)}>
-       Click me
-     </Icon>
-     </div>
-   )
- }
-
 
 
  removesample1(itemId) {
@@ -642,91 +597,6 @@ removesample2(itemId) {
   const sampleRef = fire.database().ref(`/sampleReport/${this.state.userID}/${this.state.id}/${itemId}`);
   sampleRef.remove();
   this.fillStates(this.state.id);
-
-
-}
-previewReport = (row, isSelected, e, id, key) =>
-{
-  return (
-    <div style={{textAlign: 'center'}}>
-    <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}
-    onClick={() => this.fillPreview(isSelected.key)}>
-      Click me
-    </Icon>
-    </div>
-  )
-}
-
-fillPreview(itemId) {
-
-  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-
-
-  const sample1Ref = fire.database().ref(`/sampleReport/${user.uid}/${itemId}`);
-  let id = fire.database().ref().child(`/sampleReport/${user.uid}/${itemId}`).key;
-  sample1Ref.on('value', (snapshot) => {
-
-    let maintenanceList = snapshot.val();
-
-
-
-
-    this.setState({
-      sampleDate: snapshot.child('date').val(),
-      sampleID: snapshot.child('ID').val(),
-      sampleTitle: snapshot.child('Title').val(),
-      sampleMisc: snapshot.child('Miscellaneous').val(),
-      id: id,
-    });
-
-    let arr = snapshot.val();
-    delete arr.date;
-    delete arr.ID;
-    delete arr.Title;
-    delete arr.Miscellaneous;
-
-    let arrayKeys = Object.keys(arr);
-    let arrayValues = Object.values(arr);
-    this.setState({
-      arrayKeys1: arrayKeys,
-      arrayValues1: arrayValues,
-
-    })
-
-});
-
-const sample2Ref = fire.database().ref(`/sampleReport/${user.uid}`);
-sample2Ref.on('value', (snapshot) => {
-let maintenanceList = this.snapshotToArray(snapshot);
-
-
-let keys = [maintenanceList.map((parameter) => {
-return (
-parameter.key
-)
-})]
-
-this.setState({
-arrayData1: keys,
-})
-})
-
-let arrayData = [];
-for (let i=0; i < this.state.arrayKeys1.length; i++) {
-//push send this data to the back of the chartData variable above.
-arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
-
-}
-console.log(arrayData);
-this.setState({
-key: "3",
-snapArray1: arrayData,
-arrayData2: arrayData,
-})
-
-});
-
 
 
 }
@@ -772,7 +642,6 @@ arrayData2: arrayData,
         Sample_Item: snapshot.child('Sample_Item').val(),
         dataType: snapshot.child('dataType').val(),
         color: snapshot.child('color').val(),
-        units: snapshot.child('units').val(),
         id: id,
       });
 
@@ -788,7 +657,7 @@ parameterOverwrite = (e) => {
   const sampleListRef = fire.database().ref(`sampleList/${user.uid}/${this.state.id}`);
 
 
-var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
+var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
     console.log(object);
     sampleListRef.set(object);
 
@@ -813,7 +682,6 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
       Sample_Input: '',
       dataType: this.state.dataType,
       color: this.state.color,
-      units: this.state.units,
       id: id,
 
     }
@@ -823,7 +691,6 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
     this.setState({
       Sample_Item: '',
       dataType: '',
-      units: '',
       color: '#000000',
       childrenDrawer: false,
       visible4: false,
@@ -844,7 +711,6 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
         Sample_Input: '',
         dataType: snapshot.child('dataType').val(),
         color: snapshot.child('color').val(),
-        units: snapshot.child('units').val(),
         id: id,
     });
 });
@@ -888,7 +754,6 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
         Sample_Input: '',
         dataType: snapshot.child('dataType').val(),
         color: snapshot.child('color').val(),
-        units: snapshot.child('units').val(),
         id: id,
       });
 
@@ -902,7 +767,7 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
 
      this.setState({ color: color.hex });
 
-    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
+    var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
 
     sampleListRef.set(object);
 
@@ -1070,7 +935,7 @@ for (let i=0; i < this.state.arrayKeys1.length; i++) {
 arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
 
 }
-console.log(arrayData);
+
 this.setState({
   snapArray1: arrayData,
   arrayData2: arrayData,
@@ -1146,7 +1011,6 @@ this.setState({
         Sample_Input: '',
         dataType: this.state.dataType,
         color: this.state.color,
-        units: this.state.units,
         id: id,
 
       }
@@ -1157,7 +1021,6 @@ this.setState({
         Sample_Item: '',
         arrayData2: array,
         dataType: '',
-        units: '',
         color: '',
 
       });
@@ -1201,15 +1064,9 @@ this.setState({
 
   this.setState({ dataType: e.target.value });
 
-  var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
+  var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
 
   sampleListRef.set(object);
-
-}
-
-handleSizeChange1 = (e) => {
-
-this.setState({ dataType: e.target.value });
 
 
 
@@ -1263,47 +1120,7 @@ this.setState({
 
         const MyDoc = (
           <Document>
-            <Page size="A4" style={styles.body}>
-
-
-                    <Text style={styles.header} fixed>
-                      {this.state.lakeName} Sampling Report
-                    </Text>
-                    <Text style={styles.title}>{this.state.sampleTitle}</Text>
-                    <Text style={styles.author}>{this.state.sampleDate}</Text>
-                    <Text style={styles.author}>Report #{this.state.sampleID}</Text>
-
-                    <Text style={styles.subtitle}>
-                      Monthly Sampling Data:
-                    </Text>
-
-                    <View>
-                      {this.state.arrayData2.map((parameter, idx) => {
-
-                        return (
-                          <View>
-                          <Text style={styles.author}>{parameter.Sample_Item}:  {parameter.Sample_Input} mg/L</Text>
-                          </View>
-                        )
-
-                      })}
-
-                    </View>
-
-
-
-
-
-
-
-                    <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-                      `${pageNumber} / ${totalPages}`
-                    )} fixed />
-
-
-
-
-
+            <Page size="A4" >
 
             </Page>
           </Document>
@@ -1318,24 +1135,11 @@ this.setState({
             width: 60,
           },
           {
-            title: 'Delete',
-            dataIndex: '',
-            key: 'y',
-            render: this.deleteRow1.bind(this),
-            width: 60,
-          },
-          {
         title: 'Title',
         dataIndex: 'Sample_Item',
         key: 'Sample_Item',
         width: 200,
       },
-      {
-    title: 'Units',
-    dataIndex: 'units',
-    key: 'units',
-    width: 80,
-  },
       {
     title: 'Data Type',
     dataIndex: 'dataType',
@@ -1459,7 +1263,17 @@ const csvData1 = this.state.currentData;
 
             <div style={{ background: '#F4F7FA', padding: '5px' }}>
 
+              <Row type="flex" justify="center" style={{height: 30}}>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
 
+            <Col xs={24} sm={24} md={20} lg={20} xl={20}>
+              <h1><b>Sampling Manager</b></h1>
+            </Col>
+            <Col style={{textAlign: 'right'}} xs={24} sm={24} md={4} lg={4}  xl={4} >
+          <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Sample</Button>
+          </Col>
+        </Col>
+          </Row>
 
 
             <Drawer
@@ -1471,7 +1285,7 @@ const csvData1 = this.state.currentData;
               width={500}
             >
             <Drawer
-            title="Add Parameter"
+            title="Two-level Drawer"
             width={420}
             closable={false}
             onClose={this.onChildrenDrawerClose}
@@ -1484,40 +1298,17 @@ const csvData1 = this.state.currentData;
 
           <FormGroup onSubmit={this.fillParameterInfo}>
 
+            <Col xs={24} sm={10} md={10} lg={10} xl={10}>
+              <b>SAMPLING PARAMETERS</b>
+            </Col>
+            <Row style={{paddingTop: '10px'}}>
+            <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+            <FormControl style={{display: this.state.inputAdd}} name="Sample_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Sample_Item} />
+            </Col>
+            </Row>
 
             <Row style={{paddingTop: '10px'}}>
-              <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-                <b>Parameter</b>
-              </Col>
-              <Col xs={24} sm={16} md={16} lg={16} xl={16}>
-              <FormControl style={{display: this.state.inputAdd}} name="Sample_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Sample_Item} />
-              </Col>
-
-
-
-            </Row>
-
-            <Row style={{paddingTop: '20px'}}>
-              <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-                <b>Units</b>
-              </Col>
-              <Col xs={24} sm={16} md={16} lg={16} xl={16}>
-              <FormControl style={{display: this.state.inputAdd}} name="units" onChange={this.handleChange} type="text" placeholder="Units"  value={this.state.units} />
-              </Col>
-            </Row>
-
-
-
-            <Row style={{paddingTop: '30px'}}>
-              <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                <b>Graph Type</b>
-              </Col>
-            </Row>
-
-
-
-            <Row style={{paddingTop: '10px'}}>
-            <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange1}>
+            <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange}>
         <Radio.Button value="Bar">Bar</Radio.Button>
         <Radio.Button value="Line">Line</Radio.Button>
         <Radio.Button value="Area">Area</Radio.Button>
@@ -1525,15 +1316,10 @@ const csvData1 = this.state.currentData;
       </Radio.Group>
         </Row>
 
-        <Row style={{paddingTop: '20px'}}>
-        <b>Color of Graph Data</b>
-        </Row>
-            <Row style={{paddingTop: '20px'}}>
+            <Row style={{paddingTop: '10px'}}>
 
           <Col xs={24} sm={14} md={14} lg={14} xl={14}>
             <Button onClick={this.displayColor}>Pick a Color</Button>
-            </Col>
-            <Col xs={24} sm={6} md={6} lg={6} xl={6}>
             <Button style={{backgroundColor: this.state.color}}></Button>
           </Col>
 
@@ -1546,17 +1332,11 @@ const csvData1 = this.state.currentData;
           </Col>
           </Row>
 
-          <Row>
-            <hr></hr>
-          </Row>
-          <Row style={{paddingTop: '20px'}}>
-
-        <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-          <Button  style={{display: this.state.inputAdd}} type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
-          </Col>
-          </Row>
-
-
+          <Row style={{paddingTop: '10px'}}>
+            <Col xs={24} sm={4} md={4} lg={4} xl={4} >
+                  <Button  style={{display: this.state.inputAdd}} type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
+                </Col>
+                </Row>
 
         </FormGroup>
 
@@ -1629,7 +1409,7 @@ const csvData1 = this.state.currentData;
                               return (
                                 <Row style={{paddingTop: '10px'}}>
                           <FormGroup>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}  ({parameter.units})</b></Col>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}</b></Col>
                             <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                             <FormControl name={parameter.Sample_Item} type="text"
                               onChange={this.handleSampleChange(idx)}  placeholder="Concentration" value={parameter.Sample_Input} />
@@ -1718,7 +1498,7 @@ const csvData1 = this.state.currentData;
                     return (
                       <Row style={{paddingTop: '10px'}}>
                 <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item} </b></Col>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}</b></Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                   <FormControl name={parameter.Sample_Item} type="text" componentClass="textarea" style={{ height: 60}}
                     onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Sample_Input} />
@@ -1784,22 +1564,175 @@ const csvData1 = this.state.currentData;
               <Row type="flex" justify="center">
                 <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
 
-                  <Tabs style={{fontSize: '32px'}}defaultActiveKey="1" activeKey={this.state.key} onChange={this.handleSelect} >
+                  <Tabs defaultActiveKey="1" activeKey={this.state.key} onChange={this.handleSelect} >
+
+                    <TabPane tab="DASHBOARD" key="1">
+                      <Row type="flex" justify="center">
+                        <Col span={24} style={{textAlign: 'center'}}>
+                          <Card style={{ width: '100%' }}>
+                            <div style={{textAlign: 'right'}}>
+                              <Radio.Group size="small" value={this.state.timeFrame} onChange={this.handleTimeFrameChange}>
+                        <Radio.Button value="three" onClick={this.threeMonths}>3 Months</Radio.Button>
+                        <Radio.Button value="six" onClick={this.sixMonths}>6 Months</Radio.Button>
+                        <Radio.Button value="twelve" onClick={this.twelveMonths}>12 Months</Radio.Button>
+                        <Radio.Button value="All" onClick={this.allMonths}>All</Radio.Button>
+                      </Radio.Group></div>
+                    <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={300}>
+                              <ComposedChart data={dataReverse}
+                        syncId="anyId">
+
+
+                        <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+                        <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+                        <Tooltip />
+
+
+                        <defs>
+                          {data1.map(parameter => {
+                            return (
+
+                                <linearGradient id={parameter.Sample_Item} x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor={parameter.color} stopOpacity={0.3}/>
+                                  <stop offset="95%" stopColor={parameter.color} stopOpacity={0.1}/>
+                                </linearGradient>
+
+
+                            )
+                          })}
+            </defs>
 
 
 
 
-                    <TabPane tab="SAMPLING LOG" key="1">
+                          {data1.map(parameter => {
+
+                            if (parameter.dataType == 'Bar') {
+                              console.log('something 1')
+                              const CustomTag = Bar;
+                              return(
+                                <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                              )
+                            }
+                            if (parameter.dataType == 'Line') {
+                              console.log('something 2')
+                              const CustomTag = Line;
+                              return(
+                                <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                              )
+                            }
+                            if (parameter.dataType == 'Area') {
+                              console.log('something 3')
+                              const CustomTag = Area;
+                              return(
+                                <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                              )
+                            }
+
+                            if (parameter.dataType == 'Off') {
+                              console.log('No graph')
+
+
+                            }
+
+
+                          })}
+
+
+
+
+
+
+
+                        <Legend />
+
+                      </ComposedChart>
+                       </ResponsiveContainer>
+                          </Card>
+                        </Col>
+
+
+                      </Row>
+
+                      <Row style={{paddingTop: '15px'}} type="flex" justify="center">
+                        <Col span={24}>
+                        <Card style={{ width: '100%'}} bodyStyle={{padding: "0"}}>
+                          <Row align="middle">
+                            <p style={{paddingTop: '25px', paddingLeft: '20px', fontSize: '24px'}}>Water Quality</p>
+                          </Row>
+                          <Row  type="flex" justify="center">
+
+
+                            {data1.map(parameter => {
+
+
+                                return(
+                                  <Col xs={24} sm={12} md={8} lg={8} xl={8}>
+                                    <Card >
+                                      <Row>
+                                        <Col xs={4} sm={4} md={4} lg={4} xl={4}>
+                                        <Icon type="up-circle"style={{fontSize: '32px',color: parameter.color}} />
+                                        </Col>
+                                        <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+                                        <b style={{fontSize: '24px'}}>{parameter.Sample_Item}</b>
+                                        </Col>
+                                        </Row>
+                                        <Row>
+
+                                  <ResponsiveContainer width="100%" aspect={6/3.0} minHeight={90}>
+
+                                  <ComposedChart data={dataReverse}
+                            syncId="anyId">
+
+                            <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+                            <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+                            <Tooltip />
+
+                                  <Line type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}></Line>
+
+
+
+
+                          </ComposedChart>
+                          </ResponsiveContainer>
+                          </Row>
+                          </Card>
+                          </Col>
+                                )
+
+
+
+
+                            })}
+
+
+
+
+                                    </Row>
+
+                        </Card>
+                        </Col>
+
+                      </Row>
+
+
+
+
+
+
+
+                    </TabPane>
+
+
+                    <TabPane tab="SAMPLING LOG" key="2">
                       <Row type="flex" justify="center">
                         <Col span={24} style={{textAlign: 'center'}}>
 
                           <Row>
-                        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left'}}>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
                           <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
 
-                        </Col>
-                        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'right'}}>
-                        <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Sample</Button>
                         </Col>
 
 
@@ -1823,7 +1756,7 @@ const csvData1 = this.state.currentData;
 
 
 
-                  <TabPane tab="PARAMETERS" key="2">
+                  <TabPane tab="PARAMETERS" key="3">
 
                     <Drawer
                       title= "Edit Parameter"
@@ -1835,7 +1768,7 @@ const csvData1 = this.state.currentData;
                     >
                     <Row>
                       <Col span={24}>
-                        <h2>{this.state.Sample_Item}  ({this.state.units})</h2>
+                        <h2>{this.state.Sample_Item}</h2>
                       </Col>
                     </Row>
 
@@ -1908,11 +1841,6 @@ const csvData1 = this.state.currentData;
                   <FormControl name="Sample_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Sample_Item} />
                   </Col>
                   </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                  <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-                  <FormControl  name="units" onChange={this.handleChange} type="text" placeholder="Units"  value={this.state.units} />
-                  </Col>
-                  </Row>
 
                   <Row style={{paddingTop: '10px'}}>
                     <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange}>
@@ -1969,7 +1897,7 @@ const csvData1 = this.state.currentData;
                         </Col>
 
                         <Col xs={12} sm={12} md={12} lg={12} xl={12} style={{textAlign: 'right'}}>
-                          <Button size="large" type="primary" onClick={this.showDrawer4}>+ Add Parameter</Button>
+                          <Button onClick={this.showDrawer4}>Add Parameter</Button>
 
                         </Col>
 
@@ -1992,30 +1920,6 @@ const csvData1 = this.state.currentData;
 
 
 </TabPane>
-
-<TabPane  key="3">
-
-  <Row type="flex" justify="center">
-    <Col span={24} style={{textAlign: 'center'}}>
-
-      <Row>
-      <PDFDownloadLink document={MyDoc} fileName="somename.pdf">
-  {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Click Here & Download now!')}
-</PDFDownloadLink>
-</Row>
-
-  <Row style={{paddingTop: '20px'}}>
-      {MyDoc}
-
-      </Row>
-
-    </Col>
-  </Row>
-
-
-</TabPane>
-
-
 
 
 

@@ -1,47 +1,68 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio, Popover, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
+import { Page, Text, View, Document, StyleSheet, Image,  PDFDownloadLink, Font,  } from '@react-pdf/renderer';
+import styled from '@react-pdf/styled-components';
 
-import { PDFExport } from '@progress/kendo-react-pdf';
+import './maintenanceReport.css';
+
+
 import { fire } from '../../fire';
 
-import {BootstrapTable, BootstrapButton, TableHeaderColumn, ExportCSVButton} from 'react-bootstrap-table';
-import { TiArrowSortedDown, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
 
 import domtoimage from 'dom-to-image';
+import { SketchPicker } from 'react-color';
 import fileDownload from "js-file-download";
 
 
-import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
+import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
-
-
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Tooltip, Icon, Cascader, Select, AutoComplete, } from 'antd';
+import Highlighter from 'react-highlight-words';
+import { CSVLink, CSVDownload } from "react-csv";
 
 const TabPane = Tabs.TabPane;
 
-const styles = {
-  pdfPage: {
-    padding: ".5in .5in"
-  },
-  topPad: {
-    paddingTop: "20px"
-  },
-  bottomPad: {
-    paddingBottom: "40px"
-  },
-};
+const { Option } = Select;
 
-const ColoredLine = ({ color }) => (
-    <hr
-        style={{
-            color: color,
-            backgroundColor: color,
-            height: .8
-        }}
-    />
-);
+
+const styles = StyleSheet.create({
+  page: {
+
+    backgroundColor: '#E4E4E4'
+  },
+  section: {
+    position: 'absolute',
+    left: 20,
+    top: 20,
+    fontSize: 35,
+    fontFamily: 'Muli',
+
+  },
+  section1: {
+    position: 'absolute',
+    top: 20,
+    left: 300,
+
+    fontSize: 35,
+    fontFamily: 'Muli',
+
+  }
+  ,
+  text: {
+    fontFamily: 'Roboto',
+  }
+});
+
+const Heading = styled.Text`
+  margin: 10px;
+  font-size: 22px;
+  font-family: 'Helvetica';
+`;
+
+
+
 
 
 
@@ -51,36 +72,51 @@ export default class maintenanceReports extends Component {
     constructor(props) {
         super(props);
         this.state = {
+          userID: '',
+          key: "1",
+          snapArray: [],
+          snapArray1: [],
+          arrayData1: [],
+          arrayData2: [],
+          arrayKeys1: [],
+          arrayKeys2: [],
+          arrayValues2: [],
 
-
-          //Inputs for Maintenance Report
+          Maintenance_Item: '',
           maintenanceDate: '',
-          maintenanceWorker: '',
-          mechanicalEquipmentNotes: '',
-          electricalEquipmentNotes: '',
-          aquaticVegetationNotes: '',
-          shorelineNotes: '',
-          miscNotes: '',
+          maintenanceTitle: '',
+          maintenanceDescription: '',
+          maintenanceID: '',
 
-          //Misc. for chaing taps and id's
-          id: '',
-          key: 1,
-          idKey: '',
-          page: '',
-          area: '',
-          sampleSuccess: '',
+          currentData: [],
 
-          //used for table data
-          samples: [],
-          orders: [],
-          orders2: [],
-          dataList: [],
-          filter: "",
+          overwriteDisplay: 'none',
+          addDisplay: null,
+
+          overwriteReport: 'none',
+          addReport: null,
+
+          inputAdd: null,
+          inputOverwrite: 'none',
+
+
+          tableKeys: [],
+          searchText: '',
+          selectedRowKeys: [], // Check here to configure the default column
+          loading: false,
+
+
+
+          url: null,
+          blob: null,
+          file:null,
           blobUrl: null,
+
 
           //for drawers
           visible: false,
           visible1: false,
+          visible2: false,
 
           //Inputs for Profile Page
           lakeName: '',
@@ -94,488 +130,221 @@ export default class maintenanceReports extends Component {
 
 
 
+
+
+
         }
-        //these are triggered events.  handleChange is for text box changes
-        //handlesubmit is for the form being submitted.
-        //every event trigger needs to be bound like is below with .bind
-        //we might now have to do this anymore with the newest version of react, but i have it to be safe.
+
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleSelect = this.handleSelect.bind(this);
-        this.writeData = this.writeData.bind(this);
-
-
 
 
 
       }
 
+
       //event triggered when text boxes of forms, values are changed
       handleChange(e) {
+        const name = e.target.name;
+    const value = e.target.value;
+    this.setState({ [name]: value });
         this.setState({
           [e.target.name]: e.target.value
         });
-        let filter = this.state.filter;
-        let dataList = this.state.orders.filter(function (item) {
-        return Object.values(item).map(function (value) {
-        return String(value);
-              }).find(function (value) {
-                   return value.includes(filter);
-        });
-
-        });
-        let newState = [];
-
-
 
 
 
       }
       //event triggered when form is submitted
-      handleSubmit(e) {
-        e.preventDefault();
-        //fire.database().ref('samples') refers to the main title of the fire database.
-        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const samplesRef = fire.database().ref(`maintenanceReport/${user.uid}`);
-        const orderID = fire.database().ref(`/maintenanceReport/${user.uid}/${orderID}`);
 
 
-        const maintenanceReport = {
+     snapshotToArray(snapshot) {
+        var returnArr = [];
 
-          maintenanceDate: this.state.maintenanceDate,
-          maintenanceWorker: this.state.maintenanceWorker,
-          mechanicalEquipmentNotes: this.state.mechanicalEquipmentNotes,
-          electricalEquipmentNotes: this.state.electricalEquipmentNotes,
-          aquaticVegetationNotes: this.state.aquaticVegetationNotes,
-          shorelineNotes: this.state.shorelineNotes,
-          miscNotes: this.state.miscNotes,
+        snapshot.forEach(function(childSnapshot) {
+            var item = childSnapshot.val();
+            item.key = childSnapshot.key;
 
-          id: this.state.id,
-        }
-
-
-
-
-        samplesRef.push(maintenanceReport);
-        //this.setState is used to clear the text boxes after the form has been submitted.
-        this.setState({
-
-          visible: false,
-          sampleSuccess: 'Sample Added Successfully!',
-          maintenanceDate: '',
-          maintenanceWorker: '',
-          mechanicalEquipmentNotes: '',
-          electricalEquipmentNotes: '',
-          aquaticVegetationNotes: '',
-          shorelineNotes: '',
-          miscNotes: '',
-
-
-
+            returnArr.push(item);
         });
-      });
-    }
+
+        return returnArr;
+    };
 
 
 
 
 
-      //this function is constantly running after the initial render.  Snapshot is used to look into the database.
-      //[] indicates an array value
-      //.map(Number) changes an array of strings to an array of integers
-      //snapshot.foreach(ss => {...}) **this looks in each "Sample" for the child of "user"**
-      //child of user can be child of BOD or child of tss or whatever.  It finds the value that is a child to that label.
+      componentDidMount(itemId, source) {
 
-      componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const samplesRef = fire.database().ref(`maintenanceReport/${user.uid}`);
-          samplesRef.on('value', (snapshot) => {
+
+          this.setState({
+            userID: user.uid,
+          })
 
 
-            let dataList = snapshot.val();
-            let filter = [];
-            let orders = snapshot.val();
-            let orders2 = snapshot.val();
 
-            let newState = [];
-            let newState2 = [];
-            let newState3 = [];
+          const parameterList1Ref = fire.database().ref(`maintenanceReport/${user.uid}`);
+          parameterList1Ref.on('value', (snapshot) => {
+            let snapArray = this.snapshotToArray(snapshot);
 
-          for (let order in orders) {
-            newState.push({
-              id: order,
-              maintenanceDate: orders[order].maintenanceDate,
-              maintenanceWorker: orders[order].maintenanceWorker,
-              mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
-              electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
-              aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
-              shorelineNotes: orders[order].shorelineNotes,
-              miscNotes: orders[order].miscNotes,
+            snapArray.sort(function(a, b) {
+              if (b.date === a.date) {
+                return 0;
+              }
+              return b.date > a.date ? 1 : -1;
             });
 
+            let data = snapArray;
+            console.log(data);
 
-
-
-
-          }
-
-          newState2.sort(function(a, b) {
-
-            if (a.sampleDate === b.sampleDate) {
-              return 0;
+            if (snapArray.length == 0) {
+              console.log("do nothing")
             }
-            return a.sampleDate > b.sampleDate ? 1 : -1;
-        });
-        newState.sort(function(a, b) {
+            if (snapArray.length > 0) {
 
-          if (b.maintenanceDate === a.maintenanceDate) {
-            return 0;
-          }
-          return b.maintenanceDate > a.maintenanceDate ? 1 : -1;
-      });
+              let tableKeys = [];
 
+              tableKeys.unshift({
+              title: 'Description',
+              dataIndex: 'Description',
+              key: 'Description',
+              ...this.getColumnSearchProps('Description'),
+              sorter: (a, b) => { return a.Description.localeCompare(b.Description)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+
+              tableKeys.unshift({
+              title: 'Title',
+              dataIndex: 'Title',
+              key: 'Title',
+              ...this.getColumnSearchProps('Title'),
+              sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+              tableKeys.unshift({
+              title: 'Date',
+              dataIndex: 'date',
+              key: 'date',
+              ...this.getColumnSearchProps('date'),
+              sorter: (a, b) => { return a.date.localeCompare(b.date)},
+              sortDirections: ['descend', 'ascend'],
+              width: 130,
+              })
+
+              tableKeys.unshift({
+              title: 'ID #',
+              dataIndex: 'ID',
+              key: 'ID',
+              ...this.getColumnSearchProps('ID'),
+              sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
+              sortDirections: ['descend', 'ascend'],
+              width: 80,
+              })
+
+
+              tableKeys.unshift({
+                title: 'Edit',
+                dataIndex: '',
+                key: 'x',
+                render: this.editRow.bind(this),
+                width: 60,
+                fixed: 'left',
+
+              })
+
+              tableKeys.unshift({
+
+                title: 'Delete',
+                dataIndex: '',
+                key: 'y',
+                render: this.deleteRow.bind(this),
+                width: 60,
+                fixed: 'left',
+
+              })
+
+
+
+
+
+              this.setState({
+                snapArray: data,
+                tableKeys: tableKeys,
+              })
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+             })
+
+             const parameterList2Ref = fire.database().ref(`maintenanceList/${user.uid}`);
+             parameterList2Ref.on('value', (snapshot) => {
+               let maintenanceArray = this.snapshotToArray(snapshot);
+               console.log(maintenanceArray)
+               this.setState({
+                 snapArray1: maintenanceArray,
+
+               })
+             })
+
+
+
+
+
+
+
+          const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+          profileRef.on('value', (snapshot) => {
+            var that = this;
 
 
           this.setState({
-            orders: newState,
-            orders2: newState2,
-            dataList: newState,
+            lakeName: snapshot.child('lakeName').val(),
+            locationCity: snapshot.child('locationCity').val(),
+            locationState: snapshot.child('locationState').val(),
+            managementContact: snapshot.child('managementContact').val(),
+            hoaContact: snapshot.child('hoaContact').val(),
+            managementContactNumber: snapshot.child('managementContactNumber').val(),
+            hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+            latitude: snapshot.child('latitude').val(),
+            longitude: snapshot.child('longitude').val(),
+            center: {
+              lat: snapshot.child('latitude').val(),
+              lng: snapshot.child('longitude').val()
+            },
+
           });
 
 
-
-
-          console.log(this.state.dataList);
-
-
-
-
-
-        });
-        const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
-        profileRef.on('value', (snapshot) => {
-
-
-        this.setState({
-          lakeName: snapshot.child('lakeName').val(),
-          locationCity: snapshot.child('locationCity').val(),
-          locationState: snapshot.child('locationState').val(),
-          managementContact: snapshot.child('managementContact').val(),
-          hoaContact: snapshot.child('hoaContact').val(),
-          managementContactNumber: snapshot.child('managementContactNumber').val(),
-          hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-
         });
 
 
-      });
 
-      });
-
-
-    }
-
-
-
-    fillStates(itemId) {
-      let area = '';
-      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
-
-      sampleRef.on('value', (snapshot) => {
-
-        this.setState({
-          maintenanceDate: '',
-          maintenanceWorker: '',
-          mechanicalEquipmentNotes: '',
-          electricalEquipmentNotes: '',
-          aquaticVegetationNotes: '',
-          shorelineNotes: '',
-          miscNotes: '',
-
-        });
-
-      let orders = snapshot.val();
-      let id = fire.database().ref().child(`/maintenanceReport/${user.uid}/${itemId}`).key;
-
-      let newState = [];
-      for (let order in orders) {
-        newState.push({
-          id: order,
-          maintenanceDate: orders[order].maintenanceDate,
-          maintenanceWorker: orders[order].maintenanceWorker,
-          mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
-          electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
-          aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
-          shorelineNotes: orders[order].shorelineNotes,
-          miscNotes: orders[order].miscNotes,
-
-        });
-      }
-      this.setState({
-
-        id: id,
-        key: 4,
-        visible1: true,
-
-
-        maintenanceDate: snapshot.child('maintenanceDate').val(),
-        maintenanceWorker: snapshot.child('maintenanceWorker').val(),
-        mechanicalEquipmentNotes: snapshot.child('mechanicalEquipmentNotes').val(),
-        electricalEquipmentNotes: snapshot.child('electricalEquipmentNotes').val(),
-        aquaticVegetationNotes: snapshot.child('aquaticVegetationNotes').val(),
-        shorelineNotes: snapshot.child('shorelineNotes').val(),
-        miscNotes: snapshot.child('miscNotes').val(),
-
-
-      })
-
-});
-
-    });
-  }
-
-
-  writeStates = (itemId) => {
-
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${this.state.id}`);
-
-
-    sampleRef.child("id").set(this.state.id);
-
-
-
-    sampleRef.child("maintenanceDate").set(this.state.sampleDate);
-    sampleRef.child("maintenanceWorker").set(this.state.sampleDate);
-    sampleRef.child("mechanicalEquipmentNotes").set(this.state.sampleDate);
-    sampleRef.child("electricalEquipmentNotes").set(this.state.sampleDate);
-    sampleRef.child("aquaticVegetationNotes").set(this.state.sampleDate);
-    sampleRef.child("shorelineNotes").set(this.state.sampleDate);
-    sampleRef.child("miscNotes").set(this.state.sampleDate);
-
-    });
+    })
   }
 
 
 
-  fillEmpty(itemId) {
-    let area = '';
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
 
-
-    sampleRef.on('value', (snapshot) => {
-
-    let orders = snapshot.val();
-
-    let newState = [];
-    for (let order in orders) {
-      newState.push({
-        id: order,
-
-        maintenanceDate: orders[order].maintenanceDate,
-        maintenanceWorker: orders[order].maintenanceWorker,
-        mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
-        electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
-        aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
-        shorelineNotes: orders[order].shorelineNotes,
-        miscNotes: orders[order].miscNotes,
-
-      });
-    }
-            this.setState({
-
-              id: '',
-              key: 3,
-              visible: true,
-              maintenanceDate: '',
-              maintenanceWorker: '',
-              mechanicalEquipmentNotes: '',
-              electricalEquipmentNotes: '',
-              aquaticVegetationNotes: '',
-              shorelineNotes: '',
-              miscNotes: '',
-            })
-        });
-  });
-}
-
-  createNewWorkOrder (itemId) {
-
-      let area = '';
-      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
-
-      sampleRef.on('value', (snapshot) => {
-
-      let orders = snapshot.val();
-
-      let newState = [];
-      for (let order in orders) {
-        newState.push({
-          id: order,
-
-          maintenanceDate: orders[order].maintenanceDate,
-          maintenanceWorker: orders[order].maintenanceWorker,
-          mechanicalEquipmentNotes: orders[order].mechanicalEquipmentNotes,
-          electricalEquipmentNotes: orders[order].electricalEquipmentNotes,
-          aquaticVegetationNotes: orders[order].aquaticVegetationNotes,
-          shorelineNotes: orders[order].shorelineNotes,
-          miscNotes: orders[order].miscNotes,
-
-        });
-      }
-      this.setState({
-
-        id: snapshot.child('id').val(),
-        key: 3,
-
-        maintenanceDate: snapshot.child('maintenanceDate').val(),
-        maintenanceWorker: snapshot.child('maintenanceWorker').val(),
-        mechanicalEquipmentNotes: snapshot.child('mechanicalEquipmentNotes').val(),
-        electricalEquipmentNotes: snapshot.child('electricalEquipmentNotes').val(),
-        aquaticVegetationNotes: snapshot.child('aquaticVegetationNotes').val(),
-        shorelineNotes: snapshot.child('shorelineNotes').val(),
-        miscNotes: snapshot.child('miscNotes').val(),
-
-      })
-
-});
-    });
-
-
-
-
-  }
-
-    removesample(itemId) {
-      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleRef = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
-      sampleRef.remove();
-    });
-    }
-
-    handleSelect(key) {
-
+    handleSelect = (key) => {
   this.setState({key});
 }
 
 
-writeData (e) {
-  e.preventDefault();
-  //fire.database().ref('samples') refers to the main title of the fire database.
-  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`maintenanceReport/${user.uid}`);
-  const orderID = fire.database().ref(`/maintenanceReport/${user.uid}/${this.state.id}`);
-  const newCheckboxKey = firebase.database().ref().child('checkbox').push().key;
-
-  let id = newCheckboxKey;
-  let box = id;
-
-
-  const maintenanceReport = {
-
-    maintenanceDate: this.state.maintenanceDate,
-    maintenanceWorker: this.state.maintenanceWorker,
-    mechanicalEquipmentNotes: this.state.mechanicalEquipmentNotes,
-    electricalEquipmentNotes: this.state.electricalEquipmentNotes,
-    aquaticVegetationNotes: this.state.aquaticVegetationNotes,
-    shorelineNotes: this.state.shorelineNotes,
-    miscNotes: this.state.miscNotes,
-  }
-
-  samplesRef.child(this.state.id).set(maintenanceReport);
-
-
-
-  this.setState({
-    visible1: false,
-  })
-
-
-  //this.setState is used to clear the text boxes after the form has been submitted.
-
-});
-}
-
-
-
-exportPDF = () => {
-  this.resume.save();
-}
-
-rawMarkup(){
-  var rawMarkup = this.props.content
-  return { __html: rawMarkup };
-}
-
-
-
-
-
-
-
- DOSort = (a, b, order) => {
-   let dataList = this.state.dataList;   // order is desc or asc
-  if (order === 'desc') {
-    return a.DOResult - b.DOResult;
-  } else {
-    return b.DOResult - a.DOResult;
-  }
-}
-
-
-
-editRow(row, isSelected, e, id) {
-  console.log(`${isSelected.id}`);
-  return (
-      <div style={{textAlign: 'center'}}>
-    <Icon type="edit" style={{fontSize: '24px'}}
-    onClick={() => this.fillStates(`${isSelected.id}`)}>
-      Click me
-    </Icon>
-    </div>
-  )
-}
-
-deleteRow(row, isSelected, e, id) {
-  console.log(`${isSelected.id}`);
-  return (
-    <div style={{textAlign: 'center'}}>
-    <Icon type="delete" style={{fontSize: '24px'}}
-    onClick={() => this.removesample(`${isSelected.id}`)}>
-      Click me
-    </Icon>
-    </div>
-  )
-}
-
-
-  onSubmit(event) {
-    event.preventDefault();
-  }
-
-  handleExportCSVButtonClick = (onClick) => {
-  // Custom your onClick event here,
-  // it's not necessary to implement this function if you have no any process before onClick
-  console.log('This is my custom function for ExportCSVButton click event');
-  onClick();
-}
-createCustomExportCSVButton = (onClick) => {
-  return (
-    <ExportCSVButton
-      fileName= 'custom.csv'
-      btnText='Download Excel'
-      onClick={ () => this.handleExportCSVButtonClick(onClick) }/>
-  );
-}
-
-preview = () => {
-  this.setState({
-    key: 5,
-  })
-}
 
 showDrawer = () => {
   this.setState({
@@ -585,11 +354,8 @@ showDrawer = () => {
 onClose = () => {
   this.setState({
     visible: false,
-  });
-};
-onClose1 = () => {
-  this.setState({
     visible1: false,
+    visible2: false,
   });
 };
 
@@ -598,15 +364,449 @@ onClose1 = () => {
 
 
 
+filter = (url) => {
 
+  domtoimage.toBlob(document.getElementById('my-node'))
+      .then((blob) => {
+
+          const blobUrl = URL.createObjectURL(blob);
+          this.setState({
+            blobUrl: blobUrl,
+          })
+      });
+}
+
+
+start = () => {
+  this.setState({ loading: true });
+  // ajax request after empty completing
+  setTimeout(() => {
+    this.setState({
+      selectedRowKeys: [],
+      loading: false,
+    });
+  }, 1000);
+}
+
+onSelectChange = (selectedRowKeys) => {
+  console.log('selectedRowKeys changed: ', selectedRowKeys);
+  this.setState({ selectedRowKeys });
+}
+
+getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys, selectedKeys, confirm, clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={node => { this.searchInput = node; }}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => this.handleSearch(selectedKeys, confirm)}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <Button
+          type="primary"
+          onClick={() => this.handleSearch(selectedKeys, confirm)}
+          icon="search"
+          size="small"
+          style={{ width: 90, marginRight: 8 }}
+        >
+          Search
+        </Button>
+        <Button
+          onClick={() => this.handleReset(clearFilters)}
+          size="small"
+          style={{ width: 90 }}
+        >
+          Reset
+        </Button>
+      </div>
+    ),
+    filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => this.searchInput.select());
+      }
+    },
+
+  })
+
+  handleSearch = (selectedKeys, confirm) => {
+    confirm();
+    this.setState({ searchText: selectedKeys[0] });
+    console.log(selectedKeys[0]);
+    console.log(this.state.searchText);
+  }
+
+  handleReset = (clearFilters) => {
+    clearFilters();
+    this.setState({ searchText: '' });
+  }
+
+  deleteRow = (row, isSelected, e, id, key) =>
+  {
+    return (
+      <div style={{textAlign: 'center'}}>
+      <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
+      onClick={() => this.removesample(isSelected.key)}>
+        Click me
+      </Icon>
+      </div>
+    )
+  }
+  removesample(itemId) {
+
+   const sampleRef = fire.database().ref(`/maintenanceReport/${this.state.userID}/${itemId}`);
+   sampleRef.remove();
+ }
+
+
+ deleteRow1 = (row, isSelected, e, id, key) =>
+ {
+   return (
+     <div style={{textAlign: 'center'}}>
+     <Icon type="delete" style={{fontSize: '24px'}}
+     onClick={() => this.removesample1(isSelected.key)}>
+       Click me
+     </Icon>
+     </div>
+   )
+ }
+ removesample1(itemId) {
+
+  const sampleRef = fire.database().ref(`/maintenanceList/${this.state.userID}/${itemId}`);
+  sampleRef.remove();
+}
+
+removesample2(itemId) {
+
+  const sampleRef = fire.database().ref(`/maintenanceReport/${this.state.userID}/${this.state.id}/${itemId}`);
+  sampleRef.remove();
+  this.fillStates(this.state.id);
+
+
+}
+
+  editRow = (row, isSelected, e, id, key) =>
+  {
+    return (
+      <div style={{textAlign: 'center'}}>
+      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+      onClick={() => this.fillStates(isSelected.key)}>
+        Click me
+      </Icon>
+      </div>
+    )
+  }
+
+
+  fillParameterInfo = (e, itemId) => {
+    e.preventDefault();
+    //fire.database().ref('samples') refers to the main title of the fire database.
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const parameterListRef = fire.database().ref(`maintenanceList/${user.uid}`);
+    let id = fire.database().ref().child(`/maintenanceList/${user.uid}/${itemId}`).key;
+    const parameterInfo = {
+      Maintenance_Item: this.state.Maintenance_Item,
+      Maintenance_Input: '',
+      id: id,
+
+    }
+
+    parameterListRef.push(parameterInfo);
+    //this.setState is used to clear the text boxes after the form has been submitted.
+    this.setState({
+      Maintenance_Item: '',
+
+    });
+
+  });
+  }
+
+  handleSampleChange = idx => evt => {
+    const newParameters = this.state.snapArray1.map((parameter, sidx) => {
+      if (idx !== sidx) return parameter;
+      return { ...parameter, Maintenance_Input: evt.target.value };
+    });
+    this.setState({ snapArray1: newParameters });
+
+
+
+    };
+
+    handleSampleChange1 = idx => evt => {
+      const newParameters = this.state.arrayData2.map((parameter, sidx) => {
+        if (idx !== sidx) return parameter;
+        return { ...parameter, Maintenance_Input: evt.target.value };
+      });
+      this.setState({ arrayData2: newParameters });
+
+
+
+      };
+
+
+    handleSubmit = (e) => {
+        e.preventDefault();
+        this.props.form.validateFieldsAndScroll((err, values) => {
+          if (!err) {
+            console.log('Received values of form: ', values);
+          }
+        });
+      }
+
+      sampleSubmit = (e) => {
+        e.preventDefault();
+        //fire.database().ref('samples') refers to the main title of the fire database.
+        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+        const parameterListRef = fire.database().ref(`maintenanceReport/${user.uid}`);
+
+
+    var arr = this.state.snapArray1;
+    console.log(arr);
+
+
+    if (arr.length == 0){
+      var object = {date: this.state.maintenanceDate, ID: this.state.maintenanceID, Title: this.state.maintenanceTitle, Description: this.state.maintenanceDescription}
+      console.log(object);
+      parameterListRef.push(object);
+    }
+    if (arr.length > 0){
+
+
+      var object = arr.reduce(
+          (obj, item) => Object.assign(obj, {date: this.state.maintenanceDate, ID: this.state.maintenanceID, Title: this.state.maintenanceTitle, Description: this.state.maintenanceDescription, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+          console.log(object);
+          parameterListRef.push(object);
+
+          const parameterList2Ref = fire.database().ref(`maintenanceList/${user.uid}`);
+          parameterList2Ref.on('value', (snapshot) => {
+            let maintenanceArray = this.snapshotToArray(snapshot);
+
+            this.setState({
+              snapArray1: maintenanceArray,
+
+            })
+          })
+}
+
+
+
+
+        //this.setState is used to clear the text boxes after the form has been submitted.
+        this.setState({
+          maintenanceDate: '',
+          maintenanceID: '',
+          maintenanceTitle: '',
+          maintenanceDescription: '',
+
+          visible: false,
+          visible1: false,
+          visible2: false,
+
+        });
+
+      });
+      }
+
+      fillStates(itemId) {
+
+        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+          this.setState({
+            overwriteReport: null,
+            addReport: 'none',
+            inputOverwrite: null,
+            inputAdd: 'none',
+            visible: true,
+
+          })
+
+        const sample1Ref = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
+        let id = fire.database().ref().child(`/maintenanceReport/${user.uid}/${itemId}`).key;
+        sample1Ref.on('value', (snapshot) => {
+
+          let maintenanceList = snapshot.val();
+
+
+
+
+          this.setState({
+            maintenanceDate: snapshot.child('date').val(),
+            maintenanceID: snapshot.child('ID').val(),
+            maintenanceTitle: snapshot.child('Title').val(),
+            maintenanceDescription: snapshot.child('Description').val(),
+            id: id,
+          });
+
+          let arr = snapshot.val();
+          delete arr.date;
+          delete arr.ID;
+          delete arr.Title;
+          delete arr.Description;
+
+          let arrayKeys = Object.keys(arr);
+          let arrayValues = Object.values(arr);
+          this.setState({
+            arrayKeys1: arrayKeys,
+            arrayValues1: arrayValues,
+
+          })
+
+  });
+
+const sample2Ref = fire.database().ref(`/maintenanceList/${user.uid}`);
+sample2Ref.on('value', (snapshot) => {
+let maintenanceList = this.snapshotToArray(snapshot);
+
+
+let keys = [maintenanceList.map((parameter) => {
+  return (
+parameter.key
+  )
+})]
+
+this.setState({
+  arrayData1: keys,
+})
+})
+
+let arrayData = [];
+for (let i=0; i < this.state.arrayKeys1.length; i++) {
+//push send this data to the back of the chartData variable above.
+arrayData.push({Maintenance_Input: this.state.arrayValues1[i], Maintenance_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
+
+}
+
+this.setState({
+  snapArray1: arrayData,
+  arrayData2: arrayData,
+})
+
+      });
+    }
+
+
+    sampleOverwrite = (e) => {
+      e.preventDefault();
+      //fire.database().ref('samples') refers to the main title of the fire database.
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+      const parameterListRef = fire.database().ref(`maintenanceReport/${user.uid}/${this.state.id}`);
+
+
+  var arr = this.state.arrayData2;
+  console.log(arr);
+
+
+  if (arr.length == 0){
+    var object = {date: this.state.maintenanceDate, ID: this.state.maintenanceID, Title: this.state.maintenanceTitle, Description: this.state.maintenanceDescription}
+    console.log(object);
+    parameterListRef.set(object);
+
+  }
+  else
+
+
+    var object = arr.reduce(
+        (obj, item) => Object.assign(obj, {date: this.state.maintenanceDate, ID: this.state.maintenanceID, Title: this.state.maintenanceTitle, Description: this.state.maintenanceDescription, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+        console.log(object);
+        parameterListRef.set(object);
+
+
+
+
+
+
+
+
+      //this.setState is used to clear the text boxes after the form has been submitted.
+      this.setState({
+
+
+        visible: false,
+        visible1: false,
+        visible2: false,
+
+      });
+
+    });
+    }
+
+
+    displayButtons = () => {
+
+   this.setState({
+     overwriteReport: 'none',
+     addReport: null,
+     inputOverwrite: 'none',
+     inputAdd: null,
+   })
+
+
+    }
+
+
+    additionalItem = (e, itemId, id) => {
+      e.preventDefault();
+      //fire.database().ref('samples') refers to the main title of the fire database.
+
+      let array = this.state.arrayData2;
+
+      const parameterInfo = {
+        Maintenance_Item: this.state.Maintenance_Item,
+        Maintenance_Input: '',
+        id: id,
+
+      }
+
+      array.push(parameterInfo);
+      //this.setState is used to clear the text boxes after the form has been submitted.
+      this.setState({
+        Maintenance_Item: '',
+        arrayData2: array,
+
+      });
+
+
+    }
+
+    onChange = (pagination, filters, sorter, extra: { currentDataSource: [] }) => {
+      const data = extra.currentDataSource;
+   console.log(extra.currentDataSource);
+   this.setState({
+     currentData: extra.currentDataSource,
+   })
+ }
 
       render() {
-        function buttonFormatter(cell, row){
-  return '<BootstrapButton type="submit"></BootstrapButton>';
-}
-const options = {
-  exportCSVBtn: this.createCustomExportCSVButton
-};
+
+
+        let { file } = this.state
+
+        let url = file && URL.createObjectURL(file)
+
+        let img = document.createElement("my-node");
+
+
+        const MyDoc = (
+          <Document>
+            <Page size="A4" >
+
+            </Page>
+          </Document>
+        )
+
+        const columns = this.state.tableKeys;
+
+const data = this.state.snapArray;
+const data1 = this.state.snapArray1;
+const csvData = this.state.snapArray;
+const csvData1 = this.state.currentData;
+
+
 
 
 
@@ -614,169 +814,285 @@ const options = {
         return (
           <Layout>
 
-            <div style={{ background: '#F0F0F0', padding: '5px' }}>
+            <div style={{ background: '#F4F7FA', padding: '5px' }}>
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <div style={{position: 'relative'}}>
             <Col xs={24} sm={24} md={18} lg={18} xl={18}>
-              <h1><b>Maintenance Reports</b></h1>
-              <h3><b>{this.state.lakeName}</b></h3>
+              <h1><b>Maintenance Manager</b></h1>
+              <h2>{this.state.lakeName}</h2>
             </Col>
             <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{ textAlign: 'right'}}>
-          <Button size="large" type="primary" onClick={() => this.fillEmpty()}>+ Add Maintenance Report</Button>
+          <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Maintenance Log </Button>
             <Drawer
-              title= "Fill in Maintenance Log"
+              title= "Fill in Maintenance Form"
               placement={this.state.placement}
               closable={false}
               onClose={this.onClose}
               visible={this.state.visible}
               width={500}
             >
-            <form>
-              <Row style={{textAlign: 'right'}}>
-              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Maintenance Report</Icon>
+
+            <div style={{display: this.state.inputAdd}}>
+            <Row style={{paddingTop: '10px'}} type="flex" justify="center">
+
+
+                <Col xs={18} sm={18} md={18} lg={18} xl={18}>
+                  <form>
+                    <Row style={{paddingTop: '10px', textAlign: 'center'}} type="flex" justify="center">
+                    <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                <FormGroup>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>MAINTENANCE ITEMS</b></Col>
+                  <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+                  <FormControl style={{display: this.state.inputAdd}}name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Items"  value={this.state.Maintenance_Item} />
+
+                  </Col>
+                  <Col xs={24} sm={4} md={4} lg={4} xl={4} >
+                        <Button  type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Item</Button>
+
+
+                      </Col>
+              </FormGroup>
+
+                </Col>
+                  </Row>
+
+                </form>
+
+
+                </Col>
               </Row>
-              <Row>
-        <FormGroup>
-          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
-          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-          <FormControl name="maintenanceDate" onChange={this.handleChange} type="date" placeholder="Date" value={this.state.maintenanceDate} /></Col>
-        </FormGroup>
-        </Row>
-        <Row style={{paddingTop: '10px'}}>
-        <FormGroup>
-          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Personnel</b></Col>
-          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-          <FormControl name="maintenanceWorker" onChange={this.handleChange} type="text" placeholder="Personnel" value={this.state.maintenanceWorker} /></Col>
-        </FormGroup>
-        </Row>
 
-        <Row style={{paddingTop: '10px'}}>
-        <FormGroup>
-        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Mechanical Notes</b></Col>
-        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="mechanicalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Mechanical Notes" value={this.state.mechanicalEquipmentNotes} /></Col>
-        </FormGroup>
-        </Row>
-        <Row style={{paddingTop: '10px'}}>
-        <FormGroup>
-        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Electrical Notes</b></Col>
-        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="electricalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Electrical Notes" value={this.state.electricalEquipmentNotes} /></Col>
-        </FormGroup>
-        </Row>
-        <Row style={{paddingTop: '10px'}}>
-        <FormGroup>
-        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Aquatic Vegetation Notes</b></Col>
-        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="aquaticVegetationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Vegetation Notes" value={this.state.aquaticVegetationNotes} /></Col>
-        </FormGroup>
-        </Row>
-        <Row style={{paddingTop: '10px'}}>
-        <FormGroup>
-        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shoreline Notes</b></Col>
-        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="shorelineNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Shoreline Notes" value={this.state.shorelineNotes} /></Col>
-        </FormGroup>
-        </Row>
-        <Row style={{paddingTop: '10px'}}>
-        <FormGroup>
-        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Misc. Notes</b></Col>
-        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-        <FormControl name="miscNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Misc. Notes" value={this.state.miscNotes} /></Col>
-        </FormGroup>
-        </Row>
+              <Row style={{paddingTop: '10px'}} justify="center">
+                <form>
+                  <Row style={{textAlign: 'right'}}>
+                  <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Report</Icon>
+                  </Row>
+                  <Row>
+                <FormGroup>
+                  <Row style={{paddingTop: '10px'}}>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                      <FormControl name='maintenanceDate' type='date' placeholder="Date" value={this.state.maintenanceDate}
+                      onChange={this.handleChange} />
+                    </Col>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>ID #</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                      <FormControl name='maintenanceID' type='text' placeholder="ID" value={this.state.maintenanceID}
+                        onChange={this.handleChange} />
+                    </Col>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                      <FormControl name='maintenanceTitle' type='text' placeholder="Title" value={this.state.maintenanceTitle}
+                          onChange={this.handleChange} />
+                    </Col>
+                  </Row>
+                  <Row style={{paddingTop: '10px'}}>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6} ><b>Description</b></Col>
+                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                      <FormControl name='maintenanceDescription' type="textarea" componentClass="textarea" style={{ height: 60}} placeholder="Description" value={this.state.maintenanceDescription}
+                            onChange={this.handleChange} />
+                    </Col>
+                  </Row>
 
 
-
-        <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-        <Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Add Maintenance Log</Button>
-        </Row>
+                </FormGroup>
+                </Row>
 
 
+                {this.state.snapArray1.map((parameter, idx) => {
+
+                              return (
+                                <Row style={{paddingTop: '10px'}}>
+                          <FormGroup>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                            <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                            <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 60}}
+                              onChange={this.handleSampleChange(idx)}  placeholder="Report" value={parameter.Maintenance_Input} />
+                            </Col>
+                            <Col xs={24} sm={4} md={4} lg={4} xl={4}>
+                              <Icon type="delete" style={{fontSize: '24px'}}
+                              onClick={() => this.removesample1(parameter.key)}>
+                                Click me
+                              </Icon>
+                              </Col>
 
 
 
-        </form>
+
+                          </FormGroup>
+                        </Row>
+                        )})};
+
+
+
+
+
+                <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+                <Button style={{display: this.state.addReport}} type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Maintenance Report</Button>
+                <Button style={{display: this.state.overwriteReport}} type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Report</Button>
+                <Icon style={{display: this.state.overwriteReport, fontSize: 20}} onClick={this.displayButtons} type="left" />
+
+
+                </Row>
+
+
+
+
+
+
+                </form>
+
+              </Row>
+
+              </div>
+
+              <div style={{display: this.state.inputOverwrite}}>
+              <Row style={{paddingTop: '10px'}} type="flex" justify="center">
+
+
+                  <Col xs={18} sm={18} md={18} lg={18} xl={18}>
+                    <form>
+                      <Row style={{paddingTop: '10px', textAlign: 'center'}} type="flex" justify="center">
+                      <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                  <FormGroup>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>MAINTENANCE ITEMS</b></Col>
+                    <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+
+                    <FormControl name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Overwrite this shit"  value={this.state.Maintenance_Item} />
+                    </Col>
+                    <Col xs={24} sm={4} md={4} lg={4} xl={4} >
+                          <Button  type="primary" onClick={this.additionalItem} bsStyle="primary">Over Item</Button>
+
+
+                        </Col>
+                </FormGroup>
+
+                  </Col>
+                    </Row>
+
+                  </form>
+
+
+                  </Col>
+                </Row>
+
+                <Row style={{paddingTop: '10px'}} justify="center">
+                  <form>
+                    <Row style={{textAlign: 'right'}}>
+                    <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Report</Icon>
+                    </Row>
+                    <Row>
+                  <FormGroup>
+                    <Row style={{paddingTop: '10px'}}>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                        <FormControl name='maintenanceDate' type='date' placeholder="Date" value={this.state.maintenanceDate}
+                        onChange={this.handleChange} />
+                      </Col>
+                    </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>ID #</b></Col>
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                        <FormControl name='maintenanceID' type='text' placeholder="ID" value={this.state.maintenanceID}
+                          onChange={this.handleChange} />
+                      </Col>
+                    </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                        <FormControl name='maintenanceTitle' type='text' placeholder="Title" value={this.state.maintenanceTitle}
+                            onChange={this.handleChange} />
+                      </Col>
+                    </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6} ><b>Description</b></Col>
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                        <FormControl name='maintenanceDescription' type="textarea" componentClass="textarea" style={{ height: 60}} placeholder="Description" value={this.state.maintenanceDescription}
+                              onChange={this.handleChange} />
+                      </Col>
+                    </Row>
+
+
+                  </FormGroup>
+                  </Row>
+
+
+      {this.state.arrayData2.map((parameter, idx) => {
+
+                    return (
+                      <Row style={{paddingTop: '10px'}}>
+                <FormGroup>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                  <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 60}}
+                    onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Maintenance_Input} />
+                  </Col>
+                  <Col xs={24} sm={4} md={4} lg={4} xl={4}>
+                    <Icon type="delete" style={{fontSize: '24px'}}
+                    onClick={() => this.removesample2(parameter.Maintenance_Item)}>
+                      Click me
+                    </Icon>
+                    </Col>
+
+
+
+
+                            </FormGroup>
+                          </Row>
+                          )})};
+
+
+
+
+
+                  <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+                  <Button style={{display: this.state.addReport}} type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Maintenance Report</Button>
+                  <Button style={{display: this.state.overwriteReport}} type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Report</Button>
+                  <Icon style={{display: this.state.overwriteReport, fontSize: 20}} onClick={this.displayButtons} type="left" />
+
+
+                  </Row>
+
+
+
+
+
+
+                  </form>
+
+                </Row>
+
+                </div>
+
+
 
 
 
             </Drawer>
-
             <Drawer
-              title= "Edit Sample"
+              title= "Fill in Maintenance Form"
               placement={this.state.placement}
               closable={false}
-              onClose={this.onClose1}
+              onClose={this.onClose}
               visible={this.state.visible1}
               width={500}
             >
-              <form>
-                <Row style={{textAlign: 'right'}}>
-                <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose1()}>+ Add Sample</Icon>
-                </Row>
-                <Row>
-                  <FormGroup>
-                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
-                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="maintenanceDate" onChange={this.handleChange} type="date" placeholder="Date" value={this.state.maintenanceDate} /></Col>
-                  </FormGroup>
-                  </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                  <FormGroup>
-                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Personnel</b></Col>
-                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="maintenanceWorker" onChange={this.handleChange} type="text" placeholder="Personnel" value={this.state.maintenanceWorker} /></Col>
-                  </FormGroup>
-                  </Row>
-
-                  <Row style={{paddingTop: '10px'}}>
-                  <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Mechanical Notes</b></Col>
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="mechanicalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Mechanical Notes" value={this.state.mechanicalEquipmentNotes} /></Col>
-                  </FormGroup>
-                  </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                  <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Electrical Notes</b></Col>
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="electricalEquipmentNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Electrical Notes" value={this.state.electricalEquipmentNotes} /></Col>
-                  </FormGroup>
-                  </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                  <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Aquatic Vegetation Notes</b></Col>
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="aquaticVegetationNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Vegetation Notes" value={this.state.aquaticVegetationNotes} /></Col>
-                  </FormGroup>
-                  </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                  <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Shoreline Notes</b></Col>
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="shorelineNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Shoreline Notes" value={this.state.shorelineNotes} /></Col>
-                  </FormGroup>
-                  </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                  <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Misc. Notes</b></Col>
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="miscNotes" onChange={this.handleChange} type="textarea" componentClass="textarea" style={{ height: 80, width: 335}} placeholder="Misc. Notes" value={this.state.miscNotes} /></Col>
-                  </FormGroup>
-                  </Row>
-
-
-
-        <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-        <Button type="primary" onClick={this.writeData} bsStyle="primary">Overwrite Maintenance Report</Button>
-        </Row>
 
 
 
 
 
-        </form>
+
             </Drawer>
+
+
+
+
+
             </Col>
 
           </div>
@@ -784,7 +1100,7 @@ const options = {
 
             </div>
 
-            <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+            <div style={{ background: '#F4F7FA', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
 
@@ -793,73 +1109,57 @@ const options = {
 
 
                   >
-                  <Tabs defaultActiveKey="1" >
-              <TabPane tab="Maintenance Reports" key="1">
-                <Row>
-                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                <Row>
+                  <Tabs defaultActiveKey="1" activeKey={this.state.key} onChange={this.handleSelect} >
 
-                <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
+                    <TabPane tab="MAINTENANCE LOGS" key="1">
+                    <Row type="flex" justify="center">
 
-                    <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>MAINTENANCE REPORTS</b></p>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
+                          <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
 
-
-              </Col>
-            </Row>
-
-                <Row>
-                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-
-                  <BootstrapTable
-                  data={ this.state.orders }
-                  options={options}
-                  exportCSV
-                  pagination
+                        </Col>
 
 
-                  >
+                      </Row>
 
-                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='maintenanceDate' isKey filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Maintenance Date</TableHeaderColumn>
-
-                  <TableHeaderColumn thStyle={{ whiteSpace: 'auto' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='mechanicalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Mechanical Notes</TableHeaderColumn>
-                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='electricalEquipmentNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Electrical Notes</TableHeaderColumn>
-                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='aquaticVegetationNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Aquatic Vegetation Notes</TableHeaderColumn>
-                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='shorelineNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Shoreline Notes</TableHeaderColumn>
-                  <TableHeaderColumn thStyle={{ whiteSpace: 'normal' }} tdStyle={{ whiteSpace: 'normal' }} width='150px' dataField='miscNotes' filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort>Miscellaneous Notes</TableHeaderColumn>
-
-            <TableHeaderColumn
-                  width='100px'
-                  dataField='button'
-                  dataFormat={this.editRow.bind(this)}
-                  >Edit</TableHeaderColumn>
-
-              <TableHeaderColumn
-                    width='100px'
-                    dataField='button'
-                    dataFormat={this.deleteRow.bind(this)}
-                    >Delete</TableHeaderColumn>
+                      <Row style={{paddingTop: '10px'}} type="flex" justify="center">
 
 
-                  </BootstrapTable>
+                          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                            <Table columns={columns} dataSource={data} onChange={this.onChange} scroll={{ x: 1300}} />
 
-
-            </Col>
-            </Row>
-            <Row>
-            <Col span={24}>
-            <hr></hr>
-            </Col>
-            </Row>
+                          </Col>
+                        </Row>
 
 
 
 
 
 
-            </Col>
-          </Row>
+
+
+                    </TabPane>
+
+              <TabPane tab="" key="2">
+
 
               </TabPane>
+
+
+
+
+
+
+                  <TabPane tab="" key="3">
+
+
+
+</TabPane>
+
+
+
+
+
 
 
             </Tabs>
@@ -874,6 +1174,6 @@ const options = {
 
 
           </Layout>
-        )
-            }
-          }
+      )
+    }
+  }

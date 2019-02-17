@@ -11,6 +11,7 @@ import monthlySamples from './monthlySamples';
 import monthlySamples2 from './monthlySamples2';
 import monthlySamples3 from './monthlySamples2';
 import testingPage from './testingPage';
+import testingPage2 from './testingPage2';
 
 
 import uploadDocument from './uploadDocument';
@@ -25,6 +26,8 @@ import chemicalApplications from './assetManager/chemicalApplications';
 import fishStocking from './assetManager/fishStocking';
 
 import reporting from './reporting';
+
+
 
 
 
@@ -397,204 +400,78 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     }
     return (
 
-      <Layout>
 
 
-        <div id="myDIV" style={{position: 'fixed'}}>
-          <Button size="large" width={5} type="primary" icon="menu" onClick={this.showDrawer1}/>
+    <Layout style={{backgroundColor: '#F4F7FA', background: '#F4F7FA',}}>
 
-          <Drawer
-            title="Directory"
-            placement="left"
-            closable={false}
-            onClose={this.onClose1}
-            visible={this.state.visible1}
-          >
-          <Menu
-            onClick={handleClick}
-            style={{ backgroundColor: 'white', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'gray' }}
-            mode="vertical">
-            <SubMenu key="sub1" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/dashboard"><span><Icon type="dashboard" /><span>Dashboard</span></span></Link>}>
+      <Header style={{backgroundColor: '#0667D0', background: '#0667D0',}}>
 
-            </SubMenu>
+        <Row type="flex" justify="center" align="middle" >
+          <Col span={16} style={{textAlign: 'left'}}>
+        <p style={{fontSize: '30px', color: 'white', paddingLeft: '80px'}}>LimnoSource</p>
+        </Col>
+        <Col span={8} style={{textAlign: 'right'}}>
+          <p style={{paddingRight: '80px', color: 'white', fontSize: '20px', }}><Icon type="smile" style={{fontSize: '24px', color: 'white', marginRight: 2, paddingRight: 20, paddingTop: 12}}/>{this.state.lakeName}</p>
 
-            <SubMenu key="sub2" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/monthlySamples"><span><Icon type="form" /><span>Sampling</span></span></Link>}>
-
-            </SubMenu>
-
-
-
-
-            <SubMenu key="sub4" title={<span><Icon type="setting" /><span>Asset Manager</span></span>}>
-              <Menu.Item key="6"><Link to="/maintenanceReports">Maintenance Reports</Link></Menu.Item>
-              <Menu.Item key="7"><Link to="/vendorContacts">Vendor Contacts</Link></Menu.Item>
-                <Menu.Item key="8"><Link to="/equipmentList">Equipment List</Link></Menu.Item>
-                <Menu.Item key="9"><Link to="/chemicalApplications">Chemical Applications</Link></Menu.Item>
-                <Menu.Item key="10"><Link to="/fishStocking">Fish Stocking</Link></Menu.Item>
-
-            </SubMenu>
-
-
-            <SubMenu key="sub5" title={<span><Icon type="file-text" /><span>Document Manager</span></span>}>
-              <Menu.Item key="11"><Link to="/uploadDocument">Reports</Link></Menu.Item>
-              <Menu.Item key="12"><Link to="/uploadDrawings">Drawings</Link></Menu.Item>
-              <Menu.Item key="13"><Link to="/uploadManuals">Manuals</Link></Menu.Item>
-
-
-            </SubMenu>
-
-            <SubMenu key="sub6" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/profilePage"><span><Icon type="user" /><span>Profile</span></span></Link>}>
-
-            </SubMenu>
-
-            <SubMenu key="sub7" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/reporting"><span><Icon type="form" /><span>Reporting</span></span></Link>}>
-
-            </SubMenu>
-
-
-
-
-            <SubMenu key="sub5" onSelect={() => firebase.auth().signOut()} title={<span><Icon type="logout" /><span><Button type="default" onClick={() => firebase.auth().signOut()}>Sign Out
-
-            </Button></span></span>}>
-
-            </SubMenu>
-
-
-
-
-          </Menu>
-          </Drawer>
-
-</div>
-
-
-    <Sider
-      style={{
-       overflow: 'auto',position: 'fixed', height: '100vh', left: 0, backgroundColor: '#222222'
-    }}
-
-      breakpoint="md"
-      collapsedWidth="0"
-      onBreakpoint={(broken) => { console.log(broken); }}
-      onCollapse={(collapsed, type) => { console.log(collapsed, type);
-
-        var x = document.getElementById("myDIV");
-        if (collapsed) {
-          x.style.display = "block";
-      this.setState({
-        margin: '8px 5px 15px 15px',
-      })
-    }
-  else {
-    x.style.display = "none";
-    this.setState({
-      margin: '8px 20px 20px 185px'
-    })
-  } }}
-    >
-
-        <Menu
-          onClick={handleClick}
-          style={{ backgroundColor: '#222222', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'white', fontSize: '18px' }}
-          mode="vertical">
-
-          <SubMenu key="sub1" onClick={this.dashboardRef}
-            title={<span>
-            <Link style={{ width: '100%', textDecoration: 'none', color: 'white' }} to="/dashboard">
-            <span><Icon type="dashboard" /><span>Dashboard <Icon style={{  paddingLeft: '75px', fontSize: 1}}type="right" /></span></span>
-            </Link></span>}>
-
-          </SubMenu>
-
-          <SubMenu key="sub2" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/monthlySamples"><span><Icon type="form" /><span>Sampling<Icon style={{  paddingLeft: '80px', fontSize: 1}}type="right" /></span></span></Link>}>
-
-          </SubMenu>
-
-
-
-
-          <SubMenu key="sub4" title={<span><Icon type="setting" /><span>Asset Manager</span></span>}>
-            <Menu.Item key="6"><Link to="/maintenanceReports">Maintenance Reports</Link></Menu.Item>
-            <Menu.Item key="7"><Link to="/vendorContacts">Vendor Contacts</Link></Menu.Item>
-              <Menu.Item key="8"><Link to="/equipmentList">Equipment List</Link></Menu.Item>
-              <Menu.Item key="9"><Link to="/chemicalApplications">Chemical Applications</Link></Menu.Item>
-              <Menu.Item key="10"><Link to="/fishStocking">Fish Stocking</Link></Menu.Item>
-
-          </SubMenu>
-
-
-
-
-          <SubMenu key="sub5" title={<span><Icon type="file-text" /><span>Document Manager</span></span>}>
-            <Menu.Item key="11"><Link to="/uploadDocument">Reports</Link></Menu.Item>
-            <Menu.Item key="12"><Link to="/uploadDrawings">Drawings</Link></Menu.Item>
-            <Menu.Item key="13"><Link to="/uploadManuals">Manuals</Link></Menu.Item>
-
-
-          </SubMenu>
-
-          <SubMenu key="sub6" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/profilePage"><span><Icon type="user" /><span>Profile<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
-
-          </SubMenu>
-
-          <SubMenu key="sub7" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/reporting"><span><Icon type="form" /><span>Reporting<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
-
-          </SubMenu>
-
-
-
-          <SubMenu key="sub9" title={<Link style={{ textDecoration: 'none', color: 'white' }} to="/testingPage"><span><Icon type="form" /><span>Testing Page<Icon style={{  paddingLeft: '105px', fontSize: 1}}type="right" /></span></span></Link>}>
-
-          </SubMenu>
-
-
-
-
-          <SubMenu key="sub10" onSelect={() => firebase.auth().signOut()} title={<span><Icon type="logout" /><span><Button type="default" onClick={() => firebase.auth().signOut()}><b>Sign Out</b>
-
-          </Button></span></span>}>
-
-          </SubMenu>
-
-
-
-
-        </Menu>
-    </Sider>
-    <Layout style={{margin: this.state.margin, backgroundColor: '#F0F0F0'}}>
-      <Header style={{ backgroundColor: '#ECECEC'}}>
-
-
-
-
-          <div style={{ background: '#F0F0F0', padding: '5px' }}>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-            <div style={{position: 'relative'}}>
-          <Col xs={16} sm={16} md={16} lg={16} xl={16}>
-            <div style={{fontSize: '36px'}}><b>Limno Analytics</b></div>
-          </Col>
-          <Col xs={8} sm={8} md={8} lg={8} xl={8} onClick={this.showDrawer}style={{ position: 'absolute',
-        top: '0%',
-        right: '0%', textAlign: 'right'}}>
-
-          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'right'}}>
-            <div style={{fontSize: '20px'}}><b>Log In</b></div>
-            </Col>
-          </Col>
-
-
-
-        </div>
-          </Row>
-          </div>
-
-
+      </Col>
+        </Row>
 
       </Header>
+      <Header style={{backgroundColor: '#FFFFFF', background: '#FFFFFF', zIndex: 1}}>
 
-      <Content style={{ backgroundColor: '#F0F0F0', margin: '24px 16px 0' }}>
-        <div style={{ padding: 5, backgroundColor: '#F0F0F0', background: '#F0F0F0', minHeight: 360 }}>
+        <Row type="flex" justify="center" align="middle" >
+          <Col span={24} style={{textAlign: 'left', paddingLeft: '80px'}}>
+          <Menu
+            onClick={handleClick}
+
+            mode="horizontal"
+            style={{fontSize: '16px', lineHeight: '63px', padding: "0"}}
+          >
+            <Menu.Item style={{padding: "0", margin: "0"}} key="dashboard">
+              <Link style={{ textDecoration: 'none'}} to="/dashboard"><Icon type="appstore" style={{fontSize: '22px'}}/>Dashboard</Link>
+            </Menu.Item>
+            <Menu.Item style={{paddingleft: "5px", margin: "0"}} key="sampling">
+              <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/monthlySamples"><Icon type="search" style={{fontSize: '22px'}}/>Sampling</Link>
+            </Menu.Item>
+
+
+
+            <SubMenu style={{padding: "0", margin: "0"}} title={<span style={{paddingleft: "5px", margin: "0"}} className="submenu-title-wrapper"><Icon type="tool"  style={{fontSize: '22px'}}/>Asset Manager</span>}>
+              <MenuItemGroup title="Item 1">
+                <Menu.Item key="setting:1">Option 1</Menu.Item>
+                <Menu.Item key="setting:2">Option 2</Menu.Item>
+              </MenuItemGroup>
+              <MenuItemGroup title="Item 2">
+                <Menu.Item key="setting:3">Option 3</Menu.Item>
+                <Menu.Item key="setting:4">Option 4</Menu.Item>
+              </MenuItemGroup>
+            </SubMenu>
+            <SubMenu style={{padding: "0", margin: "0"}} title={<span className="submenu-title-wrapper"><Icon type="copy"  style={{fontSize: '22px'}}/>Documents</span>}>
+              <MenuItemGroup title="Item 1">
+                <Menu.Item key="setting:1">Option 1</Menu.Item>
+                <Menu.Item key="setting:2">Option 2</Menu.Item>
+              </MenuItemGroup>
+              <MenuItemGroup title="Item 2">
+                <Menu.Item key="setting:3">Option 3</Menu.Item>
+                <Menu.Item key="setting:4">Option 4</Menu.Item>
+              </MenuItemGroup>
+            </SubMenu>
+            <Menu.Item style={{padding: "0", margin: "0"}} key="profile">
+              <Icon type="user" style={{fontSize: '22px'}} />Profile
+            </Menu.Item>
+          </Menu>
+        </Col>
+      </Row>
+
+    </Header>
+
+
+
+    <Row type="flex" justify="center">
+      <Col span={20}>
+
+      <Content style={{ backgroundColor: '#F4F7FA', }}>
+        <div style={{ padding: 5, backgroundColor: '#F4F7FA', background: '#F4F7FA', minHeight: 360 }}>
           <Route exact path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/monthlySamples" component={monthlySamples} />
@@ -611,14 +488,18 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
           <Route path="/testingPage" component={testingPage} />
           <Route path="/uploadDrawings" component={uploadDrawings} />
           <Route path="/uploadManuals" component={uploadManuals} />
+          <Route path="/testingPage2" component={testingPage2} />
+
 
         </div>
       </Content>
+      </Col>
+    </Row>
       <Footer style={{ textAlign: 'center' }}>
         Ant Design ©2018 Created by Ant UED
       </Footer>
     </Layout>
-  </Layout>
+
 
 
 

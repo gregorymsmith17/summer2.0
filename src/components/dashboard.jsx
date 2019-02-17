@@ -13,13 +13,15 @@ import { fire } from '../fire';
 import { ChromePicker } from 'react-color';
 import GoogleMapReact from 'google-map-react';
 
-
+import { SketchPicker } from 'react-color';
 import {BootstrapTable, BootstrapButton, TableHeaderColumn} from 'react-bootstrap-table';
 import { TiArrowSortedDown, TiBrush, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
 
-import { LineChart, LabelList, ResponsiveContainer, BarChart, Bar, Surface, ReferenceLine, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
+import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, Tooltip, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, Card, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, Select, AutoComplete, Radio } from 'antd';
+import Highlighter from 'react-highlight-words';
+import { CSVLink, CSVDownload } from "react-csv";
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
@@ -39,12 +41,12 @@ const tabListNoTitle = [{
 export default class Dashboard extends Component {
 
   static defaultProps = {
-center: {
+  center: {
   lat: 37.987636425563075,
   lng: -121.63235758701154
-},
-zoom: 13
-};
+  },
+  zoom: 13
+  };
 
 
 
@@ -149,686 +151,296 @@ zoom: 13
         error: null,
         weather: '',
         center: {
-          lat: 37.987636425563075,
-          lng: -121.63235758701154
+          lat: '',
+          lng: ''
         },
+
+        userID: '',
+        key: "1",
+        snapArray: [],
+        snapArray1: [],
+        arrayData1: [],
+        arrayData2: [],
+        arrayKeys1: [],
+        arrayKeys2: [],
+        arrayValues2: [],
+        smallGraphKeys: [],
+
+        Sample_Item: '',
+        sampleDate: '',
+        sampleTitle: '',
+        sampleID: '',
+        sampleMisc: '',
+        dataType: '',
+        color: '#000000',
+
+        item: '',
+        timeFrame: "All",
+        graphData: [],
+        turnedOffKeys: [],
+
+        currentData: [],
+        colorDisplay: 'none',
+
+        childrenDrawer: false,
+        childrenDrawer1: false,
+
+        overwriteDisplay: 'none',
+        addDisplay: null,
+
+        overwriteReport: 'none',
+        addReport: null,
+
+        inputAdd: null,
+        inputOverwrite: 'none',
+
+
+        tableKeys: [],
+        searchText: '',
+        selectedRowKeys: [], // Check here to configure the default column
+        loading: false,
+
+
+
+        url: null,
+        blob: null,
+        file:null,
+        blobUrl: null,
+
+
+        //for drawers
+        visible: false,
+        visible1: false,
+        visible2: false,
+        visible3: false,
+
+        //Inputs for Profile Page
+        lakeName: '',
+        locationCity: '',
+        locationState: '',
+        managementContact: '',
+        hoaContact: '',
+        managementContactNumber: '',
+        hoaContactNumber: '',
+
+
+
+
 
 
 
       }
+
+      this.handleChange = this.handleChange.bind(this);
+
+
 
     }
 
 
+    //event triggered when text boxes of forms, values are changed
+    handleChange(e) {
+      const name = e.target.name;
+  const value = e.target.value;
+  this.setState({ [name]: value });
+      this.setState({
+        [e.target.name]: e.target.value
+      });
 
 
 
+    }
+    //event triggered when form is submitted
 
-    //async allows await to be used for API calls.  Without ASYNC an error will be called saying that await is a reserved word.
 
-    //ComponentDidMount runs over and over again
+   snapshotToArray(snapshot) {
+      var returnArr = [];
 
+      snapshot.forEach(function(childSnapshot) {
+          var item = childSnapshot.val();
+          item.key = childSnapshot.key;
+
+          returnArr.push(item);
+      });
+
+      return returnArr;
+  };
   async componentDidMount() {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
-      samplesRef.on('value', (snapshot) => {
-
-
-        let dataList = snapshot.val();
-        let filter = [];
-        let orders = snapshot.val();
-
-        let orders2 = snapshot.val();
-        let orders3 = [snapshot.val()]
-        console.log(orders3);
-
-        let newState = [];
-        let newState2 = [];
-        let newState3 = [];
-
-        let nitrogenAverage = [];
-        let phosphorusAverage = [];
-        let dissolvedOxygenAverage = [];
-        let tssAverage = [];
-        let turbidityAverage = [];
-        let salinityAverage = [];
-
-
-
-
-
-
-
-      for (let order in orders) {
-        newState.push({
-          id: order,
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
-          sampleNotes: orders[order].sampleNotes,
-        });
-        newState2.push({
-          id: order,
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
-          sampleNotes: orders[order].sampleNotes,
-        });
-
-
-
-
-      }
-
-      newState2.sort(function(a, b) {
-
-        if (a.sampleDate === b.sampleDate) {
-          return 0;
-        }
-        return a.sampleDate > b.sampleDate ? 1 : -1;
-    });
-    newState.sort(function(a, b) {
-
-      if (b.sampleDate === a.sampleDate) {
-        return 0;
-      }
-      return b.sampleDate > a.sampleDate ? 1 : -1;
-  });
-
-
 
       this.setState({
-        orders: newState,
-        orders2: newState2,
-        dataList: newState,
-        color: this.state.color,
-      });
-      console.log(orders2)
+        userID: user.uid,
+      })
 
-      snapshot.forEach(ss => {
-          nitrogenAverage.push({nitrogen: ss.child('nitrogen').val(), date: ss.child('sampleDate').val()} );
-          nitrogenAverage.sort(function(a, b) {
-            if (a.date === b.date) {
-              return 0;
-            }
-            return a.date > b.date ? 1 : -1;
-        });
-          this.setState({
-            nitrogenAverage: (nitrogenAverage),
-          })
-        });
-        console.log(nitrogenAverage);
-        if (nitrogenAverage.length == 0) {
+
+
+      const parameterList1Ref = fire.database().ref(`sampleReport/${user.uid}`);
+      parameterList1Ref.on('value', (snapshot) => {
+        let snapArray = this.snapshotToArray(snapshot);
+
+        if (snapArray.length == 0) {
           console.log("do nothing")
         }
-        if (nitrogenAverage.length == 1) {
-          console.log("do one thing")
-          let nitrogenData = [];
-          for (let i=0; i < nitrogenAverage.length; i++) {
+
+
+        if (snapArray.length > 0) {
+          let data = snapArray;
+
+
+          let tableData1 = [];
+          for (let i=0; i < snapArray.length; i++) {
           //push send this data to the back of the chartData variable above.
-          nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
-
-        }
-
-          let nitrogenReverse2 = nitrogenAverage.reverse();
-          let nitrogenGraph = ([{nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
-          console.log(nitrogenGraph)
-
-          let nitrogenReverse = nitrogenData.reverse();
-          let nitrogen = ([nitrogenReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-          console.log(nitrogenReverse[0])
-          this.setState({
-            nitrogenLatest: nitrogenReverse[0],
-            nitrogenAvg: nitrogen,
-            nitrogenGraph: nitrogenGraph,
-          })
-        }
-        if (nitrogenAverage.length == 2) {
-          let nitrogenData = [];
-          for (let i=0; i < nitrogenAverage.length; i++) {
-          //push send this data to the back of the chartData variable above.
-          nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
-
-        }
-
-
-        let nitrogenReverse2 = nitrogenAverage.reverse();
-
-
-        let nitrogenGraph = ([{nitrogen: nitrogenReverse2[1].nitrogen, date: nitrogenReverse2[1].date}, {nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
-        console.log(nitrogenGraph)
-
-
-
-
-          let nitrogenReverse = nitrogenData.reverse();
-          let nitrogen = ([nitrogenReverse[0], nitrogenReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-          console.log(nitrogenReverse[0])
-          this.setState({
-            nitrogenLatest: nitrogenReverse[0],
-            nitrogenAvg: nitrogen,
-            nitrogenGraph: nitrogenGraph,
-          })
-        }
-        if (nitrogenAverage.length > 2) {
-          console.log("do one three things or more")
-          let nitrogenData = [];
-          for (let i=0; i < nitrogenAverage.length; i++) {
-          //push send this data to the back of the chartData variable above.
-          nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
-
-        }
-
-
-        let nitrogenReverse2 = nitrogenAverage.reverse();
-
-
-        let nitrogenGraph = ([{nitrogen: nitrogenReverse2[2].nitrogen, date: nitrogenReverse2[2].date}, {nitrogen: nitrogenReverse2[1].nitrogen, date: nitrogenReverse2[1].date}, {nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
-        console.log(nitrogenGraph)
-
-        let nitrogenReverse = nitrogenData.reverse();
-        let nitrogen = ([nitrogenReverse[0], nitrogenReverse[1], nitrogenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-        console.log(nitrogenReverse[0])
-        this.setState({
-          nitrogenLatest: nitrogenReverse[0],
-          nitrogenAvg: nitrogen,
-          nitrogenGraph: nitrogenGraph,
-        })
-        }
-        snapshot.forEach(ss => {
-            phosphorusAverage.push({phosphorus: ss.child('phosphorus').val(), date: ss.child('sampleDate').val()} );
-            phosphorusAverage.sort(function(a, b) {
-              if (a.date === b.date) {
-                return 0;
-              }
-              return a.date > b.date ? 1 : -1;
-          });
-            this.setState({
-              phosphorusAverage: (phosphorusAverage),
-            })
-          });
-          console.log(phosphorusAverage);
-          if (phosphorusAverage.length == 0) {
-            console.log("do nothing")
-          }
-          if (phosphorusAverage.length == 1) {
-            console.log("do one thing")
-            let phosphorusData = [];
-            for (let i=0; i < phosphorusAverage.length; i++) {
-            //push send this data to the back of the chartData variable above.
-            phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
-
+          tableData1.push(Object.keys(snapArray[i]));
           }
 
-            let phosphorusReverse2 = phosphorusAverage.reverse();
-            let phosphorusGraph = ([{phosphorus: phosphorusReverse2[0].phosphorus, date: phosphorusReverse2[0].date} ]);
-            console.log(phosphorusGraph)
+          let tableData2 = tableData1.map(function(a){return a.length;});
+          tableData2.indexOf(Math.max.apply(Math, tableData2));
 
-            let phosphorusReverse = phosphorusData.reverse();
-            let phosphorus = ([phosphorusReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
+          let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 
-            console.log(phosphorusReverse[0])
-            this.setState({
-              phosphorusLatest: phosphorusReverse[0],
-              phosphorusAvg: phosphorus,
-              phosphorusGraph: phosphorusGraph,
+          let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
+          table1Keys = table1Keys.filter(e => e !== 'ID');
+          table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
+          table1Keys = table1Keys.filter(e => e !== 'date');
+          table1Keys = table1Keys.filter(e => e !== 'Title');
+          table1Keys = table1Keys.filter(e => e !== 'key');
+          table1Keys = table1Keys.filter(e => e !== 'key');
+
+          if (this.state.turnedOffKeys.length == 0) {
+            console.log("do nothing again")
+          }
+
+          if (this.state.turnedOffKeys.lenth > 0) {
+            this.state.turnedOffKeys.map((item) => {
+
+              table1Keys = table1Keys.filter(e => e !== item);
             })
           }
-          if (phosphorusAverage.length == 2) {
-            let phosphorusData = [];
-            for (let i=0; i < phosphorusAverage.length; i++) {
-            //push send this data to the back of the chartData variable above.
-            phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
 
-          }
+          console.log(table1Keys)
 
-
-          let phosphorusReverse2 = phosphorusAverage.reverse();
-
-
-          let phosphorusGraph = ([{phosphorus: phosphorusReverse2[1].phosphorus, date: phosphorusReverse2[1].date}, {phosphorus: phosphorusReverse2[0].phosphorus, date: phosphorusReverse2[0].date} ]);
-          console.log(phosphorusGraph)
-
-
-
-
-            let phosphorusReverse = phosphorusData.reverse();
-            let phosphorus = ([phosphorusReverse[0], phosphorusReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-            console.log(phosphorusReverse[0])
-            this.setState({
-              phosphorusLatest: phosphorusReverse[0],
-              phosphorusAvg: phosphorus,
-              phosphorusGraph: phosphorusGraph,
-            })
-          }
-          if (phosphorusAverage.length > 2) {
-            console.log("do one three things or more")
-            let phosphorusData = [];
-            for (let i=0; i < phosphorusAverage.length; i++) {
-            //push send this data to the back of the chartData variable above.
-            phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
-
-          }
-
-
-          let phosphorusReverse2 = phosphorusAverage.reverse();
-
-
-          let phosphorusGraph = ([{phosphorus: phosphorusReverse2[2].phosphorus, date: phosphorusReverse2[2].date}, {phosphorus: phosphorusReverse2[1].phosphorus, date: phosphorusReverse2[1].date}, {phosphorus: phosphorusReverse2[0].phosphorus, date: phosphorusReverse2[0].date} ]);
-          console.log(phosphorusGraph)
-
-          let phosphorusReverse = phosphorusData.reverse();
-          let phosphorus = ([phosphorusReverse[0], phosphorusReverse[1], phosphorusReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-          console.log(phosphorusReverse[0])
           this.setState({
-            phosphorusLatest: phosphorusReverse[0],
-            phosphorusAvg: phosphorus,
-            phosphorusGraph: phosphorusGraph,
+            smallGraphKeys: table1Keys,
           })
+
+
+          let tableKeys = table1Keys.map((txt) => {
+            return (
+
+            {
+            title:txt,
+            dataIndex: txt,
+            key: txt,
+            ...this.getColumnSearchProps(txt),
+
+            width: 200,
           }
+          )})
+
+          tableKeys.unshift({
+          title: 'Title',
+          dataIndex: 'Title',
+          key: 'Title',
+          ...this.getColumnSearchProps('Title'),
+          sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+          sortDirections: ['descend', 'ascend'],
+          width: 200,
+
+          })
+
+          tableKeys.unshift({
+          title: 'Date',
+          dataIndex: 'date',
+          key: 'date',
+          ...this.getColumnSearchProps('date'),
+          sorter: (a, b) => { return a.date.localeCompare(b.date)},
+          sortDirections: ['descend', 'ascend'],
+          sortOrder: 'descend',
+          width: 130,
+          })
+
+          tableKeys.unshift({
+          title: 'ID #',
+          dataIndex: 'ID',
+          key: 'ID',
+          ...this.getColumnSearchProps('ID'),
+          sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
+          sortDirections: ['descend', 'ascend'],
+          width: 80,
+          })
+
+
+          tableKeys.unshift({
+            title: 'Edit',
+            dataIndex: '',
+            key: 'x',
+            fixed: 'left',
+            render: this.editRow.bind(this),
+            width: 60,
+
+          })
+
+          tableKeys.unshift({
+            title: 'Delete',
+            dataIndex: '',
+            fixed: 'left',
+            key: 'y',
+            render: this.deleteRow.bind(this),
+            width: 60,
+
+          })
+          console.log(data);
+          let reverseData = data.reverse();
+          let threeData = [data[2], data[1], data[0]];
+          let sixData = [
+          data[5],
+          data[4],
+          data[3],
+          data[2],
+          data[1],
+          data[0]];
+          let twelveData = [
+            data[11],
+            data[10],
+            data[9],
+            data[8],
+            data[7],
+            data[6],
+          data[5],
+          data[4],
+          data[3],
+          data[2],
+          data[1],
+          data[0]];
+
+          let reverseData1 = data.reverse();
+
+
+          this.setState({
+            snapArray: data,
+            threeData: threeData,
+            sixData: sixData,
+            twelveData: twelveData,
+            graphData: data,
+            tableKeys: tableKeys,
+          })
+
+
+        }
+
+         })
+
+         const sampleList2Ref = fire.database().ref(`sampleList/${user.uid}`);
+         sampleList2Ref.on('value', (snapshot) => {
+           let maintenanceArray = this.snapshotToArray(snapshot);
+           console.log(maintenanceArray)
+           this.setState({
+             snapArray1: maintenanceArray,
 
-          snapshot.forEach(ss => {
-              dissolvedOxygenAverage.push({do: ss.child('do').val(), date: ss.child('sampleDate').val()} );
-              dissolvedOxygenAverage.sort(function(a, b) {
-                if (a.date === b.date) {
-                  return 0;
-                }
-                return a.date > b.date ? 1 : -1;
-            });
-              this.setState({
-                dissolvedOxygenAverage: (dissolvedOxygenAverage),
-              })
-            });
-            console.log(dissolvedOxygenAverage);
-            if (dissolvedOxygenAverage.length == 0) {
-              console.log("do nothing")
-            }
-            if (dissolvedOxygenAverage.length == 1) {
-              console.log("do one thing")
-              let dissolvedoxygenData = [];
-              for (let i=0; i < dissolvedOxygenAverage.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              dissolvedoxygenData.push(parseFloat(dissolvedOxygenAverage[i].do));
-
-            }
-
-              let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
-              let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[0].do, date: dissolvedOxygenReverse2[0].date} ]);
-              console.log(dissolvedOxygenGraph)
-
-              let dissolvedOxygenReverse = dissolvedoxygenData.reverse();
-              let dissolvedOxygen = ([dissolvedOxygenReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-              console.log(dissolvedOxygenReverse[0])
-              this.setState({
-                dissolvedOxygenLatest: dissolvedOxygenReverse[0],
-                dissolvedOxygenAvg: dissolvedOxygen,
-                dissolvedOxygenGraph: dissolvedOxygenGraph,
-              })
-            }
-            if (dissolvedOxygenAverage.length == 2) {
-              console.log("do two things")
-              let dissolvedoxygenData = [];
-              for (let i=0; i < dissolvedOxygenAverage.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              dissolvedoxygenData.push(parseFloat(dissolvedOxygenAverage[i].do));
-
-            }
-
-              let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
-              let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[0].do, date: dissolvedOxygenReverse2[0].date}, {do: dissolvedOxygenReverse2[1].do, date: dissolvedOxygenReverse2[1].date} ]);
-              console.log(dissolvedOxygenGraph)
-
-              let dissolvedOxygenReverse = dissolvedoxygenData.reverse();
-              let dissolvedOxygen = ([dissolvedOxygenReverse[0], dissolvedOxygenReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-              console.log(dissolvedOxygenReverse[0])
-              this.setState({
-                dissolvedOxygenLatest: dissolvedOxygenReverse[0],
-                dissolvedOxygenAvg: dissolvedOxygen,
-                dissolvedOxygenGraph: dissolvedOxygenGraph,
-              })
-            }
-            if (phosphorusAverage.length > 2) {
-              console.log("do one three things or more")
-              let dissolvedoxygenData = [];
-              for (let i=0; i < dissolvedOxygenAverage.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              dissolvedoxygenData.push(parseFloat(dissolvedOxygenAverage[i].do));
-
-            }
-
-              let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
-              let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[0].do, date: dissolvedOxygenReverse2[0].date}, {do: dissolvedOxygenReverse2[1].do, date: dissolvedOxygenReverse2[1].date}, {do: dissolvedOxygenReverse2[2].do, date: dissolvedOxygenReverse2[2].date} ]);
-              console.log(dissolvedOxygenGraph)
-
-              let dissolvedOxygenReverse = dissolvedoxygenData.reverse();
-              let dissolvedOxygen = ([dissolvedOxygenReverse[0], dissolvedOxygenReverse[1], dissolvedOxygenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-              console.log(dissolvedOxygenReverse[0])
-              this.setState({
-                dissolvedOxygenLatest: dissolvedOxygenReverse[0],
-                dissolvedOxygenAvg: dissolvedOxygen,
-                dissolvedOxygenGraph: dissolvedOxygenGraph,
-              })
-
-            }
-
-            snapshot.forEach(ss => {
-                salinityAverage.push({salinity: ss.child('salinity').val(), date: ss.child('sampleDate').val()} );
-                salinityAverage.sort(function(a, b) {
-                  if (a.date === b.date) {
-                    return 0;
-                  }
-                  return a.date > b.date ? 1 : -1;
-              });
-                this.setState({
-                  salinityAverage: (salinityAverage),
-                })
-              });
-              console.log(salinityAverage);
-              if (salinityAverage.length == 0) {
-                console.log("do nothing")
-              }
-              if (salinityAverage.length == 1) {
-                console.log("do one thing")
-                let salinityData = [];
-                for (let i=0; i < salinityAverage.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                salinityData.push(parseFloat(salinityAverage[i].salinity));
-
-              }
-
-                let salinityReverse2 = salinityAverage.reverse();
-                let salinityGraph = ([{salinity: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
-                console.log(salinityGraph)
-
-                let salinityReverse = salinityData.reverse();
-                let salinity = ([salinityReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-                console.log(salinityReverse[0])
-                this.setState({
-                  salinityLatest: salinityReverse[0],
-                  salinityAvg: salinity,
-                  salinityGraph: salinityGraph,
-                })
-              }
-              if (salinityAverage.length == 2) {
-                let salinityData = [];
-                for (let i=0; i < salinityAverage.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                salinityData.push(parseFloat(salinityAverage[i].salinity));
-
-              }
-
-
-              let salinityReverse2 = salinityAverage.reverse();
-
-
-              let salinityGraph = ([{salinity: salinityReverse2[1].salinity, date: salinityReverse2[1].date}, {salinity: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
-              console.log(salinityGraph)
-
-
-
-
-                let salinityReverse = salinityData.reverse();
-                let salinity = ([salinityReverse[0], salinityReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-                console.log(salinityReverse[0])
-                this.setState({
-                  salinityLatest: salinityReverse[0],
-                  salinityAvg: salinity,
-                  salinityGraph: salinityGraph,
-                })
-              }
-              if (salinityAverage.length > 2) {
-                console.log("do one three things or more")
-                let salinityData = [];
-                for (let i=0; i < salinityAverage.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                salinityData.push(parseFloat(salinityAverage[i].salinity));
-
-              }
-
+           })
+         })
 
-              let salinityReverse2 = salinityAverage.reverse();
-
 
-              let salinityGraph = ([{salinity: salinityReverse2[2].salinity, date: salinityReverse2[2].date}, {salinity: salinityReverse2[1].salinity, date: salinityReverse2[1].date}, {salinity: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
-              console.log(salinityGraph)
-
-              let salinityReverse = salinityData.reverse();
-              let salinity = ([salinityReverse[0], salinityReverse[1], salinityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-              console.log(salinityReverse[0])
-              this.setState({
-                salinityLatest: salinityReverse[0],
-                salinityAvg: salinity,
-                salinityGraph: salinityGraph,
-              })
-              }
-              snapshot.forEach(ss => {
-                  turbidityAverage.push({turbidity: ss.child('turbidity').val(), date: ss.child('sampleDate').val()} );
-                  turbidityAverage.sort(function(a, b) {
-                    if (a.date === b.date) {
-                      return 0;
-                    }
-                    return a.date > b.date ? 1 : -1;
-                });
-                  this.setState({
-                    turbidityAverage: (turbidityAverage),
-                  })
-                });
-                console.log(turbidityAverage);
-                if (turbidityAverage.length == 0) {
-                  console.log("do nothing")
-                }
-                if (turbidityAverage.length == 1) {
-                  console.log("do one thing")
-                  let turbidityData = [];
-                  for (let i=0; i < turbidityAverage.length; i++) {
-                  //push send this data to the back of the chartData variable above.
-                  turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
-
-                }
-
-                  let turbidityReverse2 = turbidityAverage.reverse();
-                  let turbidityGraph = ([{turbidity: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
-                  console.log(turbidityGraph)
-
-                  let turbidityReverse = turbidityData.reverse();
-                  let turbidity = ([turbidityReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-                  console.log(turbidityReverse[0])
-                  this.setState({
-                    turbidityLatest: turbidityReverse[0],
-                    turbidityAvg: turbidity,
-                    turbidityGraph: turbidityGraph,
-                  })
-                }
-                if (turbidityAverage.length == 2) {
-                  let turbidityData = [];
-                  for (let i=0; i < turbidityAverage.length; i++) {
-                  //push send this data to the back of the chartData variable above.
-                  turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
-
-                }
-
-
-                let turbidityReverse2 = turbidityAverage.reverse();
-
-
-                let turbidityGraph = ([{turbidity: turbidityReverse2[1].turbidity, date: turbidityReverse2[1].date}, {turbidity: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
-                console.log(turbidityGraph)
-
-
-
-
-                  let turbidityReverse = turbidityData.reverse();
-                  let turbidity = ([turbidityReverse[0], turbidityReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-                  console.log(turbidityReverse[0])
-                  this.setState({
-                    turbidityLatest: turbidityReverse[0],
-                    turbidityAvg: turbidity,
-                    turbidityGraph: turbidityGraph,
-                  })
-                }
-                if (turbidityAverage.length > 2) {
-                  console.log("do one three things or more")
-                  let turbidityData = [];
-                  for (let i=0; i < turbidityAverage.length; i++) {
-                  //push send this data to the back of the chartData variable above.
-                  turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
-
-                }
-
-
-                let turbidityReverse2 = turbidityAverage.reverse();
-
-
-                let turbidityGraph = ([{turbidity: turbidityReverse2[2].turbidity, date: turbidityReverse2[2].date}, {turbidity: turbidityReverse2[1].turbidity, date: turbidityReverse2[1].date}, {turbidity: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
-                console.log(turbidityGraph)
-
-                let turbidityReverse = turbidityData.reverse();
-                let turbidity = ([turbidityReverse[0], turbidityReverse[1], turbidityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-                console.log(turbidityReverse[0])
-                this.setState({
-                  turbidityLatest: turbidityReverse[0],
-                  turbidityAvg: turbidity,
-                  turbidityGraph: turbidityGraph,
-                })
-                }
-
-                snapshot.forEach(ss => {
-                    tssAverage.push({tss: ss.child('tss').val(), date: ss.child('sampleDate').val()} );
-                    tssAverage.sort(function(a, b) {
-                      if (a.date === b.date) {
-                        return 0;
-                      }
-                      return a.date > b.date ? 1 : -1;
-                  });
-                    this.setState({
-                      tssAverage: (tssAverage),
-                    })
-                  });
-                  console.log(tssAverage);
-                  if (tssAverage.length == 0) {
-                    console.log("do nothing")
-                  }
-                  if (tssAverage.length == 1) {
-                    console.log("do one thing")
-                    let tssData = [];
-                    for (let i=0; i < tssAverage.length; i++) {
-                    //push send this data to the back of the chartData variable above.
-                    tssData.push(parseFloat(tssAverage[i].tss));
-
-                  }
-
-                    let tssReverse2 = tssAverage.reverse();
-                    let tssGraph = ([{tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
-                    console.log(tssGraph)
-
-                    let tssReverse = tssData.reverse();
-                    let tss = ([tssReverse[0]].reduce((a, b) => a + b, 0)/ 1).toFixed(2);
-
-                    console.log(tssReverse[0])
-                    this.setState({
-                      tssLatest: tssReverse[0],
-                      tssAvg: tss,
-                      tssGraph: tssGraph,
-                    })
-                  }
-                  if (tssAverage.length == 2) {
-                    let tssData = [];
-                    for (let i=0; i < tssAverage.length; i++) {
-                    //push send this data to the back of the chartData variable above.
-                    tssData.push(parseFloat(tssAverage[i].tss));
-
-                  }
-
-
-                  let tssReverse2 = tssAverage.reverse();
-
-
-                  let tssGraph = ([{tss: tssReverse2[1].tss, date: tssReverse2[1].date}, {tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
-                  console.log(tssGraph)
-
-
-
-
-                    let tssReverse = tssData.reverse();
-                    let tss = ([tssReverse[0], tssReverse[1]].reduce((a, b) => a + b, 0)/ 2).toFixed(2);
-
-                    console.log(tssReverse[0])
-                    this.setState({
-                      tssLatest: tssReverse[0],
-                      tssAvg: tss,
-                      tssGraph: tssGraph,
-                    })
-                  }
-                  if (tssAverage.length > 2) {
-                    console.log("do one three things or more")
-                    let tssData = [];
-                    for (let i=0; i < tssAverage.length; i++) {
-                    //push send this data to the back of the chartData variable above.
-                    tssData.push(parseFloat(tssAverage[i].tss));
-
-                  }
-
-
-                  let tssReverse2 = tssAverage.reverse();
-
-
-                  let tssGraph = ([{tss: tssReverse2[2].tss, date: tssReverse2[2].date}, {tss: tssReverse2[1].tss, date: tssReverse2[1].date}, {tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
-                  console.log(tssGraph)
-
-                  let tssReverse = tssData.reverse();
-                  let tss = ([tssReverse[0], tssReverse[1], tssReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-                  console.log(tssReverse[0])
-                  this.setState({
-                    tssLatest: tssReverse[0],
-                    tssAvg: tss,
-                    tssGraph: tssGraph,
-                  })
-                  }
-
-
-
-
-
-
-
-
-
-    });
     const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
     profileRef.on('value', (snapshot) => {
       var that = this;
@@ -845,11 +457,13 @@ zoom: 13
       latitude: snapshot.child('latitude').val(),
       longitude: snapshot.child('longitude').val(),
       center: {
-        lat: snapshot.child('latitude').val(),
-        lng: snapshot.child('longitude').val()
+        lat: parseFloat(snapshot.child('latitude').val()),
+        lng: parseFloat(snapshot.child('longitude').val())
       },
 
     });
+
+
     console.log(this.state.center);
               var myLat = `${this.state.latitude}`;
                 var myLon = `${this.state.longitude}`;
@@ -880,18 +494,7 @@ zoom: 13
 
   });
 
-    const colorsRef = fire.database().ref(`colors/${user.uid}`);
 
-    colorsRef.on('value', (snapshot) => {
-      let colorList = snapshot.val();
-      console.log(colorList);
-      this.setState({
-        tempColor: snapshot.child('tempColor').val(),
-
-      });
-
-
-    });
 
   });
 
@@ -904,195 +507,618 @@ zoom: 13
 
 
 
-   imageFormatter = (cell, row) => {
-      return (
-<span><img src={cell} /></span>
-)
+
+
+
+  onSelectChange = (selectedRowKeys) => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  }
+
+  getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({
+        setSelectedKeys, selectedKeys, confirm, clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={node => { this.searchInput = node; }}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => this.handleSearch(selectedKeys, confirm)}
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <Button
+            type="primary"
+            onClick={() => this.handleSearch(selectedKeys, confirm)}
+            icon="search"
+            size="small"
+            style={{ width: 90, marginRight: 8 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => this.handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </div>
+      ),
+      filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />,
+      onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => this.searchInput.select());
+        }
+      },
+
+    })
+
+    handleSearch = (selectedKeys, confirm) => {
+      confirm();
+      this.setState({ searchText: selectedKeys[0] });
+      console.log(selectedKeys[0]);
+      console.log(this.state.searchText);
     }
 
-    toggleNitrogen(event) {
+    handleReset = (clearFilters) => {
+      clearFilters();
+      this.setState({ searchText: '' });
+    }
+
+
+
+
+    deleteRow = (row, isSelected, e, id, key) =>
+    {
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.removesample(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+    removesample(itemId) {
+
+     const sampleRef = fire.database().ref(`/sampleReport/${this.state.userID}/${itemId}`);
+     sampleRef.remove();
+    }
+
+
+
+    removesample1(itemId) {
+
+    const sampleRef = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
+    sampleRef.remove();
+    }
+
+    removesample2(itemId) {
+
+    const sampleRef = fire.database().ref(`/sampleReport/${this.state.userID}/${this.state.id}/${itemId}`);
+    sampleRef.remove();
+    this.fillStates(this.state.id);
+
+
+    }
+
+    editRow = (row, isSelected, e, id, key) =>
+    {
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillStates(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
+    editRow1 = (row, isSelected, e, id, key) =>
+    {
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="form" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillParameterStates(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
+    fillParameterStates(itemId) {
+
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
         this.setState({
-          checkboxState: !this.state.checkboxState
+          visible3: true,
+
+        })
+
+      const sample1Ref = fire.database().ref(`/sampleList/${user.uid}/${itemId}`);
+      let id = fire.database().ref().child(`/sampleList/${user.uid}/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+
+        this.setState({
+          Sample_Item: snapshot.child('Sample_Item').val(),
+          dataType: snapshot.child('dataType').val(),
+          color: snapshot.child('color').val(),
+          id: id,
         });
-        const checkboxState = this.state.checkboxState;
-        if (checkboxState) {
-          this.setState({
-            nitrogenPlot: '',
-          })
-        } else {
-          this.setState({
-            nitrogenPlot: 'nitrogen',
-          })
-        }
+
+    });
+
+    });
+    }
+
+    parameterOverwrite = (e) => {
+    e.preventDefault();
+    //fire.database().ref('samples') refers to the main title of the fire database.
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const sampleListRef = fire.database().ref(`sampleList/${user.uid}/${this.state.id}`);
+
+
+    var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
+      console.log(object);
+      sampleListRef.set(object);
+
+    //this.setState is used to clear the text boxes after the form has been submitted.
+    this.setState({
+      visible3: false,
+
+    });
+
+    });
+    }
+
+
+    fillParameterInfo = (e, itemId) => {
+      e.preventDefault();
+      //fire.database().ref('samples') refers to the main title of the fire database.
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+      const sampleListRef = fire.database().ref(`sampleList/${user.uid}`);
+      let id = fire.database().ref().child(`/sampleList/${user.uid}/${itemId}`).key;
+      const sampleInfo = {
+        Sample_Item: this.state.Sample_Item,
+        Sample_Input: '',
+        dataType: this.state.dataType,
+        color: this.state.color,
+        id: id,
+
       }
-      togglePhosphorus(event) {
-          this.setState({
-            checkboxStatephosphorus: !this.state.checkboxStatephosphorus
+
+      sampleListRef.push(sampleInfo);
+      //this.setState is used to clear the text boxes after the form has been submitted.
+      this.setState({
+        Sample_Item: '',
+        dataType: '',
+        color: '#000000',
+        childrenDrawer: false,
+        visible4: false,
+      });
+
+    });
+    }
+
+
+
+
+    changeData(itemId) {
+      const sample1Ref = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
+      let id = fire.database().ref().child(`/sampleList/${this.state.userID}/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+        this.setState({
+          Sample_Item: snapshot.child('Sample_Item').val(),
+          Sample_Input: '',
+          dataType: snapshot.child('dataType').val(),
+          color: snapshot.child('color').val(),
+          id: id,
+      });
+    });
+
+
+    }
+
+    editRowColor = (row, isSelected, e, id, key) =>
+    {
+
+      const content = (
+    <div>
+      <SketchPicker
+    color={ this.state.color }
+    onChangeComplete={ this.overwriteColor }
+      />
+    </div>
+    );
+
+      return (
+        <div style={{textAlign: 'left'}}>
+          <Popover content={content} title="Title" trigger="click">
+            <Icon type="bg-colors" style={{fontSize: '24px', color: '#101441'}}
+            onClick={() => this.changeColor(isSelected.key)}>
+              Click me
+            </Icon>
+      </Popover>
+        </div>
+      )
+    }
+
+    changeColor(itemId) {
+
+
+      const sample1Ref = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
+      let id = fire.database().ref().child(`/sampleList/${this.state.userID}/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+
+        this.setState({
+          Sample_Item: snapshot.child('Sample_Item').val(),
+          Sample_Input: '',
+          dataType: snapshot.child('dataType').val(),
+          color: snapshot.child('color').val(),
+          id: id,
+        });
+
+    });
+
+    }
+
+    overwriteColor = (color) => {
+
+      const sampleListRef = fire.database().ref(`sampleList/${this.state.userID}/${this.state.id}`);
+
+       this.setState({ color: color.hex });
+
+      var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
+
+      sampleListRef.set(object);
+
+
+     };
+
+
+
+
+
+
+    handleSampleChange = idx => evt => {
+      const newParameters = this.state.snapArray1.map((parameter, sidx) => {
+        if (idx !== sidx) return parameter;
+        return { ...parameter, Sample_Input: evt.target.value };
+      });
+      this.setState({ snapArray1: newParameters });
+
+
+
+      };
+
+      handleSampleChange1 = idx => evt => {
+        const newParameters = this.state.arrayData2.map((parameter, sidx) => {
+          if (idx !== sidx) return parameter;
+          return { ...parameter, Sample_Input: evt.target.value };
+        });
+        this.setState({ arrayData2: newParameters });
+
+
+
+        };
+
+
+      handleSubmit = (e) => {
+          e.preventDefault();
+          this.props.form.validateFieldsAndScroll((err, values) => {
+            if (!err) {
+              console.log('Received values of form: ', values);
+            }
           });
-          const checkboxState = this.state.checkboxStatephosphorus;
-          if (checkboxState) {
-            this.setState({
-              phosphorusPlot: '',
-            })
-          } else {
-            this.setState({
-              phosphorusPlot: 'phosphorus',
-            })
-          }
         }
-        toggleTemp(event) {
-            this.setState({
-              checkboxStatenitrogen: !this.state.checkboxStatenitrogen
-            });
-            const checkboxState = this.state.checkboxStatenitrogen;
-            if (checkboxState) {
+
+        sampleSubmit = (e) => {
+          e.preventDefault();
+          //fire.database().ref('samples') refers to the main title of the fire database.
+          this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+          const sampleListRef = fire.database().ref(`sampleReport/${user.uid}`);
+
+
+      var arr = this.state.snapArray1;
+      console.log(arr);
+
+
+      if (arr.length == 0){
+        var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
+        console.log(object);
+        sampleListRef.push(object);
+      }
+
+    if (arr.length > 0){
+
+        var object = arr.reduce(
+            (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
+            console.log(object);
+            sampleListRef.push(object);
+
+            const sampleList2Ref = fire.database().ref(`sampleList/${user.uid}`);
+            sampleList2Ref.on('value', (snapshot) => {
+              let maintenanceArray = this.snapshotToArray(snapshot);
+
               this.setState({
-                tempPlot: '',
+                snapArray1: maintenanceArray,
+
               })
-            } else {
-              this.setState({
-                tempPlot: 'temp',
-              })
-            }
+            })
+
           }
-          toggleTDS(event) {
-              this.setState({
-                checkboxStatetds: !this.state.checkboxStatetds
-              });
-              const checkboxState = this.state.checkboxStatetds;
-              if (checkboxState) {
-                this.setState({
-                  tdsPlot: '',
-                })
-              } else {
-                this.setState({
-                  tdsPlot: 'tds',
-                })
-              }
-            }
-            togglepH(event) {
-                this.setState({
-                  checkboxStatepH: !this.state.checkboxStatepH
-                });
-                const checkboxState = this.state.checkboxStatepH;
-                if (checkboxState) {
-                  this.setState({
-                    pHPlot: '',
-                  })
-                } else {
-                  this.setState({
-                    pHPlot: 'pH',
-                  })
-                }
-              }
-              toggletss(event) {
-                  this.setState({
-                    checkboxStatetss: !this.state.checkboxStatetss
-                  });
-                  const checkboxState = this.state.checkboxStatetss;
-                  if (checkboxState) {
-                    this.setState({
-                      tssPlot: '',
-                    })
-                  } else {
-                    this.setState({
-                      tssPlot: 'tss',
-                    })
-                  }
-                }
-                togglesalinity(event) {
-                    this.setState({
-                      checkboxStatesalinity: !this.state.checkboxStatesalinity
-                    });
-                    const checkboxState = this.state.checkboxStatesalinity;
-                    if (checkboxState) {
-                      this.setState({
-                        salinityPlot: '',
-                      })
-                    } else {
-                      this.setState({
-                        salinityPlot: 'salinity',
-                      })
-                    }
-                  }
-                  toggleHardness(event) {
-                      this.setState({
-                        checkboxStatehardness: !this.state.checkboxStatehardness
-                      });
-                      const checkboxState = this.state.checkboxStatehardness;
-                      if (checkboxState) {
-                        this.setState({
-                          totalHardnessPlot: '',
-                        })
-                      } else {
-                        this.setState({
-                          totalHardnessPlot: 'totalHardness',
-                        })
-                      }
-                    }
-                    toggleTurbidity(event) {
-                        this.setState({
-                          checkboxStateturbidity: !this.state.checkboxStateturbidity
-                        });
-                        const checkboxState = this.state.checkboxStateturbidity;
-                        if (checkboxState) {
-                          this.setState({
-                            turbidityPlot: '',
-                          })
-                        } else {
-                          this.setState({
-                            turbidityPlot: 'turbidity',
-                          })
-                        }
-                      }
-                      toggleDO(event) {
-                          this.setState({
-                            checkboxStatedo: !this.state.checkboxStatedo
-                          });
-                          const checkboxState = this.state.checkboxStatedo;
-                          if (checkboxState) {
-                            this.setState({
-                              doPlot: '',
-                            })
-                          } else {
-                            this.setState({
-                              doPlot: 'do',
-                            })
-                          }
-                        }
 
-                      handleClick = () => {
-                        this.setState({ displayColorPicker: !this.state.displayColorPicker })
-                      };
 
-                      handleClose = () => {
-                        this.setState({ displayColorPicker: false })
-                      };
 
-                      tempColorChange = (color) => {
 
-                          console.log(this.state.color);
-                          this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-                          const samplesRef = fire.database().ref(`colors/${user.uid}`);
-                          const orderID = fire.database().ref(`/colors/${user.uid}/${orderID}`);
-                          const sample = {
-                            tempColor: color.hex
-                          }
-                          samplesRef.set(sample);
-                          this.setState({
-                            tempColor: color.hex,
-                           });
-                          });
-                      }
 
-                      onSubmit(event) {
-                        event.preventDefault();
-                      }
+          //this.setState is used to clear the text boxes after the form has been submitted.
+          this.setState({
+            sampleDate: '',
+            sampleID: '',
+            sampleTitle: '',
+            sampleMisc: '',
 
-                      onTabChange = (key, type) => {
-     console.log(key, type);
-     this.setState({ [type]: key });
-   }
+            visible: false,
+            visible1: false,
+            visible2: false,
+
+          });
+
+        });
+        }
+
+        fillStates(itemId) {
+
+          this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+            this.setState({
+              overwriteReport: null,
+              addReport: 'none',
+              inputOverwrite: null,
+              inputAdd: 'none',
+              visible: true,
+
+            })
+
+          const sample1Ref = fire.database().ref(`/sampleReport/${user.uid}/${itemId}`);
+          let id = fire.database().ref().child(`/sampleReport/${user.uid}/${itemId}`).key;
+          sample1Ref.on('value', (snapshot) => {
+
+            let maintenanceList = snapshot.val();
+
+
+
+
+            this.setState({
+              sampleDate: snapshot.child('date').val(),
+              sampleID: snapshot.child('ID').val(),
+              sampleTitle: snapshot.child('Title').val(),
+              sampleMisc: snapshot.child('Miscellaneous').val(),
+              id: id,
+            });
+
+            let arr = snapshot.val();
+            delete arr.date;
+            delete arr.ID;
+            delete arr.Title;
+            delete arr.Miscellaneous;
+
+            let arrayKeys = Object.keys(arr);
+            let arrayValues = Object.values(arr);
+            this.setState({
+              arrayKeys1: arrayKeys,
+              arrayValues1: arrayValues,
+
+            })
+
+    });
+
+    const sample2Ref = fire.database().ref(`/sampleReport/${user.uid}`);
+    sample2Ref.on('value', (snapshot) => {
+    let maintenanceList = this.snapshotToArray(snapshot);
+
+
+    let keys = [maintenanceList.map((parameter) => {
+    return (
+    parameter.key
+    )
+    })]
+
+    this.setState({
+    arrayData1: keys,
+    })
+    })
+
+    let arrayData = [];
+    for (let i=0; i < this.state.arrayKeys1.length; i++) {
+    //push send this data to the back of the chartData variable above.
+    arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
+
+    }
+
+    this.setState({
+    snapArray1: arrayData,
+    arrayData2: arrayData,
+    })
+
+        });
+      }
+
+
+      sampleOverwrite = (e) => {
+        e.preventDefault();
+        //fire.database().ref('samples') refers to the main title of the fire database.
+        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+        const sampleListRef = fire.database().ref(`sampleReport/${user.uid}/${this.state.id}`);
+
+
+    var arr = this.state.arrayData2;
+    console.log(arr);
+
+
+    if (arr.length == 0){
+      var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
+      console.log(object);
+      sampleListRef.set(object);
+
+    }
+    else
+
+
+      var object = arr.reduce(
+          (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
+          console.log(object);
+          sampleListRef.set(object);
+
+
+
+        //this.setState is used to clear the text boxes after the form has been submitted.
+        this.setState({
+
+
+          visible: false,
+          visible1: false,
+          visible2: false,
+
+        });
+
+      });
+      }
+
+
+      displayButtons = () => {
+
+     this.setState({
+       overwriteReport: 'none',
+       addReport: null,
+       inputOverwrite: 'none',
+       inputAdd: null,
+     })
+
+
+      }
+
+
+      additionalItem = (e, itemId, id) => {
+        e.preventDefault();
+        //fire.database().ref('samples') refers to the main title of the fire database.
+
+        let array = this.state.arrayData2;
+
+        const parameterInfo = {
+
+          Sample_Item: this.state.Sample_Item,
+          Sample_Input: '',
+          dataType: this.state.dataType,
+          color: this.state.color,
+          id: id,
+
+        }
+
+        array.push(parameterInfo);
+        //this.setState is used to clear the text boxes after the form has been submitted.
+        this.setState({
+          Sample_Item: '',
+          arrayData2: array,
+          dataType: '',
+          color: '',
+
+        });
+
+
+      }
+
+      onChange = (pagination, filters, sorter, extra: { currentDataSource: [] }) => {
+        const data = extra.currentDataSource;
+     console.log(extra.currentDataSource);
+     this.setState({
+       currentData: extra.currentDataSource,
+     })
+    }
+
+    handleChangeComplete = (color) => {
+      this.setState({ color: color.hex, colorDisplay: 'none' });
+    };
+
+    showChildrenDrawer = () => {
+      this.setState({
+        childrenDrawer: true,
+      });
+    };
+
+    onChildrenDrawerClose = () => {
+      this.setState({
+        childrenDrawer: false,
+      });
+    };
+
+    displayColor = () => {
+      this.setState({
+        colorDisplay: null,
+      })
+    }
+
+    handleSizeChange = (e) => {
+
+    const sampleListRef = fire.database().ref(`sampleList/${this.state.userID}/${this.state.id}`);
+
+    this.setState({ dataType: e.target.value });
+
+    var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
+
+    sampleListRef.set(object);
+
+
+
+    }
+
+    handleTimeFrameChange = (e) => {
+    this.setState({ timeFrame: e.target.value });
+    console.log(this.state.timeFrame)
+    if (this.state.timeframe == 'three') {
+    console.log("it's 3!!")
+    this.setState({
+      graphData: this.state.threeData,
+    })
+    }
+
+
+    }
+
+    threeMonths = () => {
+    this.setState({
+    graphData: this.state.threeData,
+    })
+    }
+    sixMonths = () => {
+    this.setState({
+    graphData: this.state.sixData,
+    })
+    }
+    twelveMonths = () => {
+    this.setState({
+    graphData: this.state.twelveData,
+    })
+    }
+    allMonths = () => {
+    this.setState({
+    graphData: this.state.snapArray,
+    })
+    }
+
+
+
+
+
+
+
+
+
+
 
 
    getLocation(){
@@ -1117,573 +1143,382 @@ zoom: 13
 
   render() {
 
-    const doCheckbox = (
-      <span>
-        <input
-        type="checkbox"
-        defaultChecked='true'
-        onClick={this.toggleDO.bind(this)}
-        />
-      <label>DO</label>
-      </span>
+    const center = {
+      lat: this.state.latitude,
+      lng: this.state.longitude
+    };
+
+
+
+    const columns1 = [
+      {
+        title: 'Edit',
+        dataIndex: '',
+        key: 'x',
+        render: this.editRow1.bind(this),
+        width: 60,
+      },
+      {
+    title: 'Title',
+    dataIndex: 'Sample_Item',
+    key: 'Sample_Item',
+    width: 200,
+    },
+    {
+    title: 'Data Type',
+    dataIndex: 'dataType',
+    key: 'dataType',
+    render: (text, record, isSelected, color) => {
+    if (record.dataType == 'Bar') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+    <Icon type="bar-chart" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+    if (record.dataType == 'Area') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+    <Icon type="area-chart" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+    if (record.dataType == 'Line') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+    <Icon type="line-chart" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+    if (record.dataType == 'Off') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+    <Icon type="close" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+
+    },
+
+
+
+
+    width: 200,
+    },
+    {
+    title: 'Color',
+    dataIndex: 'color',
+    key: 'color',
+    render: (text, record, isSelected) =>
+    (
+
+    <div style={{textAlign: 'left'}}>
+    <Popover content={content1} title="Select Color" trigger="click">
+    <Icon type="bg-colors" style={{fontSize: '24px', color: record.color}}
+    onClick={() => this.changeColor(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+
+    )
+
+    ,
+    width: 200,
+    },
+
+
+
+    ]
+
+
+    const content1 = (<div>
+    <SketchPicker
+    color={ this.state.color }
+    onChangeComplete={ this.overwriteColor }
+    />
+    </div>);
+
+    const content = (
+    <div>
+    <Row>
+    <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange}>
+    <Radio.Button value="Bar">Bar</Radio.Button>
+    <Radio.Button value="Line">Line</Radio.Button>
+    <Radio.Button value="Area">Area</Radio.Button>
+    <Radio.Button value="Off">Off</Radio.Button>
+    </Radio.Group>
+    </Row>
+
+
+    <Row style={{paddingTop: '10px', textAlign: 'center'}}>
+    <Button type="primary"onClick={this.parameterOverwrite}>Save</Button>
+    </Row>
+    </div>
     );
 
-    const nitrogenCheckbox = (
-      <span>
-        <input
-          inline
-        type="checkbox"
-        defaultChecked='true'
-        onClick={this.toggleNitrogen.bind(this)}
-        />
-      <label>Nitrogen</label>
-      </span>
-    );
-    const phosphorusCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.togglePhosphorus.bind(this)}/>
-      <label>Phosphorus</label>
-      </span>
-    );
-    const tempCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTemp.bind(this)}/>
-      <label>Temperature</label>
-      </span>
-    );
-    const tdsCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTDS.bind(this)}/>
-      <label>TDS</label>
-      </span>
-    );
-    const pHCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.togglepH.bind(this)}/>
-      <label>pH</label>
-      </span>
-    );
-    const tssCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggletss.bind(this)}/>
-      <label>TSS</label>
-      </span>
-    );
-    const salinityCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.togglesalinity.bind(this)}/>
-      <label>Salinity</label>
-      </span>
-    );
-    const hardnessCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleHardness.bind(this)}/>
-      <label>Total Hardness</label>
-      </span>
-    );
-    const turbidityCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTurbidity.bind(this)}/>
-      <label>Turbidity</label>
-      </span>
-    );
-    const popover = {
-       position: 'absolute',
-       zIndex: '2',
-     }
-     const cover = {
-       position: 'fixed',
-       top: '0px',
-       right: '0px',
-       bottom: '0px',
-       left: '0px',
-     }
+    const columns = this.state.tableKeys;
+
+    const data = this.state.snapArray;
+    const dataReverse = this.state.graphData;
+    const data1 = this.state.snapArray1;
+    const csvData = this.state.snapArray;
+    const csvData1 = this.state.currentData;
 
 
 
     return (
 
       <Layout>
+        <div style={{ background: '#F4F7FA', padding: '5px' }}>
 
 
-        <div style={{ background: '#F0F0F0', padding: '5px' }}>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <div style={{position: 'relative'}}>
-        <Col xs={18} sm={18} md={18} lg={18} xl={18}>
-          <h1>Dashboard</h1>
-          <h3><b>{this.state.lakeName}</b></h3>
+        <Row type="flex" justify="center">
+          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
 
-        </Col>
+            <Row style={{paddingTop: '20px'}} type="flex" justify="center">
+              <Col span={24}>
+
+                    <Col xs={24} sm={8} md={8} lg={8} xl={8}>
+            <Card  style={{textAlign: 'left'}} bordered={true} >
+             <div style={{textAlign: 'center'}}>
+             <h3>{this.state.currentCity}</h3>
+               <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
+               <h3>{this.state.currentDescription}</h3>
+               <p>Temperature: {this.state.currentTemp} F</p>
+               <p>Humidity: {this.state.currentHumidity}%</p>
+               </div>
+            </Card>
+            </Col>
 
 
-
-
-
-      </div>
-        </Row>
-        </div>
-        <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-        <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-         <Card  style={{textAlign: 'left'}} bordered={true} >
-           <div style={{textAlign: 'center'}}>
-           <h3>{this.state.currentCity}</h3>
-             <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
-             <h3>{this.state.currentDescription}</h3>
-             <p>Temperature: {this.state.currentTemp} F</p>
-             <p>Humidity: {this.state.currentHumidity}%</p>
+            <Col xs={24} sm={16} md={16} lg={16} xl={16}>
+            <Card  style={{textAlign: 'left'}} bordered={true} >
+             <div style={{ height: '25vh', width: '100%' }}>
+               <GoogleMapReact
+                 bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
+                 center={this.state.center
+                 }
+                 defaultZoom={this.props.zoom}
+               >
+                 <AnyReactComponent
+                   lat={this.state.latitude}
+                   lng={this.state.longitude}
+                   text={this.state.lakeName}
+                 />
+               </GoogleMapReact>
              </div>
-         </Card>
-        </Col>
-
-        <Col xs={24} sm={24} md={16} lg={16} xl={16}>
-         <Card  style={{textAlign: 'left'}} bordered={true} >
-           <div style={{ height: '29vh', width: '100%' }}>
-             <GoogleMapReact
-               bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
-               center={this.state.center}
-               defaultZoom={this.props.zoom}
-             >
-               <AnyReactComponent
-                 lat={this.state.latitude}
-                 lng={this.state.longitude}
-                 text={this.state.lakeName}
-               />
-             </GoogleMapReact>
-           </div>
-         </Card>
-
-        </Col>
-
-
-        </Row>
-        </div>
+            </Card>
+            </Col>
 
 
 
-        <Row style={{backgroundColor: '#F0F0F0'}}>
-        <Col span={24}>
-        <hr style={{backgroundColor: 'black', height: '0px', border: 0}}></hr>
-        </Col>
-        </Row>
 
-        <div style={{ background: '#F0F0F0', padding: '5px' }}>
-    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-        <div style={{position: 'relative'}}>
-          <div style={{ position: 'absolute',
-        top: '0%',
-        left: '0%', backgroundColor: 'lightBlue', height: '100%', width: '4%', zIndex: 1}} />
-      <Card  style={{textAlign: 'left'}} bordered={true}>
-          <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
-          <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-          <hr></hr>
-          <h3>{this.state.nitrogenLatest} mg/L</h3>
-        </Card>
-        </div>
-      </Col>
-      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-        <div style={{position: 'relative'}}>
-          <div style={{ position: 'absolute',
-        top: '0%',
-        left: '0%', backgroundColor: '#086788', height: '100%', width: '4%', zIndex: 1}} />
-        <Card  style={{textAlign: 'left'}} bordered={true}>
-          <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
-          <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-          <hr></hr>
-          <h3>{this.state.phosphorusLatest} mg/L</h3>
+            </Col>
+            </Row>
 
 
-        </Card>
-        </div>
-      </Col>
-      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-        <div style={{position: 'relative'}}>
-          <div style={{ position: 'absolute',
-        top: '0%',
-        left: '0%', backgroundColor: '#F0C808', height: '100%', width: '4%', zIndex: 1}} />
-      <Card  style={{textAlign: 'left'}} bordered={true}>
-        <p style={{lineHeight: '2px'}}><b>DISSOLVED OXYGEN</b></p>
-        <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-          <hr></hr>
-          <h3>{this.state.dissolvedOxygenLatest} mg/L</h3>
-        </Card>
-        </div>
-      </Col>
+          <Row type="flex" justify="center" style={{paddingTop: '20px'}}>
+            <Col span={24} style={{textAlign: 'center'}}>
+              <Card style={{ width: '100%' }}>
+                <div style={{textAlign: 'right'}}>
+                  <Radio.Group size="small" style={{fontSize: '12px'}} value={this.state.timeFrame} onChange={this.handleTimeFrameChange} >
+            <Radio.Button value="three" onClick={this.threeMonths}>3 Months</Radio.Button>
+            <Radio.Button value="six" onClick={this.sixMonths}>6 Months</Radio.Button>
+            <Radio.Button value="twelve" onClick={this.twelveMonths}>12 Months</Radio.Button>
+            <Radio.Button value="All" onClick={this.allMonths}>All</Radio.Button>
+          </Radio.Group></div>
+        <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={300}>
+                  <ComposedChart data={dataReverse}
+            syncId="anyId">
 
 
-    </Row>
-  </div>
+            <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+            <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+            <Tooltip />
 
 
+            <defs>
+              {data1.map(parameter => {
+                return (
 
-  <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px'}}>
-<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-  <div style={{position: 'relative'}}>
-    <div style={{ position: 'absolute',
-  top: '0%',
-  left: '0%', backgroundColor: '#5C80BC', height: '100%', width: '4%', zIndex: 1}} />
-  <Card  style={{textAlign: 'left'}} bordered={true}>
-    <p style={{lineHeight: '2px'}}><b>TSS</b></p>
-    <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-    <hr></hr>
-    <h3>{this.state.tssLatest} mg/L</h3>
-  </Card>
-  </div>
-</Col>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-  <div style={{position: 'relative'}}>
-    <div style={{ position: 'absolute',
-  top: '0%',
-  left: '0%', backgroundColor: '#30323D', height: '100%', width: '4%', zIndex: 1}} />
-  <Card  style={{textAlign: 'left'}} bordered={true}>
-    <p style={{lineHeight: '2px'}}><b>TURBIDITY</b></p>
-    <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-    <hr></hr>
-    <h3>{this.state.turbidityLatest} mg/L</h3>
-  </Card>
-  </div>
-</Col>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-  <div style={{position: 'relative'}}>
-    <div style={{ position: 'absolute',
-  top: '0%',
-  left: '0%', backgroundColor: '#CDD1C4', height: '100%', width: '4%', zIndex: 1}} />
-<Card  style={{textAlign: 'left'}} bordered={true}>
-  <p style={{lineHeight: '2px'}}><b>SALINITY</b></p>
-  <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-    <hr></hr>
-    <h3>{this.state.salinityLatest} ppt</h3>
+                    <linearGradient id={parameter.Sample_Item} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={parameter.color} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={parameter.color} stopOpacity={0.1}/>
+                    </linearGradient>
 
 
-  </Card>
-  </div>
-</Col>
-
-
-</Row>
-</div>
-
-
-
-<Row style={{backgroundColor: '#F0F0F0'}}>
-<Col span={24}>
-<hr style={{backgroundColor: 'black', height: '0px', border: 0}}></hr>
-</Col>
-</Row>
-
-<div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-<Col xs={24} sm={24} md={24} lg={24} xl={24}>
-
-
-      <Card
-
-
-      >
-      <Tabs defaultActiveKey="1" >
-  <TabPane tab="Nutrients" key="1">
-    <Row style={{paddingTop: '15px'}}>
-    <Col span={24} >
-
-        <p style={{lineHeight: '2px'}}><b>NITROGEN AND PHOSPHORUS</b></p>
-        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
-        <hr></hr>
-  </Col>
-</Row>
-
-    <Row>
-    <Col span={24}>
-      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
-        <AreaChart data={this.state.orders2}
-  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-  <defs>
-    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
-    </linearGradient>
-    <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
-    </linearGradient>
+                )
+              })}
   </defs>
-  <XAxis dataKey="sampleDate" />
-  <YAxis />
-  <CartesianGrid strokeDasharray="6 6" />
-  <Tooltip />
 
-  <Area type="monotone" dataKey="nitrogen" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="nitrogen" position="top" /></Area>
-  <Area type="monotone" dataKey="phosphorus" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="phosphorus" position="top" /></Area>
-  <Legend />
-</AreaChart>
- </ResponsiveContainer>
+
+
+
+              {data1.map(parameter => {
+
+                if (parameter.dataType == 'Bar') {
+                  console.log('something 1')
+                  const CustomTag = Bar;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Line') {
+                  console.log('something 2')
+                  const CustomTag = Line;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Area') {
+                  console.log('something 3')
+                  const CustomTag = Area;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                  )
+                }
+
+                if (parameter.dataType == 'Off') {
+                  console.log('No graph')
+
+
+                }
+
+
+              })}
+
+
+
+
+
+
+
+            <Legend />
+
+          </ComposedChart>
+           </ResponsiveContainer>
+              </Card>
+            </Col>
+
+
+          </Row>
+
+          <Row style={{paddingTop: '20px'}} type="flex" justify="center">
+            <Col span={24}>
+            <Card style={{ width: '100%'}} bodyStyle={{padding: "0"}}>
+              <Row align="middle">
+                <p style={{paddingTop: '25px', paddingLeft: '20px', fontSize: '24px'}}>Water Quality</p>
+              </Row>
+              <Row  type="flex" justify="center">
+
+
+                {data1.map(parameter => {
+
+
+                    return(
+                      <Col xs={24} sm={12} md={8} lg={8} xl={8}>
+                        <Card >
+                          <Row>
+                            <Col xs={4} sm={4} md={4} lg={4} xl={4}>
+                            <Icon type="up-circle"style={{fontSize: '32px',color: parameter.color}} />
+                            </Col>
+                            <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+                            <b style={{fontSize: '24px'}}>{parameter.Sample_Item}</b>
+                            </Col>
+                            </Row>
+                            <Row>
+
+                      <ResponsiveContainer width="100%" aspect={6/3.0} minHeight={90}>
+
+                      <ComposedChart data={dataReverse}
+                syncId="anyId">
+
+                <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+                <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+                <Tooltip />
+
+                      <Line type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}></Line>
+
+
+
+
+              </ComposedChart>
+              </ResponsiveContainer>
+              </Row>
+              </Card>
+              </Col>
+                    )
+
+
+
+
+                })}
+
+
+
+
+                        </Row>
+
+            </Card>
+            </Col>
+
+          </Row>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </Col>
 </Row>
 
-  </TabPane>
-  <TabPane tab="Salinity and TDS" key="2">
-    <Row style={{paddingTop: '15px'}}>
-    <Col span={24}>
 
-        <p style={{lineHeight: '2px'}}><b>SALINITY AND TDS</b></p>
-        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
-        <hr></hr>
-  </Col>
-</Row>
 
-    <Row>
-    <Col span={24}>
-      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
-        <AreaChart data={this.state.orders2}
-  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-  <defs>
-    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
-    </linearGradient>
-    <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
-    </linearGradient>
-  </defs>
-  <XAxis dataKey="sampleDate" />
-  <YAxis domain={[0, 10]}/>
-  <CartesianGrid strokeDasharray="6 6" />
-  <Tooltip />
 
-  <Area type="monotone" dataKey="tds" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="tds" position="top" /></Area>
-  <Area type="monotone" dataKey="salinity" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="salinity" position="top" /></Area>
-
-  <Legend />
-</AreaChart>
- </ResponsiveContainer>
-
-</Col>
-</Row>
-
-
-
-  </TabPane>
-  <TabPane tab="Turbidity and Dissolved Oxygen" key="3">
-    <Row style={{paddingTop: '15px'}}>
-    <Col span={24}>
-
-        <p style={{lineHeight: '2px'}}><b>TURBIDITY AND DISSOLVED OXYGEN</b></p>
-        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
-        <hr></hr>
-  </Col>
-</Row>
-
-    <Row>
-    <Col span={24}>
-      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
-        <AreaChart data={this.state.orders2}
-  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-  <defs>
-    <linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#809848" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#809848" stopOpacity={0}/>
-    </linearGradient>
-    <linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#40798C" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#40798C" stopOpacity={0}/>
-    </linearGradient>
-  </defs>
-  <XAxis dataKey="sampleDate" />
-  <YAxis />
-  <CartesianGrid strokeDasharray="6 6" />
-  <Tooltip />
-
-  <Area type="monotone" dataKey="turbidity" stroke="#809848" fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey="turbidity" position="top" /></Area>
-  <Area type="monotone" dataKey="do" stroke="#40798C" fillOpacity={1} fill="url(#colorDO)" ><LabelList dataKey="do" position="top" /></Area>
-
-  <Legend />
-</AreaChart>
- </ResponsiveContainer>
-
-</Col>
-</Row>
-
-
-
-
-  </TabPane>
-</Tabs>
-
-      </Card>
-</Col>
-</Row>
-</div>
-
-
-
-
-
-
-
-
-
-
-
- <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-
-<Card   bordered={true}>
-
-
-  <Row>
-  <Col span={15}>
-
-      <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
-      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
-      <p style={{lineHeight: '2px'}}>AVERAGE</p>
-
-</Col>
-<Col span={7}>
-
-    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.nitrogenAvg}mg/L</b></p>
-
-
-</Col>
-
-<Row>
-<Col span={24}>
-<hr></hr>
-</Col>
-</Row>
-
-</Row>
-
-<Row>
-<Col span={24}>
-
-    <ResponsiveContainer  width='100%' aspect={5/3.0}>
-      <BarChart    data={this.state.nitrogenGraph}
-           margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-           <defs>
-           <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-             <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
-             <stop offset="95%" stopColor="#086788" stopOpacity={0.3}/>
-           </linearGradient>
-           </defs>
-
-      <XAxis dataKey="date" />
-
-      <Tooltip/>
-
-      <Bar barSize={30} dataKey="nitrogen" fillOpacity={1} fill="url(#colorBlue)">
-      <LabelList dataKey="nitrogen" position="top" /></Bar>
-       </BarChart>
-       </ResponsiveContainer>
-     </Col>
-     </Row>
-</Card>
-</Col>
-
-
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-<Card  bordered={true}>
-
-  <Row>
-  <Col span={15}>
-
-      <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
-      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
-      <p style={{lineHeight: '2px'}}>AVERAGE</p>
-
-  </Col>
-  <Col span={7}>
-
-    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.phosphorusAvg}mg/L</b></p>
-
-
-  </Col>
-
-  </Row>
-  <Row>
-  <Col span={24}>
-  <hr></hr>
-  </Col>
-</Row>
-
-
-  <Row> <Col span={24}>
-    <ResponsiveContainer  width='100%' aspect={5/3.0}>
-      <BarChart    data={this.state.phosphorusGraph}
-           margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-           <defs>
-           <linearGradient id="colorYellow" x1="0" y1="0" x2="0" y2="1">
-             <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
-             <stop offset="95%" stopColor="#F0C808" stopOpacity={0.3}/>
-           </linearGradient>
-           </defs>
-      <XAxis dataKey="date"/>
-
-      <Tooltip/>
-
-      <Bar barSize={30} dataKey="phosphorus" fillOpacity={1} fill="url(#colorYellow)">
-      <LabelList dataKey="phosphorus" position="top" />
-    </Bar>
-       </BarChart>
-       </ResponsiveContainer>
-       </Col></Row>
-
-</Card>
-</Col>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-<Card   bordered={true}>
-
-
-  <Row>
-  <Col span={15}>
-
-      <p style={{lineHeight: '2px'}}><b>DISSOLVED O<sub>2</sub></b></p>
-      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
-      <p style={{lineHeight: '2px'}}>AVERAGE</p>
-
-  </Col>
-  <Col span={7}>
-
-    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.dissolvedOxygenAvg}mg/L</b></p>
-
-
-  </Col>
-
-  <Row>
-  <Col span={24}>
-  <hr></hr>
-  </Col>
-  </Row>
-
-  </Row>
-
-  <Row>
-  <Col span={24}>
-
-
-  <ResponsiveContainer  width='100%' aspect={5/3.0}>
-    <BarChart    data={this.state.dissolvedOxygenGraph}
-         margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-         <defs>
-         <linearGradient id="colorRed" x1="0" y1="0" x2="0" y2="1">
-           <stop offset="5%" stopColor="#DD1C1A" stopOpacity={0.8}/>
-           <stop offset="95%" stopColor="#DD1C1A" stopOpacity={0.3}/>
-         </linearGradient>
-         </defs>
-    <XAxis dataKey="date"/>
-
-    <Tooltip/>
-
-    <Bar barSize={30} dataKey="do" fillOpacity={1} fill="url(#colorRed)"><LabelList dataKey="do" position="top" /></Bar>
-     </BarChart>
-     </ResponsiveContainer>
-
-</Col></Row>
-</Card>
-</Col>
-</Row>
-</div>
-
-
-
-
-
-
+  </div>
 
 
 

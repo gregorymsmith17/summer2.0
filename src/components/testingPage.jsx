@@ -385,6 +385,7 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
 
           let table1Keys = Object.keys(graphInfoReverse[indexOfMaxValue]);
           table1Keys = table1Keys.filter(e => e !== 'id');
+          table1Keys = table1Keys.filter(e => e !== 'date');
           console.log(table1Keys);
 
 
@@ -406,15 +407,25 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
             let tableData = [];
             for (let i=0; i < table1Keys.length; i++) {
             //push send this data to the back of the chartData variable above.
-            tableData.push({dataField: table1Keys[i], text: table1Keys[i]});
+            tableData.push({dataField: table1Keys[i], sort: true, sortFunc: (a, b, order, dataField, rowA, rowB) => {
+    if (order === 'asc') {
+      return b - a;
+    }
+    return a - b; // desc
+  }, text: table1Keys[i]});
 
             }
+            tableData.unshift({dataField: 'date',
+             text: 'Date',
+             sort: true,
 
+            })
             tableData.push({dataField: 'delete',
              text: 'Delete',
              formatter: this.deleteRow.bind(this),
 
             })
+
 
             var arr = snapshot.val();
 
@@ -933,7 +944,7 @@ handleSampleChange = idx => evt => {
     const parameterListRef = fire.database().ref(`parameterSample/${user.uid}`);
 
     const date = {date: this.state.sampleDate};
-    const color = {color: this.state.color};
+
     const parameterInfo = {
 
       list: this.state.Parameter_List.map((parameter) => {
@@ -976,7 +987,7 @@ console.log(this.state.parameters);
 
 var arr = this.state.Parameter_List;
 var object = arr.reduce(
-    (obj, item) => Object.assign(obj, {date: this.state.sampleDate, color: this.state.color, id: item.id, [item.Parameter_Name]: item.Parameter_Input}) ,{});
+    (obj, item) => Object.assign(obj, {date: this.state.sampleDate, id: item.id, [item.Parameter_Name]: item.Parameter_Input}) ,{});
 
 console.log(object);
 
@@ -1058,7 +1069,10 @@ parameterListRef.push(object);
 
 
 
-
+        const defaultSorted = [{
+  dataField: 'date', // if dataField is not match to any column you defined, it will be ignored.
+  order: 'desc' // desc or asc
+}];
 
 
 
@@ -1205,21 +1219,24 @@ parameterListRef.push(object);
             <Row>
               <Row >
               <Col xs={24} sm={24} md={24} lg={24} xl={24} >
-                <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={200}>
+                <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={300}>
                   <ComposedChart data={this.state.graphInfo}
             syncId="anyId">
 
-            <XAxis dataKey="date" />
-            <YAxis />
+
+            <XAxis dataKey="date"><Label value="testing something here" offset={200} position="top" /></XAxis>
+
+            <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
             <Tooltip />
+
 
             <defs>
               {this.state.Parameter_List.map(parameter => {
                 return (
 
                     <linearGradient id={parameter.Parameter_Name} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={parameter.color} stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor={parameter.color} stopOpacity={0}/>
+                      <stop offset="5%" stopColor={parameter.color} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={parameter.color} stopOpacity={0.1}/>
                     </linearGradient>
 
 
@@ -1236,21 +1253,21 @@ parameterListRef.push(object);
                   console.log('something 1')
                   const CustomTag = Bar;
                   return(
-                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
                   )
                 }
                 if (parameter.dataType == 'Line') {
                   console.log('something 2')
                   const CustomTag = Line;
                   return(
-                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
                   )
                 }
                 if (parameter.dataType == 'Area') {
                   console.log('something 3')
                   const CustomTag = Area;
                   return(
-                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
                   )
                 }
 
