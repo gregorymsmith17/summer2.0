@@ -72,31 +72,10 @@ export default class Dashboard extends Component {
         currentHumidity: '',
 
         //checkbox status
-        checkboxState: true,
-        checkboxState1: true,
-        checkboxStatenitrogen: true,
-        checkboxStatephosphorus: true,
-        checkboxStatetds: true,
-        checkboxStatepH: true,
-        checkboxStatetss: true,
-        checkboxStatesalinity: true,
-        checkboxStateconductivity: true,
-        checkboxStatehardness: true,
-        checkboxStateturbidity: true,
-        checkboxStatedo: true,
+
 
         //these are for the graphs
-        tempPlot: 'temp',
-        doPlot: 'do',
-        conductivityPlot: 'conductivity',
-        tdsPlot: 'tds',
-        salinityPlot: 'salinity',
-        pHPlot: 'pH',
-        turbidityPlot: 'turbidity',
-        nitrogenPlot: 'nitrogen',
-        phosphorusPlot: 'phosphorus',
-        totalHardnessPlot: 'totalHardness',
-        tssPlot: 'tss',
+
 
         //this is the object array for the table
         samples: [],
@@ -107,31 +86,9 @@ export default class Dashboard extends Component {
         blobUrl: null,
 
         //averages
-        nitrogenAverage: [],
-        nitrogenAvg: '',
-        nitrogenLatest: '',
-        nitrogenGraph: [],
-        phosphorusAverage: [],
-        phosphorusAvg: '',
-        phosphorusGraph: [],
-        phoshporusLatest: '',
-        dissolvedOxygenAverage: [],
-        dissolvedOxygenAvg: '',
-        dissolvedOxygenGraph: [],
-        dissolvedOxygenLatest: '',
 
-        turbidityLatest: '',
-        turbidityAverage: [],
-        turbidityAvg: '',
-        turbidityGraph: [],
-        tssLatest: '',
-        tssAverage: [],
-        tssAvg: '',
-        tssGraph: [],
-        salinityLatest: '',
-        salinityAverage: [],
-        salinityAvg: '',
-        salinityGraph: [],
+
+
 
         key: 'tab1',
         noTitleKey: 'app',
@@ -178,6 +135,7 @@ export default class Dashboard extends Component {
         timeFrame: "All",
         graphData: [],
         turnedOffKeys: [],
+        latestSample: [],
 
         currentData: [],
         colorDisplay: 'none',
@@ -332,6 +290,8 @@ export default class Dashboard extends Component {
             dataIndex: txt,
             key: txt,
             ...this.getColumnSearchProps(txt),
+            sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+            sortDirections: ['descend', 'ascend'],
 
             width: 200,
           }
@@ -391,7 +351,25 @@ export default class Dashboard extends Component {
           })
           console.log(data);
           let reverseData = data.reverse();
+          console.log(data);
           let threeData = [data[2], data[1], data[0]];
+          console.log(data[0]);
+          let latestSample = data[0];
+          delete latestSample.date;
+          delete latestSample.ID;
+          delete latestSample.Miscellaneous;
+          delete latestSample.key;
+          delete latestSample.Title;
+          console.log(data[0]);
+
+          this.setState({
+            latestSample: data[0],
+          })
+          console.log(this.state.latestSample)
+
+          console.log(this.state.latestSample.Nitrogen)
+
+
           let sixData = [
           data[5],
           data[4],
@@ -646,6 +624,7 @@ export default class Dashboard extends Component {
           Sample_Item: snapshot.child('Sample_Item').val(),
           dataType: snapshot.child('dataType').val(),
           color: snapshot.child('color').val(),
+
           id: id,
         });
 
@@ -661,15 +640,12 @@ export default class Dashboard extends Component {
     const sampleListRef = fire.database().ref(`sampleList/${user.uid}/${this.state.id}`);
 
 
-    var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
+    var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id, units: this.state.units}
       console.log(object);
       sampleListRef.set(object);
 
     //this.setState is used to clear the text boxes after the form has been submitted.
-    this.setState({
-      visible3: false,
 
-    });
 
     });
     }
@@ -715,9 +691,10 @@ export default class Dashboard extends Component {
           Sample_Input: '',
           dataType: snapshot.child('dataType').val(),
           color: snapshot.child('color').val(),
+          units: snapshot.child('units').val(),
           id: id,
       });
-    });
+  });
 
 
     }
@@ -1068,13 +1045,11 @@ export default class Dashboard extends Component {
 
     this.setState({ dataType: e.target.value });
 
-    var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
+    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
 
     sampleListRef.set(object);
 
-
-
-    }
+  }
 
     handleTimeFrameChange = (e) => {
     this.setState({ timeFrame: e.target.value });
@@ -1089,10 +1064,13 @@ export default class Dashboard extends Component {
 
     }
 
+
+
     threeMonths = () => {
     this.setState({
     graphData: this.state.threeData,
     })
+    console.log(this.state.graphData)
     }
     sixMonths = () => {
     this.setState({
@@ -1137,6 +1115,49 @@ export default class Dashboard extends Component {
            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
        );
    }
+
+   onClose = () => {
+     this.setState({
+       visible: false,
+       visible1: false,
+       visible2: false,
+       visible3: false,
+
+     });
+   };
+
+   visible3 = () => {
+     const sampleList2Ref = fire.database().ref(`sampleList/${this.state.userID}`);
+     sampleList2Ref.on('value', (snapshot) => {
+       let maintenanceArray = this.snapshotToArray(snapshot);
+
+       this.setState({
+         arrayKeys1: [],
+         arrayValues1: [],
+         sampleDate: '',
+         sampleID: '',
+         sampleTitle: '',
+         sampleMisc: '',
+         snapArray1: maintenanceArray,
+         visible: true,
+         Sample_Item: '',
+         dataType: '',
+         units: '',
+         color: '#000000',
+         childrenDrawer: false,
+       visible3: true,
+     })
+   })
+
+
+   }
+   visible3Off = () => {
+     this.setState({
+       visible3: false,
+     })
+   }
+
+
 
 
 
@@ -1282,6 +1303,41 @@ export default class Dashboard extends Component {
     return (
 
       <Layout>
+
+        <Drawer
+
+          placement={this.state.placement}
+          closable={false}
+          onClose={this.onClose}
+
+          visible={this.state.visible3}
+          width={500}
+        >
+        <Row>
+
+          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
+          <Icon type="right-circle" onClick={this.visible3Off} style={{fontSize: '24px'}}/>
+
+          </Col>
+
+        </Row>
+
+        <Row style={{paddingTop: '10px'}} type="flex" justify="center">
+
+
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Table columns={columns1} dataSource={data1} onChange={this.onChange} scroll={{ x: '100%'}} />
+
+            </Col>
+
+          </Row>
+
+
+      </Drawer>
+
+
+
+
         <div style={{ background: '#F4F7FA', padding: '5px' }}>
 
 
@@ -1292,7 +1348,7 @@ export default class Dashboard extends Component {
               <Col span={24}>
 
                     <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-            <Card  style={{textAlign: 'left'}} bordered={true} >
+            <Card  style={{textAlign: 'left', height: 300,}} bordered={true} >
              <div style={{textAlign: 'center'}}>
              <h3>{this.state.currentCity}</h3>
                <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
@@ -1304,10 +1360,11 @@ export default class Dashboard extends Component {
             </Col>
 
 
-            <Col xs={24} sm={16} md={16} lg={16} xl={16}>
-            <Card  style={{textAlign: 'left'}} bordered={true} >
-             <div style={{ height: '25vh', width: '100%' }}>
+            <Col offset={1} xs={24} sm={15} md={15} lg={15} xl={15}>
+            <Card  style={{textAlign: 'left', height: 300,}} bordered={true} >
+             <div style={{  height: 250, width: '100%' }}>
                <GoogleMapReact
+                 onClick={this._onClick}
                  bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
                  center={this.state.center
                  }
@@ -1333,13 +1390,32 @@ export default class Dashboard extends Component {
           <Row type="flex" justify="center" style={{paddingTop: '20px'}}>
             <Col span={24} style={{textAlign: 'center'}}>
               <Card style={{ width: '100%' }}>
-                <div style={{textAlign: 'right'}}>
-                  <Radio.Group size="small" style={{fontSize: '12px'}} value={this.state.timeFrame} onChange={this.handleTimeFrameChange} >
-            <Radio.Button value="three" onClick={this.threeMonths}>3 Months</Radio.Button>
-            <Radio.Button value="six" onClick={this.sixMonths}>6 Months</Radio.Button>
-            <Radio.Button value="twelve" onClick={this.twelveMonths}>12 Months</Radio.Button>
-            <Radio.Button value="All" onClick={this.allMonths}>All</Radio.Button>
-          </Radio.Group></div>
+                <Row>
+                  <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+
+
+                  </Col>
+                  <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+
+
+                  </Col>
+                  <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
+                    <Radio.Group size="small" style={{fontSize: '10px'}} value={this.state.timeFrame} onChange={this.handleTimeFrameChange} >
+              <Radio.Button value="three" onClick={this.threeMonths}>3 Months</Radio.Button>
+              <Radio.Button value="six" onClick={this.sixMonths}>6 Months</Radio.Button>
+              <Radio.Button value="twelve" onClick={this.twelveMonths}>12 Months</Radio.Button>
+              <Radio.Button value="All" onClick={this.allMonths}>All</Radio.Button>
+              <Radio.Button value="Edit Chart" onClick={this.visible3}>Edit</Radio.Button>
+            </Radio.Group>
+
+                  </Col>
+
+
+
+                </Row>
+
+
+
         <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={300}>
                   <ComposedChart data={dataReverse}
             syncId="anyId">
@@ -1428,26 +1504,44 @@ export default class Dashboard extends Component {
 
                 {data1.map(parameter => {
 
+                  const item = parameter.Sample_Item;
+                  const item3 = item.replace(/^"(.*)"$/, '$1');
+                  const item2 = this.state.latestSample[item3];
+
+
+                  console.log(item);
+                  console.log(item2);
+                  console.log(item3);
+
+
+
+
 
                     return(
                       <Col xs={24} sm={12} md={8} lg={8} xl={8}>
-                        <Card >
-                          <Row>
-                            <Col xs={4} sm={4} md={4} lg={4} xl={4}>
-                            <Icon type="up-circle"style={{fontSize: '32px',color: parameter.color}} />
-                            </Col>
-                            <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
-                            <b style={{fontSize: '24px'}}>{parameter.Sample_Item}</b>
-                            </Col>
-                            </Row>
-                            <Row>
+          <Card >
+            <Row>
+              <Col xs={4} sm={4} md={4} lg={4} xl={4}>
+              <Icon type="up-circle"style={{fontSize: '32px',color: parameter.color}} />
+              </Col>
+              <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+              <b style={{fontSize: '24px'}}>{parameter.Sample_Item}</b>
+              </Col>
+              </Row>
+              <Row>
+
+                <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+                <b style={{fontSize: '17px'}}>{item2} {parameter.units}</b>
+                </Col>
+                </Row>
+              <Row>
 
                       <ResponsiveContainer width="100%" aspect={6/3.0} minHeight={90}>
 
                       <ComposedChart data={dataReverse}
                 syncId="anyId">
 
-                <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+                <XAxis tick={{fontSize: 10}} dataKey="date"></XAxis>
 
                 <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
                 <Tooltip />

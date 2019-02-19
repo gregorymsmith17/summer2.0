@@ -286,6 +286,15 @@ export default class monthlySamples extends Component {
 
 
               let tableKeys = table1Keys.map((txt) => {
+
+
+                const item3 = txt.replace(/^"(.*)"$/, '$1');
+                const item4 = "a"+"."+item3;
+
+
+                console.log(item3);
+                console.log(item4);
+
                 return (
 
                 {
@@ -293,6 +302,8 @@ export default class monthlySamples extends Component {
                 dataIndex: txt,
                 key: txt,
                 ...this.getColumnSearchProps(txt),
+                sorter: (a, b) => { return a[item3] - b[item3]},
+                sortDirections: ['descend', 'ascend'],
 
                 width: 200,
               }
@@ -316,7 +327,7 @@ export default class monthlySamples extends Component {
               ...this.getColumnSearchProps('date'),
               sorter: (a, b) => { return a.date.localeCompare(b.date)},
               sortDirections: ['descend', 'ascend'],
-              sortOrder: 'descend',
+
               width: 130,
               })
 
@@ -393,8 +404,11 @@ export default class monthlySamples extends Component {
 
 
 
+
+
+
               this.setState({
-                snapArray: data,
+                snapArray: data.reverse(),
                 threeData: threeData,
                 sixData: sixData,
                 twelveData: twelveData,
@@ -472,9 +486,31 @@ export default class monthlySamples extends Component {
 
 
 showDrawer = () => {
-  this.setState({
-    visible: true,
-  });
+
+  const sampleList2Ref = fire.database().ref(`sampleList/${this.state.userID}`);
+  sampleList2Ref.on('value', (snapshot) => {
+    let maintenanceArray = this.snapshotToArray(snapshot);
+
+    this.setState({
+      arrayKeys1: [],
+      arrayValues1: [],
+      sampleDate: '',
+      sampleID: '',
+      sampleTitle: '',
+      sampleMisc: '',
+      snapArray1: maintenanceArray,
+      visible: true,
+      Sample_Item: '',
+      dataType: '',
+      units: '',
+      color: '#000000',
+      childrenDrawer: false,
+      visible4: false,
+    })
+  })
+
+
+
 };
 showDrawer4 = () => {
   this.setState({
@@ -1040,6 +1076,8 @@ if (arr.length > 0){
 
           let arrayKeys = Object.keys(arr);
           let arrayValues = Object.values(arr);
+
+
           this.setState({
             arrayKeys1: arrayKeys,
             arrayValues1: arrayValues,
@@ -1092,7 +1130,7 @@ this.setState({
 
 
   if (arr.length == 0){
-    var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
+    var object = {date: this.state.sampleDate, ID: this.state.sampleID,  Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
     console.log(object);
     sampleListRef.set(object);
 
@@ -1718,7 +1756,7 @@ const csvData1 = this.state.currentData;
                     return (
                       <Row style={{paddingTop: '10px'}}>
                 <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item} </b></Col>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}   </b></Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
                   <FormControl name={parameter.Sample_Item} type="text" componentClass="textarea" style={{ height: 60}}
                     onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Sample_Input} />

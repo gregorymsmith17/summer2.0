@@ -25,11 +25,12 @@ import equipmentList from './assetManager/equipmentList';
 import chemicalApplications from './assetManager/chemicalApplications';
 import fishStocking from './assetManager/fishStocking';
 
+import drawings from './documents/drawings';
+import reports from './documents/reports';
+import permits from './documents/permits';
+import manuals from './documents/manuals';
+
 import reporting from './reporting';
-
-
-
-
 
 
 
@@ -437,27 +438,31 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
 
             <SubMenu style={{padding: "0", margin: "0"}} title={<span style={{paddingleft: "5px", margin: "0"}} className="submenu-title-wrapper"><Icon type="tool"  style={{fontSize: '22px'}}/>Asset Manager</span>}>
-              <MenuItemGroup title="Item 1">
-                <Menu.Item key="setting:1">Option 1</Menu.Item>
-                <Menu.Item key="setting:2">Option 2</Menu.Item>
+              <MenuItemGroup >
+                <Menu.Item key="setting:1"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/maintenanceReports"><Icon type="book" style={{fontSize: '22px'}}/>Maintenance Reports</Link></Menu.Item>
+                <Menu.Item key="setting:2"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/chemicalApplications"><Icon type="experiment" rotate={180} style={{fontSize: '22px'}}/>Chemical Applications</Link></Menu.Item>
+                <Menu.Item key="setting:3"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/fishStocking"><Icon type="gold" style={{fontSize: '22px'}}/>Fish Stocking</Link></Menu.Item>
+                <Menu.Item key="setting:4"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/equipmentList"><Icon type="bars" style={{fontSize: '22px'}}/>Equipment List</Link></Menu.Item>
+                <Menu.Item key="setting:5"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/vendorContacts"><Icon type="mail" style={{fontSize: '22px'}}/>Vendor Contacts</Link></Menu.Item>
               </MenuItemGroup>
-              <MenuItemGroup title="Item 2">
-                <Menu.Item key="setting:3">Option 3</Menu.Item>
-                <Menu.Item key="setting:4">Option 4</Menu.Item>
-              </MenuItemGroup>
+
             </SubMenu>
-            <SubMenu style={{padding: "0", margin: "0"}} title={<span className="submenu-title-wrapper"><Icon type="copy"  style={{fontSize: '22px'}}/>Documents</span>}>
-              <MenuItemGroup title="Item 1">
-                <Menu.Item key="setting:1">Option 1</Menu.Item>
-                <Menu.Item key="setting:2">Option 2</Menu.Item>
+
+            <SubMenu style={{padding: "0", margin: "0"}} title={<span style={{paddingleft: "5px", margin: "0"}} className="submenu-title-wrapper"><Icon type="folder-open"  style={{fontSize: '22px'}}/>Dcouments</span>}>
+              <MenuItemGroup >
+                <Menu.Item key="setting:1"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/reports"><Icon type="copy" style={{fontSize: '22px'}}/>Reports</Link></Menu.Item>
+                <Menu.Item key="setting:2"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/drawings"><Icon type="snippets" style={{fontSize: '22px'}}/>Drawings</Link></Menu.Item>
+                <Menu.Item key="setting:3"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/permits"><Icon type="file-done" style={{fontSize: '22px'}}/>Permits</Link></Menu.Item>
+                <Menu.Item key="setting:4"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/manuals"><Icon type="read" style={{fontSize: '22px'}}/>Manuals</Link></Menu.Item>
+
               </MenuItemGroup>
-              <MenuItemGroup title="Item 2">
-                <Menu.Item key="setting:3">Option 3</Menu.Item>
-                <Menu.Item key="setting:4">Option 4</Menu.Item>
-              </MenuItemGroup>
+
             </SubMenu>
+
+
+
             <Menu.Item style={{padding: "0", margin: "0"}} key="profile">
-              <Icon type="user" style={{fontSize: '22px'}} />Profile
+              <Link style={{ textDecoration: 'none'}} to="/profilePage"><Icon type="user" style={{fontSize: '22px'}}/>Profile</Link>
             </Menu.Item>
           </Menu>
         </Col>
@@ -471,7 +476,7 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
       <Col span={20}>
 
       <Content style={{ backgroundColor: '#F4F7FA', }}>
-        <div style={{ padding: 5, backgroundColor: '#F4F7FA', background: '#F4F7FA', minHeight: 360 }}>
+        <div style={{ padding: 5, paddingLeft: 15, backgroundColor: '#F4F7FA', background: '#F4F7FA', minHeight: 360 }}>
           <Route exact path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/monthlySamples" component={monthlySamples} />
@@ -489,6 +494,10 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
           <Route path="/uploadDrawings" component={uploadDrawings} />
           <Route path="/uploadManuals" component={uploadManuals} />
           <Route path="/testingPage2" component={testingPage2} />
+          <Route path="/manuals" component={manuals} />
+          <Route path="/reports" component={reports} />
+          <Route path="/drawings" component={drawings} />
+          <Route path="/permits" component={permits} />
 
 
         </div>
