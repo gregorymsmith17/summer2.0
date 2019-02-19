@@ -3,10 +3,8 @@ import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormG
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
-import './maintenanceReport.css';
-
 import { PDFExport } from '@progress/kendo-react-pdf';
-import { fire } from '../../fire';
+import { fire } from '../fire';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 
@@ -39,14 +37,27 @@ const styles = {
 
 
 
-export default class equipmentList extends Component {
+export default class testingPage2 extends Component {
 
 
     constructor(props) {
         super(props);
         this.state = {
 
-
+          //checkbox status
+          checkboxState: true,
+          checkboxState1: true,
+          checkboxStatenitrogen: true,
+          checkboxStatephosphorus: true,
+          checkboxStatetds: true,
+          checkboxStatepH: true,
+          checkboxStatetss: true,
+          checkboxStatesalinity: true,
+          checkboxStateconductivity: true,
+          checkboxStatehardness: true,
+          checkboxStateturbidity: true,
+          checkboxStatedo: true,
+          checkboxStatetemp: true,
 
 
 
@@ -56,13 +67,25 @@ export default class equipmentList extends Component {
 
           //random id and key, key is for the tab number
           id: '',
-          key: "1",
+          key: 1,
           idKey: '',
           page: '',
           area: '',
           displayColorPicker: false,
 
-
+          //colors for graph lines
+          tempColor: '#4C5B5C',
+          doColor: '#6C698D',
+          conductivityColor: '#DD1C1A',
+          tdsColor: '#086788',
+          salinityColor: '#F0C808',
+          pHColor: '#4C5B5C',
+          turbidityColor: '#6C698D',
+          nitrogenColor: '#086788',
+          phosphorusColor: '#F0C808',
+          totalHardnessColor: '#DD1C1A',
+          tssColor: '#086788',
+          sampleNotesColor: '#',
 
 
           //this is the object array for the table
@@ -71,11 +94,7 @@ export default class equipmentList extends Component {
           orders2: [],
           dataList: [],
           filter: "",
-          blob: null,
-          file:null,
           blobUrl: null,
-
-          imageSource: '',
 
 
           //these are for the graphs
@@ -86,14 +105,25 @@ export default class equipmentList extends Component {
           visible1: false,
           visible2: false,
 
-          overwriteDisplay: 'none',
-          addDisplay: null,
+
+          //Graph 1
+          parameterGraph1: 'salinity',
+          parameterGraph2: 'tds',
+          parameterGraph3: 'tss',
+          parameterGraph4: 'turbidity',
+          graphType: 'Area',
+          graphType2: 'Area',
+          graphType3: 'Bar',
+          graphType4: 'Bar',
 
 
-
-
-
-
+          //barLine
+          barLine: '',
+          lineLine: '',
+          graphingType1: '',
+          graphingType2: '',
+          graphingType3: '',
+          graphingType4: '',
 
 
 
@@ -134,10 +164,6 @@ export default class equipmentList extends Component {
           columnData: [{}
                             ],
 
-          reportValues: [],
-          reportKeys: [],
-          reportData: [],
-
 
 
         }
@@ -146,9 +172,9 @@ export default class equipmentList extends Component {
         //every event trigger needs to be bound like is below with .bind
         //we might now have to do this anymore with the newest version of react, but i have it to be safe.
         this.handleChange = this.handleChange.bind(this);
-        this.filter = this.filter.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
-
+        this.writeData = this.writeData.bind(this);
 
 
 
@@ -179,6 +205,51 @@ export default class equipmentList extends Component {
 
       }
       //event triggered when form is submitted
+      handleSubmit(e) {
+        e.preventDefault();
+        //fire.database().ref('samples') refers to the main title of the fire database.
+        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+        const samplesRef = fire.database().ref(`parameterList1/${user.uid}`);
+
+
+
+
+        const parameterInfo = {
+
+          date: this.state.sampleDate,
+          list: this.state.Parameter_List1.map((parameter) => {
+
+                            return (
+                            {
+                            Parameter_Name: parameter.Parameter_Name,
+                            Parameter_Units: parameter.Parameter_Units,
+                            Parameter_Input: parameter.Parameter_Input,
+                          }
+                            )
+                          })
+        }
+
+        console.log(parameterInfo);
+        samplesRef.push(parameterInfo);
+
+
+
+
+
+
+
+
+        //this.setState is used to clear the text boxes after the form has been submitted.
+        this.setState({
+          sampleDate: '',
+
+          visible: false,
+          visible1: false,
+          visible2: false,
+
+        });
+      });
+    }
 
 
      snapshotToArray(snapshot) {
@@ -206,8 +277,6 @@ export default class equipmentList extends Component {
 
 
 
-
-
           this.setState({
             userID: user.uid,
 
@@ -216,7 +285,7 @@ export default class equipmentList extends Component {
 
 
 
-          const parameterListRef = fire.database().ref(`equipmentList/${user.uid}`);
+          const parameterListRef = fire.database().ref(`parameterList/${user.uid}`);
           parameterListRef.on('value', (snapshot) => {
             let parameterList = snapshot.val();
             console.log(parameterList);
@@ -225,8 +294,11 @@ export default class equipmentList extends Component {
           for (let order in parameterList) {
             newState.push({
               id: order,
-              Maintenance_Item: parameterList[order].Maintenance_Item,
-
+              Parameter_Name: parameterList[order].Parameter_Name,
+              Parameter_Units: parameterList[order].Parameter_Units,
+              Parameter_Input: parameterList[order].Parameter_Input,
+              dataType: parameterList[order].dataType,
+              color: parameterList[order].color,
 
             });
             console.log(newState);
@@ -236,7 +308,7 @@ export default class equipmentList extends Component {
           })
           })
 
-          const parameterList1Ref = fire.database().ref(`equipmentItems/${user.uid}`);
+          const parameterList1Ref = fire.database().ref(`parameterSample/${user.uid}`);
           parameterList1Ref.on('value', (snapshot) => {
             let parameterList1 = snapshot.val();
             console.log(parameterList1);
@@ -313,10 +385,8 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
 
           let table1Keys = Object.keys(graphInfoReverse[indexOfMaxValue]);
           table1Keys = table1Keys.filter(e => e !== 'id');
-          table1Keys = table1Keys.filter(e => e !== 'key');
+          table1Keys = table1Keys.filter(e => e !== 'date');
           console.log(table1Keys);
-
-
 
 
 
@@ -333,31 +403,28 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
             console.log(this.state.graphInfoReverse);
             console.log(this.state.graphKeys);
             console.log(this.state.columnData);
-            console.log(this.state.Parameter_List);
 
             let tableData = [];
             for (let i=0; i < table1Keys.length; i++) {
             //push send this data to the back of the chartData variable above.
-            tableData.push({dataField: table1Keys[i], text: table1Keys[i],
-            headerStyle:{ whiteSpace: 'auto' }, style:{whiteSpace: 'auto'}, width: '150px',
-
-          });
+            tableData.push({dataField: table1Keys[i], sort: true, sortFunc: (a, b, order, dataField, rowA, rowB) => {
+    if (order === 'asc') {
+      return b - a;
+    }
+    return a - b; // desc
+  }, text: table1Keys[i]});
 
             }
+            tableData.unshift({dataField: 'date',
+             text: 'Date',
+             sort: true,
 
+            })
             tableData.push({dataField: 'delete',
              text: 'Delete',
              formatter: this.deleteRow.bind(this),
 
             })
-            tableData.push({dataField: 'edit',
-             text: 'Edit',
-             formatter: this.editEquipment.bind(this),
-
-            })
-
-
-
 
 
             var arr = snapshot.val();
@@ -399,58 +466,8 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
 
 
           })
-          const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
-          profileRef.on('value', (snapshot) => {
-            var that = this;
 
-
-          this.setState({
-            lakeName: snapshot.child('lakeName').val(),
-            locationCity: snapshot.child('locationCity').val(),
-            locationState: snapshot.child('locationState').val(),
-            managementContact: snapshot.child('managementContact').val(),
-            hoaContact: snapshot.child('hoaContact').val(),
-            managementContactNumber: snapshot.child('managementContactNumber').val(),
-            hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-            latitude: snapshot.child('latitude').val(),
-            longitude: snapshot.child('longitude').val(),
-            center: {
-              lat: snapshot.child('latitude').val(),
-              lng: snapshot.child('longitude').val()
-            },
-
-          });
-          console.log(this.state.center);
-                    var myLat = `${this.state.latitude}`;
-                      var myLon = `${this.state.longitude}`;
-                   let API_WEATHER = `http://api.openweathermap.org/data/2.5/weather?lat=${myLat}&lon=${myLon}&units=imperial&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`;
-
-                   fetch(API_WEATHER)
-                .then(response => response.json())
-                .then(responseJson => {
-                  console.log(responseJson);
-                  console.log(responseJson.weather);
-                  console.log(responseJson.name);
-                  this.setState({
-                    isLoading: false,
-                    dataSource: responseJson,
-                    currentCity: this.state.lakeName,
-                    currentTemp: responseJson.main.temp,
-                    currentIcon: 'http://openweathermap.org/img/w/' + responseJson.weather[0].icon + '.png',
-                    currentDescription: responseJson.weather[0].main,
-                    currentHumidity: responseJson.main.humidity,
-
-
-                  });
-                })
-                .catch(error => {
-                  console.log(error);
-                });
-
-
-        });
-
-          const parameter2ist1Ref = fire.database().ref(`equipmentItems/${user.uid}`);
+          const parameter2ist1Ref = fire.database().ref(`parameterSample/${user.uid}`);
           parameter2ist1Ref.on('value', (snapshot) => {
             let parameterList2 = snapshot.val();
             console.log(parameterList2);
@@ -472,19 +489,18 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
 
-      const sample1Ref = fire.database().ref(`/equipmentList/${user.uid}/${itemId}`);
+      const sample1Ref = fire.database().ref(`/parameterList/${user.uid}/${itemId}`);
 
-      let id = fire.database().ref().child(`/equipmentList/${user.uid}/${itemId}`).key;
+      let id = fire.database().ref().child(`/parameterList/${user.uid}/${itemId}`).key;
 
       sample1Ref.on('value', (snapshot) => {
 
         this.setState({
-          Maintenance_Item: snapshot.child('Maintenance_Item').val(),
-
+          Parameter_Name: snapshot.child('Parameter_Name').val(),
+          Parameter_Units: snapshot.child('Parameter_Units').val(),
+          color: snapshot.child('color').val(),
+          dataType: snapshot.child('dataType').val(),
           id: id,
-          overwriteDisplay: null,
-          addDisplay: 'none',
-          
 
 
         });
@@ -497,59 +513,98 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
     });
   }
 
-  fillEquipment(itemId) {
+
+  writeStates = (itemId) => {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${this.state.id}`);
 
 
-    const sample1Ref = fire.database().ref(`/equipmentItems/${user.uid}/${itemId}`);
+    sampleRef.child("id").set(this.state.id);
 
-    let id = fire.database().ref().child(`/equipmentItems/${user.uid}/${itemId}`).key;
 
-    sample1Ref.on('value', (snapshot) => {
+    sampleRef.child("sampleDate").set(this.state.sampleDate);
+    sampleRef.child("sampleTaker").set(this.state.sampleTaker);
+    sampleRef.child("temp").set(this.state.temp);
+    sampleRef.child("do").set(this.state.do);
+    sampleRef.child("conductivity").set(this.state.conductivity);
+    sampleRef.child("tds").set(this.state.tds);
+    sampleRef.child("salinity").set(this.state.salinity);
+    sampleRef.child("pH").set(this.state.pH);
+    sampleRef.child("turbidity").set(this.state.turbidity);
+    sampleRef.child("nitrogen").set(this.state.nitrogen);
+    sampleRef.child("phosphorus").set(this.state.phosphorus);
+    sampleRef.child("totalHardness").set(this.state.totalHardness);
+    sampleRef.child("tss").set(this.state.tss);
+    sampleRef.child("sampleNotes").set(this.state.sampleNotes);
 
-      let information = snapshot.val();
-        console.log(information);
-        delete information.id;
 
-        console.log(Object.keys(information));
-        let keys = Object.keys(information);
 
-        console.log(keys);
+  });
 
-        console.log(Object.values(information));
-        let values = Object.values(information);
 
-        console.log(values);
+  }
 
-        let tableData1 = [];
-        for (let i=0; i < values.length; i++) {
-        //push send this data to the back of the chartData variable above.
-        tableData1.push({Maintenance_Item: keys[i], Maintenance_Input: values[i]});
 
-        }
-        console.log(tableData1);
 
-        this.setState({
-          id: id,
-          Parameter_List: tableData1,
-          reportValues: values,
-          reportKeys: keys,
-          visible1: true,
-        })
+  fillEmpty = (itemId) => {
+    let area = '';
 
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+
+
+    sampleRef.on('value', (snapshot) => {
+
+    let orders = snapshot.val();
+
+    let newState = [];
+    for (let order in orders) {
+      newState.push({
+        id: order,
+
+        sampleDate: orders[order].sampleDate,
+        sampleTaker: orders[order].sampleTaker,
+        temp: orders[order].temp,
+        do: orders[order].do,
+        conductivity: orders[order].conductivity,
+        tds: orders[order].tds,
+        salinity: orders[order].salinity,
+        pH: orders[order].pH,
+        turbidity: orders[order].turbidity,
+        nitrogen: orders[order].nitrogen,
+        phosphorus: orders[order].phosphorus,
+        totalHardness: orders[order].totalHardness,
+        tss: orders[order].tss,
+        sampleNotes: orders[order].sampleNotes,
+
+      });
+    }
+    this.setState({
+
+      visible: true,
+      sampleDate: '',
+      sampleTaker: '',
+      temp: '',
+      do: '',
+      conductivity: '',
+      tds: '',
+      salinity: '',
+      pH: '',
+      turbidity: '',
+      nitrogen: '',
+      phosphorus: '',
+      totalHardness: '',
+      tss: '',
+      sampleNotes: '',
+
+
+    })
 
 
 });
-
   });
 }
-
-
-
-
-
-
 
 
 
@@ -560,7 +615,47 @@ let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i :
 }
 
 
+writeData (e) {
+  e.preventDefault();
+  //fire.database().ref('samples') refers to the main title of the fire database.
+  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+  const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
 
+
+  const sample = {
+
+    id: this.state.id,
+    sampleDate: this.state.sampleDate,
+    sampleTaker: this.state.sampleTaker,
+    temp: this.state.temp,
+    do: this.state.do,
+    conductivity: this.state.conductivity,
+    tds: this.state.tds,
+    salinity: this.state.salinity,
+    pH: this.state.pH,
+    turbidity: this.state.turbidity,
+    nitrogen: this.state.nitrogen,
+    phosphorus: this.state.phosphorus,
+    totalHardness: this.state.totalHardness,
+    tss: this.state.tss,
+    sampleNotes: this.state.sampleNotes,
+  }
+
+  samplesRef.child(this.state.id).set(sample);
+
+  this.setState({
+    visible1: false,
+  })
+
+
+
+
+
+
+  //this.setState is used to clear the text boxes after the form has been submitted.
+
+});
+}
 
 
 
@@ -681,20 +776,6 @@ editRow(row, isSelected, e, id) {
   )
 }
 
-editEquipment(row, isSelected, e, id) {
-
-  return (
-      <div style={{textAlign: 'center'}}>
-    <Icon type="edit" style={{fontSize: '24px'}}
-    onClick={() => this.fillEquipment(`${isSelected.key}`)}>
-      Click me
-    </Icon>
-    </div>
-  )
-}
-
-
-
 
 
 
@@ -713,11 +794,33 @@ editEquipment(row, isSelected, e, id) {
 
 
 
+handleClick = () => {
+  this.setState({ displayColorPicker: !this.state.displayColorPicker })
+};
 
+handleClose = () => {
+  this.setState({ displayColorPicker: false })
+};
 
+tempColorChange = (color) => {
 
+    console.log(this.state.color);
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const samplesRef = fire.database().ref(`colors/${user.uid}`);
+    const orderID = fire.database().ref(`/colors/${user.uid}/${orderID}`);
+    const sample = {
+      tempColor: color.hex
+    }
+    samplesRef.set(sample);
+    this.setState({
+      tempColor: color.hex,
+     });
+    });
+}
 
-
+test = () => {
+  console.log("test")
+}
 
 
 showDrawer = () => {
@@ -739,7 +842,31 @@ onClose = () => {
 
 
 
+editChart = (itemId) => {
+  let area = '';
 
+  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+  const sampleRef = fire.database().ref(`/monthlySamples/${user.uid}/${itemId}`);
+
+
+  sampleRef.on('value', (snapshot) => {
+
+  let orders = snapshot.val();
+
+  let newState = [];
+
+  this.setState({
+
+    visible2: true,
+
+
+
+  })
+
+
+});
+});
+}
 
 
 
@@ -748,18 +875,24 @@ fillParameterInfo = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const parameterListRef = fire.database().ref(`equipmentList/${user.uid}`);
+  const parameterListRef = fire.database().ref(`parameterList/${user.uid}`);
 
   const parameterInfo = {
-    Maintenance_Item: this.state.Maintenance_Item,
-
+    Parameter_Name: this.state.Parameter_Name,
+    Parameter_Units: this.state.Parameter_Units,
+    Parameter_Input: this.state.Parameter_Input,
+    color: this.state.color,
+    dataType: this.state.dataType,
   }
 
   parameterListRef.push(parameterInfo);
   //this.setState is used to clear the text boxes after the form has been submitted.
   this.setState({
-    Maintenance_Item: '',
-
+    Parameter_Name: '',
+    Parameter_Units: '',
+    Parameter_Input: '',
+    color: '',
+    dataType: '',
   });
 
 });
@@ -771,17 +904,17 @@ editParameterInfo = (e) => {
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
 
-  const sampleRef = fire.database().ref(`/equipmentList/${user.uid}/${this.state.id}`);
+  const sampleRef = fire.database().ref(`/parameterList/${user.uid}/${this.state.id}`);
 
 
 
-  sampleRef.child("Maintenance_Item").set(this.state.Maintenance_Item);
+  sampleRef.child("Parameter_Name").set(this.state.Parameter_Name);
+  sampleRef.child("Parameter_Units").set(this.state.Parameter_Units);
+  sampleRef.child("Parameter_Input").set(this.state.Parameter_Input);
+  sampleRef.child("dataType").set(this.state.dataType);
+  sampleRef.child("color").set(this.state.color);
 
 
-  this.setState({
-    overwriteDisplay: 'none',
-    addDisplay: null,
-  })
 
 
 
@@ -796,7 +929,7 @@ editParameterInfo = (e) => {
 handleSampleChange = idx => evt => {
   const newParameters = this.state.Parameter_List.map((parameter, sidx) => {
     if (idx !== sidx) return parameter;
-    return { ...parameter, Maintenance_Input: evt.target.value };
+    return { ...parameter, Parameter_Input: evt.target.value };
   });
   this.setState({ Parameter_List: newParameters });
   console.log(this.state.Parameter_List);
@@ -804,30 +937,23 @@ handleSampleChange = idx => evt => {
 
   };
 
-  handleTableChange = idx => evt => {
-    const newParameters = this.state.Parameter_List.map((parameter, sidx) => {
-      if (idx !== sidx) return parameter;
-      return { ...parameter, Maintenance_Input: evt.target.value };
-    });
-    this.setState({ Parameter_List: newParameters });
-    console.log(this.state.Parameter_List);
-
-
-    };
-
   sampleSubmit = (e) => {
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const parameterListRef = fire.database().ref(`equipmentItems/${user.uid}`);
+    const parameterListRef = fire.database().ref(`parameterSample/${user.uid}`);
+
+    const date = {date: this.state.sampleDate};
 
     const parameterInfo = {
+
       list: this.state.Parameter_List.map((parameter) => {
 
                         return (
                         {
-                        Maintenance_Item: parameter.Maintenance_Item,
-                        Maintenance_Input: parameter.Maintenance_Input,
+                        Parameter_Name: parameter.Parameter_Name,
+                        Parameter_Units: parameter.Parameter_Units,
+                        Parameter_Input: parameter.Parameter_Input,
                       }
                         )
                       })
@@ -839,11 +965,15 @@ handleSampleChange = idx => evt => {
 
   let array = kvArray.map(parameter => {
     var rObj = {};
-    rObj[parameter.Maintenance_Item] = parameter.Maintenance_Input;
+    rObj[parameter.Parameter_Name] = parameter.Parameter_Input;
     return rObj;
 
 
   })
+
+  let newArray = array.unshift(date);
+
+
 
 
 console.log(array);
@@ -857,17 +987,21 @@ console.log(this.state.parameters);
 
 var arr = this.state.Parameter_List;
 var object = arr.reduce(
-    (obj, item) => Object.assign(obj, {id: item.id, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+    (obj, item) => Object.assign(obj, {date: this.state.sampleDate, id: item.id, [item.Parameter_Name]: item.Parameter_Input}) ,{});
 
 console.log(object);
+
+
 
 parameterListRef.push(object);
 
+
+
     //this.setState is used to clear the text boxes after the form has been submitted.
     this.setState({
-      Maintenance_Item: '',
-      Maintenance_Input: '',
-
+      Parameter_Name: '',
+      Parameter_Units: '',
+      Parameter_Input: '',
       visible: false,
       visible1: false,
       visible2: false,
@@ -876,76 +1010,11 @@ parameterListRef.push(object);
 
   });
   }
-
-  sampleOverwrite = (e) => {
-    e.preventDefault();
-    //fire.database().ref('samples') refers to the main title of the fire database.
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const parameterListRef = fire.database().ref(`equipmentItems/${user.uid}`);
-
-    const parameterInfo = {
-      list: this.state.Parameter_List.map((parameter) => {
-
-                        return (
-                        {
-                        Maintenance_Item: parameter.Maintenance_Item,
-                        Maintenance_Input: parameter.Maintenance_Input,
-                      }
-                        )
-                      })
-
-    }
-    console.log(parameterInfo.list);
-
-  let kvArray = parameterInfo.list;
-
-  let array = kvArray.map(parameter => {
-    var rObj = {};
-    rObj[parameter.Maintenance_Item] = parameter.Maintenance_Input;
-    return rObj;
-
-
-  })
-
-
-console.log(array);
-this.setState({
-  parameters: array,
-})
-console.log(this.state.parameters);
-
-
-
-
-var arr = this.state.Parameter_List;
-var object = arr.reduce(
-    (obj, item) => Object.assign(obj, {id: this.state.id, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
-
-console.log(object);
-
-parameterListRef.child(this.state.id).set(object);
-
-    //this.setState is used to clear the text boxes after the form has been submitted.
-    this.setState({
-      Maintenance_Item: '',
-      Maintenance_Input: '',
-
-      visible: false,
-      visible1: false,
-      visible2: false,
-
-    });
-
-  });
-  }
-
-
-
 
 
    removesample(itemId) {
 
-    const sampleRef = fire.database().ref(`/equipmentItems/${this.state.userID}/${itemId}`);
+    const sampleRef = fire.database().ref(`/parameterSample/${this.state.userID}/${itemId}`);
 
     sampleRef.remove();
 
@@ -954,7 +1023,7 @@ parameterListRef.child(this.state.id).set(object);
 
   removesample1(itemId) {
 
-   const sampleRef = fire.database().ref(`/equipmentList/${this.state.userID}/${itemId}`);
+   const sampleRef = fire.database().ref(`/parameterList/${this.state.userID}/${itemId}`);
 
    sampleRef.remove();
 
@@ -978,138 +1047,32 @@ parameterListRef.child(this.state.id).set(object);
    return (
      <div style={{textAlign: 'center'}}>
      <Icon type="delete" style={{fontSize: '24px'}}
-     onClick={() => this.removesample1(isSelected.key)}>
+     onClick={() => this.removesample1(isSelected.id)}>
        Click me
      </Icon>
      </div>
    )
  }
 
- displayButtons = () => {
-
-this.setState({
-  overwriteDisplay: 'none',
-  addDisplay: null,
-})
-
-
- }
-
- previewReport(row, isSelected, e, id) {
-
-   return (
-       <div style={{textAlign: 'center'}}>
-     <Icon type="download" style={{fontSize: '24px'}}
-     onClick={() => this.reviewReport(`${isSelected.key}`)}>
-       Click me
-     </Icon>
-     </div>
-   )
- }
-
-reviewReport = (itemId) => {
-
-  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-
-  const sample1Ref = fire.database().ref(`/equipmentItems/${user.uid}/${itemId}`);
-
-  let id = fire.database().ref().child(`/equipmentItems/${user.uid}/${itemId}`).key;
-
-  sample1Ref.on('value', (snapshot) => {
+ handleChangeComplete = (color) => {
+    this.setState({ color: color.hex });
+  };
 
 
 
 
-    let information = snapshot.val();
-      console.log(information);
-      delete information.id;
-
-      console.log(Object.keys(information));
-      let keys = Object.keys(information);
-
-      console.log(keys);
-
-      console.log(Object.values(information));
-      let values = Object.values(information);
-
-      console.log(values);
-
-      let tableData1 = [];
-      for (let i=0; i < values.length; i++) {
-      //push send this data to the back of the chartData variable above.
-      tableData1.push({reportKey: keys[i], reportValue: values[i]});
-
-      }
-      console.log(tableData1);
-
-      this.setState({
-        reportData: tableData1,
-        reportValues: values,
-        reportKeys: keys,
-      })
-
-
-
-
-
-    this.setState({
-
-
-      id: id,
-
-        key: "3",
-
-
-    });
-
-
-
-
-});
-
-});
-
-
-}
-
-
-
-filter = (url) => {
-
-
-
-  domtoimage.toBlob(document.getElementById('my-node'))
-      .then((blob) => {
-
-
-          console.log(blob);
-          const blobUrl = URL.createObjectURL(blob);
-
-          console.log(blobUrl);
-
-          this.setState({
-            blobUrl: blobUrl,
-          })
-
-      });
-
-
-}
 
 
 
 
       render() {
 
-        let { file } = this.state
-        console.log(this.state.file);
-        let url = file && URL.createObjectURL(file)
 
 
-        let img = document.createElement("my-node");
-
-
+        const defaultSorted = [{
+  dataField: 'date', // if dataField is not match to any column you defined, it will be ignored.
+  order: 'desc' // desc or asc
+}];
 
 
 
@@ -1156,13 +1119,13 @@ filter = (url) => {
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
               <div style={{position: 'relative'}}>
             <Col xs={24} sm={24} md={18} lg={18} xl={18}>
-              <h1><b>Equipment Manager</b></h1>
+              <h1><b>Monthly Samples</b></h1>
               <h3><b>{this.state.lakeName}</b></h3>
             </Col>
             <Col xs={24} sm={24} md={6} lg={6} xl={6} style={{ textAlign: 'right'}}>
-          <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Equipment</Button>
+          <Button size="large" type="primary" onClick={() => this.fillEmpty()}>+ Add Sample</Button>
             <Drawer
-              title= "Fill in Equipment Form"
+              title= "Fill in Sample Form"
               placement={this.state.placement}
               closable={false}
               onClose={this.onClose}
@@ -1171,63 +1134,26 @@ filter = (url) => {
             >
             <form>
               <Row style={{textAlign: 'right'}}>
-              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Equipment Item</Icon>
+              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Sample</Icon>
               </Row>
-
-
-            {this.state.Parameter_List.map((parameter, idx) => {
-
-                          return (
-                            <Row style={{paddingTop: '10px'}}>
-                      <FormGroup>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
-                        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                        <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 60, width: 300}}
-                          onChange={this.handleSampleChange(idx)}  placeholder="Item" value={parameter.Maintenance_Input} /></Col>
-                      </FormGroup>
-                    </Row>
-                    )})};
-
-
-
-
-
-            <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-            <Button type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Item</Button>
+              <Row>
+            <FormGroup>
+            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+            <FormControl name='sampleDate' type='date' placeholder="Normal text" value={this.state.sampleDate}
+            onChange={this.handleChange} /></Col>
+            </FormGroup>
             </Row>
 
-
-
-
-
-            </form>
-
-
-
-            </Drawer>
-            <Drawer
-              title= "Fill in Equipment Form"
-              placement={this.state.placement}
-              closable={false}
-              onClose={this.onClose}
-              visible={this.state.visible1}
-              width={500}
-            >
-            <form>
-              <Row style={{textAlign: 'right'}}>
-              <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Equipment Item</Icon>
-              </Row>
-
-
             {this.state.Parameter_List.map((parameter, idx) => {
 
                           return (
-                            <Row style={{paddingTop: '10px'}}>
+                            <Row>
                       <FormGroup>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Parameter_Name}</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                        <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 60, width: 300}}
-                          onChange={this.handleTableChange(idx)}  placeholder="Item" value={parameter.Maintenance_Input} /></Col>
+                        <FormControl name={parameter.Parameter_Name}
+                          onChange={this.handleSampleChange(idx)}  type="number" placeholder="Normal text" value={parameter.Parameter_Input} /></Col>
                       </FormGroup>
                       </Row>
                     )})};
@@ -1237,7 +1163,7 @@ filter = (url) => {
 
 
             <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-            <Button type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Item</Button>
+            <Button type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add sample</Button>
             </Row>
 
 
@@ -1249,8 +1175,6 @@ filter = (url) => {
 
 
             </Drawer>
-
-
 
 
 
@@ -1270,10 +1194,126 @@ filter = (url) => {
 
 
                   >
-                  <Tabs defaultActiveKey="1" activeKey={this.state.key} onChange={this.handleSelect} >
+                  <Tabs defaultActiveKey="1" >
+              <TabPane tab="GRAPHS" key="1">
+                <Row>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
 
 
-              <TabPane tab="EQUIPMENT LIST" key="1">
+
+                <Row >
+                <Col xs={24} sm={24} md={24} lg={24} xl={24} >
+
+
+
+
+            </Col>
+            </Row>
+            <Row>
+            <Col span={24}>
+            <hr></hr>
+            </Col>
+            </Row>
+
+
+            <Row>
+              <Row >
+              <Col xs={24} sm={24} md={24} lg={24} xl={24} >
+                <ResponsiveContainer width="100%" aspect={8/3.0} minHeight={300}>
+                  <ComposedChart data={this.state.graphInfo}
+            syncId="anyId">
+
+
+            <XAxis dataKey="date"><Label value="testing something here" offset={200} position="top" /></XAxis>
+
+            <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+            <Tooltip />
+
+
+            <defs>
+              {this.state.Parameter_List.map(parameter => {
+                return (
+
+                    <linearGradient id={parameter.Parameter_Name} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={parameter.color} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={parameter.color} stopOpacity={0.1}/>
+                    </linearGradient>
+
+
+                )
+              })}
+</defs>
+
+
+
+
+              {this.state.Parameter_List.map(parameter => {
+
+                if (parameter.dataType == 'Bar') {
+                  console.log('something 1')
+                  const CustomTag = Bar;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Line') {
+                  console.log('something 2')
+                  const CustomTag = Line;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Area') {
+                  console.log('something 3')
+                  const CustomTag = Area;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Parameter_Name}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Parameter_Name + ")"}><LabelList dataKey={parameter.Parameter_Name} position="top" /></CustomTag>
+                  )
+                }
+
+
+              })}
+
+
+
+
+
+
+
+            <Legend />
+
+          </ComposedChart>
+           </ResponsiveContainer>
+
+          </Col>
+          </Row>
+
+
+
+      </Row>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </Col>
+          </Row>
+
+              </TabPane>
+
+              <TabPane tab="DATA TABLE" key="2">
 
                 <Row>
                 <Col span={24} style={{paddingTop: '15px'}}>
@@ -1301,7 +1341,7 @@ filter = (url) => {
                 </Row>
               </TabPane>
 
-              <TabPane tab="ITEMS" key="2">
+              <TabPane tab="CONSTITUENTS" key="3">
                 <Row>
                 <Col span={24} style={{paddingTop: '15px'}}>
 
@@ -1314,20 +1354,41 @@ filter = (url) => {
               <form>
             <Row style={{paddingTop: '10px'}}>
             <FormGroup>
-              <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>EQUIPMENT ITEMS</b></Col>
+              <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Parameter Name</b></Col>
               <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-              <FormControl name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Name" style={{ width: 350}} value={this.state.Maintenance_Item} /></Col>
+              <FormControl name="Parameter_Name" onChange={this.handleChange} type="text" placeholder="Name" style={{ width: 350}} value={this.state.Parameter_Name} /></Col>
             </FormGroup>
             </Row>
-
-
-
+            <Row style={{paddingTop: '10px'}}>
+              <FormGroup>
+                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Parameter Units</b></Col>
+                <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                <FormControl name="Parameter_Units" onChange={this.handleChange} type="text" placeholder="Units"  style={{ width: 350}} value={this.state.Parameter_Units} /></Col>
+              </FormGroup>
+              </Row>
+              <Row style={{paddingTop: '10px'}}>
+                <FormGroup>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Data Type</b></Col>
+                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                  <FormControl name="dataType" onChange={this.handleChange} type="text" placeholder="Data Type"  style={{ width: 350}} value={this.state.dataType} /></Col>
+                </FormGroup>
+                </Row>
+              <Row>
+            <FormGroup>
+            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+              <SketchPicker
+            color={ this.state.color }
+            onChangeComplete={ this.handleChangeComplete }
+          />
+      </Col>
+    </FormGroup>
+            </Row>
 
               <Row style={{paddingTop: '10px', textAlign: 'left'}}>
-              <Button style={{display: this.state.addDisplay}} type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Item</Button>
+              <Button type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
 
-            <Button style={{display: this.state.overwriteDisplay}} type="primary" onClick={this.editParameterInfo} bsStyle="primary">Overwrite Item</Button>
-            <Icon style={{display: this.state.overwriteDisplay, fontSize: 20}} onClick={this.displayButtons} type="left" />
+            <Button type="primary" onClick={this.editParameterInfo} bsStyle="primary">Edit Parameter</Button>
               </Row>
             </form>
           </Row>
@@ -1342,8 +1403,10 @@ filter = (url) => {
 
 
 
-                      [{dataField: 'Maintenance_Item', text: 'Equipment Item'},
-
+                      [{dataField: 'Parameter_Name', text: 'Parameter'},
+                      {dataField: 'Parameter_Units', text: 'Units'},
+                      {dataField: 'color', text: 'Color'},
+                      {dataField: 'dataType', text: 'Data Type'},
                       {dataField: 'delete',
                        text: 'Delete',
                        formatter: this.deleteRow1.bind(this),
@@ -1365,8 +1428,6 @@ filter = (url) => {
 
 
               </TabPane>
-
-
 
 
 

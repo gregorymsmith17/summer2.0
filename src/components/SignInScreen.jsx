@@ -11,6 +11,7 @@ import monthlySamples from './monthlySamples';
 import monthlySamples2 from './monthlySamples2';
 import monthlySamples3 from './monthlySamples2';
 import testingPage from './testingPage';
+import testingPage2 from './testingPage2';
 
 
 import uploadDocument from './uploadDocument';
@@ -24,8 +25,24 @@ import equipmentList from './assetManager/equipmentList';
 import chemicalApplications from './assetManager/chemicalApplications';
 import fishStocking from './assetManager/fishStocking';
 
+<<<<<<< HEAD
 import reporting from './reporting';
 
+=======
+import drawings from './documents/drawings';
+import reports from './documents/reports';
+import permits from './documents/permits';
+import manuals from './documents/manuals';
+
+import reporting from './reporting';
+
+
+
+import lake from './images/lake.jpg';
+import lake2 from './images/lake2.png';
+import lake3 from './images/lake3.png';
+
+>>>>>>> ebb4ad3b3339defbc77ddb4e5627171ff361370c
 import { Link } from 'react-router-dom';
 import { PanelGroup, Popover, Panel, Grid, Collapse, Well, ListGroup, ListGroupItem, Nav, NavItem, Jumbotron, OverlayTrigger, Tab, Tabs } from 'react-bootstrap';
 import { Row, Col, Card, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
@@ -343,73 +360,71 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     }
     return (
 
-      <Layout>
 
 
-        <div id="myDIV" style={{position: 'fixed'}}>
-          <Button size="large" width={5} type="primary" icon="menu" onClick={this.showDrawer1}/>
+    <Layout style={{backgroundColor: '#F4F7FA', background: '#F4F7FA',}}>
 
-          <Drawer
-            title="Directory"
-            placement="left"
-            closable={false}
-            onClose={this.onClose1}
-            visible={this.state.visible1}
-          >
+      <Header style={{backgroundColor: '#0667D0', background: '#0667D0',}}>
+
+        <Row type="flex" justify="center" align="middle" >
+          <Col span={16} style={{textAlign: 'left'}}>
+        <p style={{fontSize: '30px', color: 'white', paddingLeft: '80px'}}>LimnoSource</p>
+        </Col>
+        <Col span={8} style={{textAlign: 'right'}}>
+          <p style={{paddingRight: '80px', color: 'white', fontSize: '20px', }}><Icon type="smile" style={{fontSize: '24px', color: 'white', marginRight: 2, paddingRight: 20, paddingTop: 12}}/>{this.state.lakeName}</p>
+
+      </Col>
+        </Row>
+
+      </Header>
+      <Header style={{backgroundColor: '#FFFFFF', background: '#FFFFFF', zIndex: 1}}>
+
+        <Row type="flex" justify="center" align="middle" >
+          <Col span={24} style={{textAlign: 'left', paddingLeft: '80px'}}>
           <Menu
             onClick={handleClick}
-            style={{ backgroundColor: 'white', paddingTop: '20px', left: '5px', width: '100%', height: '100vh', color: 'gray' }}
-            mode="vertical">
-            <SubMenu key="sub1" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/dashboard"><span><Icon type="dashboard" /><span>Dashboard</span></span></Link>}>
+
+            mode="horizontal"
+            style={{fontSize: '16px', lineHeight: '63px', padding: "0"}}
+          >
+            <Menu.Item style={{padding: "0", margin: "0"}} key="dashboard">
+              <Link style={{ textDecoration: 'none'}} to="/dashboard"><Icon type="appstore" style={{fontSize: '22px'}}/>Dashboard</Link>
+            </Menu.Item>
+            <Menu.Item style={{paddingleft: "5px", margin: "0"}} key="sampling">
+              <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/monthlySamples"><Icon type="search" style={{fontSize: '22px'}}/>Sampling</Link>
+            </Menu.Item>
+
+
+
+            <SubMenu style={{padding: "0", margin: "0"}} title={<span style={{paddingleft: "5px", margin: "0"}} className="submenu-title-wrapper"><Icon type="tool"  style={{fontSize: '22px'}}/>Asset Manager</span>}>
+              <MenuItemGroup >
+                <Menu.Item key="setting:1"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/maintenanceReports"><Icon type="book" style={{fontSize: '22px'}}/>Maintenance Reports</Link></Menu.Item>
+                <Menu.Item key="setting:2"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/chemicalApplications"><Icon type="experiment" rotate={180} style={{fontSize: '22px'}}/>Chemical Applications</Link></Menu.Item>
+                <Menu.Item key="setting:3"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/fishStocking"><Icon type="gold" style={{fontSize: '22px'}}/>Fish Stocking</Link></Menu.Item>
+                <Menu.Item key="setting:4"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/equipmentList"><Icon type="bars" style={{fontSize: '22px'}}/>Equipment List</Link></Menu.Item>
+                <Menu.Item key="setting:5"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/vendorContacts"><Icon type="mail" style={{fontSize: '22px'}}/>Vendor Contacts</Link></Menu.Item>
+              </MenuItemGroup>
 
             </SubMenu>
 
-            <SubMenu key="sub2" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/monthlySamples"><span><Icon type="form" /><span>Sampling</span></span></Link>}>
+            <SubMenu style={{padding: "0", margin: "0"}} title={<span style={{paddingleft: "5px", margin: "0"}} className="submenu-title-wrapper"><Icon type="folder-open"  style={{fontSize: '22px'}}/>Dcouments</span>}>
+              <MenuItemGroup >
+                <Menu.Item key="setting:1"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/reports"><Icon type="copy" style={{fontSize: '22px'}}/>Reports</Link></Menu.Item>
+                <Menu.Item key="setting:2"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/drawings"><Icon type="snippets" style={{fontSize: '22px'}}/>Drawings</Link></Menu.Item>
+                <Menu.Item key="setting:3"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/permits"><Icon type="file-done" style={{fontSize: '22px'}}/>Permits</Link></Menu.Item>
+                <Menu.Item key="setting:4"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/manuals"><Icon type="read" style={{fontSize: '22px'}}/>Manuals</Link></Menu.Item>
 
-            </SubMenu>
-
-
-
-
-            <SubMenu key="sub4" title={<span><Icon type="setting" /><span>Asset Manager</span></span>}>
-              <Menu.Item key="6"><Link to="/maintenanceReports">Maintenance Reports</Link></Menu.Item>
-              <Menu.Item key="7"><Link to="/vendorContacts">Vendor Contacts</Link></Menu.Item>
-                <Menu.Item key="8"><Link to="/equipmentList">Equipment List</Link></Menu.Item>
-                <Menu.Item key="9"><Link to="/chemicalApplications">Chemical Applications</Link></Menu.Item>
-                <Menu.Item key="10"><Link to="/fishStocking">Fish Stocking</Link></Menu.Item>
-
-            </SubMenu>
-
-
-            <SubMenu key="sub5" title={<span><Icon type="file-text" /><span>Document Manager</span></span>}>
-              <Menu.Item key="11"><Link to="/uploadDocument">Reports</Link></Menu.Item>
-              <Menu.Item key="12"><Link to="/uploadDrawings">Drawings</Link></Menu.Item>
-              <Menu.Item key="13"><Link to="/uploadManuals">Manuals</Link></Menu.Item>
-
-
-            </SubMenu>
-
-            <SubMenu key="sub6" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/profilePage"><span><Icon type="user" /><span>Profile</span></span></Link>}>
-
-            </SubMenu>
-
-            <SubMenu key="sub7" title={<Link style={{ textDecoration: 'none', color: 'gray' }} to="/reporting"><span><Icon type="form" /><span>Reporting</span></span></Link>}>
+              </MenuItemGroup>
 
             </SubMenu>
 
 
 
-
-            <SubMenu key="sub5" onSelect={() => firebase.auth().signOut()} title={<span><Icon type="logout" /><span><Button type="default" onClick={() => firebase.auth().signOut()}>Sign Out
-
-            </Button></span></span>}>
-
-            </SubMenu>
-
-
-
-
+            <Menu.Item style={{padding: "0", margin: "0"}} key="profile">
+              <Link style={{ textDecoration: 'none'}} to="/profilePage"><Icon type="user" style={{fontSize: '22px'}}/>Profile</Link>
+            </Menu.Item>
           </Menu>
+<<<<<<< HEAD
           </Drawer>
 
 </div>
@@ -510,18 +525,19 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
           </SubMenu>
 
+=======
+        </Col>
+      </Row>
+>>>>>>> ebb4ad3b3339defbc77ddb4e5627171ff361370c
+
+    </Header>
 
 
 
-          <SubMenu key="sub4" title={<span><Icon type="setting" /><span>Asset Manager</span></span>}>
-            <Menu.Item key="6"><Link to="/maintenanceReports">Maintenance Reports</Link></Menu.Item>
-            <Menu.Item key="7"><Link to="/vendorContacts">Vendor Contacts</Link></Menu.Item>
-              <Menu.Item key="8"><Link to="/equipmentList">Equipment List</Link></Menu.Item>
-              <Menu.Item key="9"><Link to="/chemicalApplications">Chemical Applications</Link></Menu.Item>
-              <Menu.Item key="10"><Link to="/fishStocking">Fish Stocking</Link></Menu.Item>
+    <Row type="flex" justify="center">
+      <Col span={20}>
 
-          </SubMenu>
-
+<<<<<<< HEAD
 
 
 
@@ -561,8 +577,42 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
         </Menu>
     </Header>
+=======
+      <Content style={{ backgroundColor: '#F4F7FA', }}>
+        <div style={{ padding: 5, paddingLeft: 15, backgroundColor: '#F4F7FA', background: '#F4F7FA', minHeight: 360 }}>
+          <Route exact path="/" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/monthlySamples" component={monthlySamples} />
+          <Route path="/maintenanceReports" component={maintenanceReports} />
+          <Route path="/vendorContacts" component={vendorContacts} />
+          <Route path="/uploadDocument" component={uploadDocument} />
+          <Route path="/profilePage" component={profilePage} />
+          <Route path="/equipmentList" component={equipmentList} />
+          <Route path="/chemicalApplications" component={chemicalApplications} />
+          <Route path="/fishStocking" component={fishStocking} />
+          <Route path="/reporting" component={reporting} />
+          <Route path="/monthlySamples2" component={monthlySamples2} />
+          <Route path="/monthlySamples3" component={monthlySamples3} />
+          <Route path="/testingPage" component={testingPage} />
+          <Route path="/uploadDrawings" component={uploadDrawings} />
+          <Route path="/uploadManuals" component={uploadManuals} />
+          <Route path="/testingPage2" component={testingPage2} />
+          <Route path="/manuals" component={manuals} />
+          <Route path="/reports" component={reports} />
+          <Route path="/drawings" component={drawings} />
+          <Route path="/permits" component={permits} />
+
+
+        </div>
+      </Content>
+      </Col>
+    </Row>
+      <Footer style={{ textAlign: 'center' }}>
+        Ant Design ©2018 Created by Ant UED
+      </Footer>
+>>>>>>> ebb4ad3b3339defbc77ddb4e5627171ff361370c
     </Layout>
-  </Layout>
+
 
 
 

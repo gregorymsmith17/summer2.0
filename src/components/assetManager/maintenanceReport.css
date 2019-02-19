@@ -1,0 +1,66 @@
+@font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Muli Regular'), local('Muli-Regular'), url(http://fonts.gstatic.com/s/muli/v10/BfQP1MR3mJNaumtWa4Tizg.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3aCWcynf_cDxXwCLxiixG1c.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'), url(http://fonts.gstatic.com/s/sourcesanspro/v9/ODelI1aHBYDBqgeIAH2zlNzbP97U9sKh0jjxbPbfOKg.ttf) format('truetype');
+}
+
+#components-table-demo-resizable-column .react-resizable {
+  position: relative;
+}
+
+#components-table-demo-resizable-column .react-resizable-handle {
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  bottom: 0;
+  right: -5px;
+  cursor: col-resize;
+}
+
+
+.k-pdf-export p {
+
+      font-size: 30px;
+      color: #000000;
+    }
+
+.k-pdf-export h3 {
+
+      padding: 10px;
+      font-size: 32px;
+      font-family: sans-serif;
+      color: gray;
+    }
+
+    .k-pdf-export cls_005 {
+      font-family: Arial,serif;
+      font-size: 16.0px;
+      color: rgb(0,0,0);
+      font-weight: bold;
+      font-style: normal;
+      text-decoration: none;
+}
+
+.k-pdf-export span.cls_002{font-family:Times,serif;font-size:20.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+.k-pdf-export div.cls_002{font-family:Times,serif;font-size:20.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+
+.k-pdf-export .span.cls_003{font-family:Times,serif;font-size:20.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+.k-pdf-export .div.cls_003{font-family:Times,serif;font-size:20.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+
+.k-pdf-export cls_004{font-family:Times,serif;font-size:20.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
+.k-pdf-export cls_004{font-family:Times,serif;font-size:20.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
