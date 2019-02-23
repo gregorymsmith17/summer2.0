@@ -18,7 +18,7 @@ import fileDownload from "js-file-download";
 
 import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, Tooltip, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, Select, AutoComplete, Radio } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, Select, AutoComplete, Radio, Alert } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { CSVLink, CSVDownload } from "react-csv";
 
@@ -91,6 +91,8 @@ const Heading = styled.Text`
 export default class maintenanceReports extends Component {
 
 
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -105,34 +107,27 @@ export default class maintenanceReports extends Component {
           arrayValues2: [],
           smallGraphKeys: [],
 
-          Sample_Item: '',
+          Maintenance_Item: '',
           sampleDate: '',
           sampleTitle: '',
           sampleID: '',
           sampleMisc: '',
-          units: '',
-          dataType: '',
-          color: '#000000',
+
 
           item: '',
-          timeFrame: "All",
+
           graphData: [],
           turnedOffKeys: [],
 
           currentData: [],
-          colorDisplay: 'none',
+
+
+
 
           childrenDrawer: false,
           childrenDrawer1: false,
 
-          overwriteDisplay: 'none',
-          addDisplay: null,
 
-          overwriteReport: 'none',
-          addReport: null,
-
-          inputAdd: null,
-          inputOverwrite: 'none',
 
 
           tableKeys: [],
@@ -147,12 +142,14 @@ export default class maintenanceReports extends Component {
           file:null,
           blobUrl: null,
 
+          error: 'none',
 
           //for drawers
           visible: false,
           visible1: false,
           visible2: false,
           visible3: false,
+          visibleEditMaintenance: false,
 
           //Inputs for Profile Page
           lakeName: '',
@@ -164,16 +161,8 @@ export default class maintenanceReports extends Component {
           hoaContactNumber: '',
 
 
-
-
-
-
-
         }
-
         this.handleChange = this.handleChange.bind(this);
-
-
 
       }
 
@@ -184,9 +173,9 @@ export default class maintenanceReports extends Component {
     const value = e.target.value;
     this.setState({ [name]: value });
         this.setState({
-          [e.target.name]: e.target.value
+          [e.target.name]: e.target.value,
+          error: 'none',
         });
-
 
 
       }
@@ -210,6 +199,8 @@ export default class maintenanceReports extends Component {
 
 
 
+
+
       componentDidMount(itemId, source) {
 
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
@@ -218,9 +209,7 @@ export default class maintenanceReports extends Component {
             userID: user.uid,
           })
 
-
-
-          const parameterList1Ref = fire.database().ref(`sampleReport/${user.uid}`);
+          const parameterList1Ref = fire.database().ref(`maintenanceReport/${user.uid}`);
           parameterList1Ref.on('value', (snapshot) => {
             let snapArray = this.snapshotToArray(snapshot);
 
@@ -302,10 +291,9 @@ export default class maintenanceReports extends Component {
                 dataIndex: txt,
                 key: txt,
                 ...this.getColumnSearchProps(txt),
-                sorter: (a, b) => { return a[item3] - b[item3]},
-                sortDirections: ['descend', 'ascend'],
 
-                width: 200,
+
+                width: 300,
               }
               )})
 
@@ -375,41 +363,13 @@ export default class maintenanceReports extends Component {
               })
               console.log(data);
               let reverseData = data.reverse();
-              let threeData = [data[2], data[1], data[0]];
-              let sixData = [
-              data[5],
-              data[4],
-              data[3],
-              data[2],
-              data[1],
-              data[0]];
-              let twelveData = [
-                data[11],
-                data[10],
-                data[9],
-                data[8],
-                data[7],
-                data[6],
-              data[5],
-              data[4],
-              data[3],
-              data[2],
-              data[1],
-              data[0]];
-
-
 
               let reverseData1 = data.reverse();
 
 
-
-
               this.setState({
-                snapArray: data,
-                threeData: threeData,
-                sixData: sixData,
-                twelveData: twelveData,
-                graphData: data,
+                snapArray: data.reverse(),
+
                 tableKeys: tableKeys,
               })
 
@@ -418,16 +378,9 @@ export default class maintenanceReports extends Component {
             }
 
 
-
-
-
-
-
-
-
              })
 
-             const sampleList2Ref = fire.database().ref(`sampleList/${user.uid}`);
+             const sampleList2Ref = fire.database().ref(`maintenanceList/${user.uid}`);
              sampleList2Ref.on('value', (snapshot) => {
                let maintenanceArray = this.snapshotToArray(snapshot);
                console.log(maintenanceArray)
@@ -436,10 +389,6 @@ export default class maintenanceReports extends Component {
 
                })
              })
-
-
-
-
 
 
 
@@ -484,7 +433,7 @@ export default class maintenanceReports extends Component {
 
 showDrawer = () => {
 
-  const sampleList2Ref = fire.database().ref(`sampleList/${this.state.userID}`);
+  const sampleList2Ref = fire.database().ref(`maintenanceList/${this.state.userID}`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -497,10 +446,8 @@ showDrawer = () => {
       sampleMisc: '',
       snapArray1: maintenanceArray,
       visible: true,
-      Sample_Item: '',
-      dataType: '',
-      units: '',
-      color: '#000000',
+      Maintenance_Item: '',
+
       childrenDrawer: false,
       visible4: false,
     })
@@ -521,6 +468,7 @@ onClose = () => {
     visible1: false,
     visible2: false,
     visible3: false,
+    visibleEditMaintenance: false,
 
   });
 };
@@ -618,20 +566,7 @@ getColumnSearchProps = (dataIndex) => ({
     this.setState({ searchText: '' });
   }
 
-  sortColumn = (txt) => {
-    return (
-      <div style={{textAlign: 'center'}}>
-      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
-      onClick={() => this.testColumn(txt)}>
-        Click me
-      </Icon>
-      </div>
-    )
-  }
 
-  testColumn(txt) {
-    console.log(txt)
-  }
 
   deleteRow = (row, isSelected, e, id, key) =>
   {
@@ -646,7 +581,7 @@ getColumnSearchProps = (dataIndex) => ({
   }
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`/sampleReport/${this.state.userID}/${itemId}`);
+   const sampleRef = fire.database().ref(`/maintenanceReport/${this.state.userID}/${itemId}`);
    sampleRef.remove();
  }
 
@@ -666,13 +601,13 @@ getColumnSearchProps = (dataIndex) => ({
 
  removesample1(itemId) {
 
-  const sampleRef = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
+  const sampleRef = fire.database().ref(`/maintenanceList/${this.state.userID}/${itemId}`);
   sampleRef.remove();
 }
 
 removesample2(itemId) {
 
-  const sampleRef = fire.database().ref(`/sampleReport/${this.state.userID}/${this.state.id}/${itemId}`);
+  const sampleRef = fire.database().ref(`/maintenanceReport/${this.state.userID}/${this.state.id}/${itemId}`);
   sampleRef.remove();
   this.fillStates(this.state.id);
 
@@ -696,8 +631,8 @@ fillPreview(itemId) {
 
 
 
-  const sample1Ref = fire.database().ref(`/sampleReport/${user.uid}/${itemId}`);
-  let id = fire.database().ref().child(`/sampleReport/${user.uid}/${itemId}`).key;
+  const sample1Ref = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
+  let id = fire.database().ref().child(`/maintenanceReport/${user.uid}/${itemId}`).key;
   sample1Ref.on('value', (snapshot) => {
 
     let maintenanceList = snapshot.val();
@@ -729,7 +664,7 @@ fillPreview(itemId) {
 
 });
 
-const sample2Ref = fire.database().ref(`/sampleReport/${user.uid}`);
+const sample2Ref = fire.database().ref(`/maintenanceReport/${user.uid}`);
 sample2Ref.on('value', (snapshot) => {
 let maintenanceList = this.snapshotToArray(snapshot);
 
@@ -748,7 +683,7 @@ arrayData1: keys,
 let arrayData = [];
 for (let i=0; i < this.state.arrayKeys1.length; i++) {
 //push send this data to the back of the chartData variable above.
-arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
+arrayData.push({Maintenance_Input: this.state.arrayValues1[i], Maintenance_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
 
 }
 console.log(arrayData);
@@ -797,15 +732,12 @@ arrayData2: arrayData,
 
       })
 
-    const sample1Ref = fire.database().ref(`/sampleList/${user.uid}/${itemId}`);
-    let id = fire.database().ref().child(`/sampleList/${user.uid}/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`/maintenanceList/${user.uid}/${itemId}`);
+    let id = fire.database().ref().child(`/maintenanceList/${user.uid}/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
 
       this.setState({
-        Sample_Item: snapshot.child('Sample_Item').val(),
-        dataType: snapshot.child('dataType').val(),
-        color: snapshot.child('color').val(),
-        units: snapshot.child('units').val(),
+        Maintenance_Item: snapshot.child('Maintenance_Item').val(),
         id: id,
       });
 
@@ -818,10 +750,10 @@ parameterOverwrite = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const sampleListRef = fire.database().ref(`sampleList/${user.uid}/${this.state.id}`);
+  const sampleListRef = fire.database().ref(`maintenanceList/${user.uid}/${this.state.id}`);
 
 
-var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
+var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: '', id: this.state.id}
     console.log(object);
     sampleListRef.set(object);
 
@@ -839,118 +771,60 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = fire.database().ref(`sampleList/${user.uid}`);
-    let id = fire.database().ref().child(`/sampleList/${user.uid}/${itemId}`).key;
-    const sampleInfo = {
-      Sample_Item: this.state.Sample_Item,
-      Sample_Input: '',
-      dataType: this.state.dataType,
-      color: this.state.color,
-      units: this.state.units,
-      id: id,
+    const sampleListRef = fire.database().ref(`maintenanceList/${user.uid}`);
+    let id = fire.database().ref().child(`/maintenanceList/${user.uid}/${itemId}`).key;
+
+    if (this.state.Maintenance_Item.length == 0) {
+      console.log("do nothing")
+      this.setState({
+        error: null,
+      })
+    }
+
+    if (this.state.Maintenance_Item.length != 0) {
+
+      const sampleInfo = {
+        Maintenance_Item: this.state.Maintenance_Item,
+        Maintenance_Input: '',
+
+        id: id,
+
+      }
+
+      sampleListRef.push(sampleInfo);
+      //this.setState is used to clear the text boxes after the form has been submitted.
+      this.setState({
+        Maintenance_Item: '',
+
+        childrenDrawer: false,
+        visible4: false,
+      });
 
     }
 
-    sampleListRef.push(sampleInfo);
-    //this.setState is used to clear the text boxes after the form has been submitted.
-    this.setState({
-      Sample_Item: '',
-      dataType: '',
-      units: '',
-      color: '#000000',
-      childrenDrawer: false,
-      visible4: false,
-    });
+
+
+
+
+
+
+
+
+
+
+
 
   });
-  }
-
-
-
-
-  changeData(itemId) {
-    const sample1Ref = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
-    let id = fire.database().ref().child(`/sampleList/${this.state.userID}/${itemId}`).key;
-    sample1Ref.on('value', (snapshot) => {
-      this.setState({
-        Sample_Item: snapshot.child('Sample_Item').val(),
-        Sample_Input: '',
-        dataType: snapshot.child('dataType').val(),
-        color: snapshot.child('color').val(),
-        units: snapshot.child('units').val(),
-        id: id,
-    });
-});
 
 
   }
-
-  editRowColor = (row, isSelected, e, id, key) =>
-  {
-
-    const content = (
-  <div>
-    <SketchPicker
-  color={ this.state.color }
-  onChangeComplete={ this.overwriteColor }
-    />
-  </div>
-);
-
-    return (
-      <div style={{textAlign: 'left'}}>
-        <Popover content={content} title="Title" trigger="click">
-          <Icon type="bg-colors" style={{fontSize: '24px', color: '#101441'}}
-          onClick={() => this.changeColor(isSelected.key)}>
-            Click me
-          </Icon>
-    </Popover>
-      </div>
-    )
-  }
-
-  changeColor(itemId) {
-
-
-    const sample1Ref = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
-    let id = fire.database().ref().child(`/sampleList/${this.state.userID}/${itemId}`).key;
-    sample1Ref.on('value', (snapshot) => {
-
-      this.setState({
-        Sample_Item: snapshot.child('Sample_Item').val(),
-        Sample_Input: '',
-        dataType: snapshot.child('dataType').val(),
-        color: snapshot.child('color').val(),
-        units: snapshot.child('units').val(),
-        id: id,
-      });
-
-});
-
-  }
-
-  overwriteColor = (color) => {
-
-    const sampleListRef = fire.database().ref(`sampleList/${this.state.userID}/${this.state.id}`);
-
-     this.setState({ color: color.hex });
-
-    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
-
-    sampleListRef.set(object);
-
-
-   };
-
-
-
 
 
 
   handleSampleChange = idx => evt => {
     const newParameters = this.state.snapArray1.map((parameter, sidx) => {
       if (idx !== sidx) return parameter;
-      return { ...parameter, Sample_Input: evt.target.value };
+      return { ...parameter, Maintenance_Input: evt.target.value };
     });
     this.setState({ snapArray1: newParameters });
 
@@ -961,7 +835,7 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
     handleSampleChange1 = idx => evt => {
       const newParameters = this.state.arrayData2.map((parameter, sidx) => {
         if (idx !== sidx) return parameter;
-        return { ...parameter, Sample_Input: evt.target.value };
+        return { ...parameter, Maintenance_Input: evt.target.value };
       });
       this.setState({ arrayData2: newParameters });
 
@@ -983,7 +857,9 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const sampleListRef = fire.database().ref(`sampleReport/${user.uid}`);
+        const sampleListRef = fire.database().ref(`maintenanceReport/${user.uid}`);
+
+
 
 
     var arr = this.state.snapArray1;
@@ -999,11 +875,11 @@ var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, colo
 if (arr.length > 0){
 
       var object = arr.reduce(
-          (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
+          (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
           console.log(object);
           sampleListRef.push(object);
 
-          const sampleList2Ref = fire.database().ref(`sampleList/${user.uid}`);
+          const sampleList2Ref = fire.database().ref(`maintenanceList/${user.uid}`);
           sampleList2Ref.on('value', (snapshot) => {
             let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1044,12 +920,12 @@ if (arr.length > 0){
             addReport: 'none',
             inputOverwrite: null,
             inputAdd: 'none',
-            visible: true,
+            visibleEditMaintenance: true,
 
           })
 
-        const sample1Ref = fire.database().ref(`/sampleReport/${user.uid}/${itemId}`);
-        let id = fire.database().ref().child(`/sampleReport/${user.uid}/${itemId}`).key;
+        const sample1Ref = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
+        let id = fire.database().ref().child(`/maintenanceList/${user.uid}/${itemId}`).key;
         sample1Ref.on('value', (snapshot) => {
 
           let maintenanceList = snapshot.val();
@@ -1073,6 +949,8 @@ if (arr.length > 0){
 
           let arrayKeys = Object.keys(arr);
           let arrayValues = Object.values(arr);
+
+
           this.setState({
             arrayKeys1: arrayKeys,
             arrayValues1: arrayValues,
@@ -1081,7 +959,7 @@ if (arr.length > 0){
 
   });
 
-const sample2Ref = fire.database().ref(`/sampleReport/${user.uid}`);
+const sample2Ref = fire.database().ref(`/maintenanceReport/${user.uid}`);
 sample2Ref.on('value', (snapshot) => {
 let maintenanceList = this.snapshotToArray(snapshot);
 
@@ -1100,7 +978,7 @@ this.setState({
 let arrayData = [];
 for (let i=0; i < this.state.arrayKeys1.length; i++) {
 //push send this data to the back of the chartData variable above.
-arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
+arrayData.push({Maintenance_Input: this.state.arrayValues1[i], Maintenance_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
 
 }
 console.log(arrayData);
@@ -1117,7 +995,7 @@ this.setState({
       e.preventDefault();
       //fire.database().ref('samples') refers to the main title of the fire database.
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleListRef = fire.database().ref(`sampleReport/${user.uid}/${this.state.id}`);
+      const sampleListRef = fire.database().ref(`maintenanceReport/${user.uid}/${this.state.id}`);
 
 
   var arr = this.state.arrayData2;
@@ -1125,7 +1003,7 @@ this.setState({
 
 
   if (arr.length == 0){
-    var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
+    var object = {date: this.state.sampleDate, ID: this.state.sampleID,  Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
     console.log(object);
     sampleListRef.set(object);
 
@@ -1134,7 +1012,7 @@ this.setState({
 
 
     var object = arr.reduce(
-        (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
+        (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
         console.log(object);
         sampleListRef.set(object);
 
@@ -1175,11 +1053,9 @@ this.setState({
 
       const parameterInfo = {
 
-        Sample_Item: this.state.Sample_Item,
-        Sample_Input: '',
-        dataType: this.state.dataType,
-        color: this.state.color,
-        units: this.state.units,
+        Maintenance_Item: this.state.Maintenance_Item,
+        Maintenance_Input: '',
+
         id: id,
 
       }
@@ -1187,11 +1063,9 @@ this.setState({
       array.push(parameterInfo);
       //this.setState is used to clear the text boxes after the form has been submitted.
       this.setState({
-        Sample_Item: '',
+        Maintenance_Item: '',
         arrayData2: array,
-        dataType: '',
-        units: '',
-        color: '',
+
 
       });
 
@@ -1206,9 +1080,7 @@ this.setState({
    })
  }
 
- handleChangeComplete = (color) => {
-    this.setState({ color: color.hex, colorDisplay: 'none' });
-  };
+
 
   showChildrenDrawer = () => {
     this.setState({
@@ -1222,70 +1094,25 @@ this.setState({
     });
   };
 
-  displayColor = () => {
-    this.setState({
-      colorDisplay: null,
-    })
-  }
-
-  handleSizeChange = (e) => {
-
-  const sampleListRef = fire.database().ref(`sampleList/${this.state.userID}/${this.state.id}`);
-
-  this.setState({ dataType: e.target.value });
-
-  var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
-
-  sampleListRef.set(object);
-
-}
-
-handleSizeChange1 = (e) => {
-
-this.setState({ dataType: e.target.value });
 
 
 
-}
-
-handleTimeFrameChange = (e) => {
-this.setState({ timeFrame: e.target.value });
-console.log(this.state.timeFrame)
-if (this.state.timeframe == 'three') {
-  console.log("it's 3!!")
-  this.setState({
-    graphData: this.state.threeData,
-  })
-}
 
 
-}
 
-threeMonths = () => {
-this.setState({
-  graphData: this.state.threeData,
-})
-}
-sixMonths = () => {
-this.setState({
-  graphData: this.state.sixData,
-})
-}
-twelveMonths = () => {
-this.setState({
-  graphData: this.state.twelveData,
-})
-}
-allMonths = () => {
-this.setState({
-  graphData: this.state.snapArray,
-})
-}
+
 
       render() {
 
 
-
+        const content = (
+          <Alert
+      message="Error"
+      description="This is an error message about copywriting."
+      type="error"
+      showIcon
+    />
+        )
 
         let { file } = this.state
         let url = file && URL.createObjectURL(file)
@@ -1315,7 +1142,7 @@ this.setState({
 
                         return (
                           <View>
-                          <Text style={styles.author}>{parameter.Sample_Item}:  {parameter.Sample_Input} mg/L</Text>
+                          <Text style={styles.author}>{parameter.Maintenance_Item}:  {parameter.Maintenance_Input} mg/L</Text>
                           </View>
                         )
 
@@ -1359,120 +1186,15 @@ this.setState({
           },
           {
         title: 'Title',
-        dataIndex: 'Sample_Item',
-        key: 'Sample_Item',
-        width: 200,
+        dataIndex: 'Maintenance_Item',
+        key: 'Maintenance_Item',
+
       },
-      {
-    title: 'Units',
-    dataIndex: 'units',
-    key: 'units',
-    width: 80,
-  },
-      {
-    title: 'Data Type',
-    dataIndex: 'dataType',
-    key: 'dataType',
-    render: (text, record, isSelected, color) => {
-    if (record.dataType == 'Bar') {
-      return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
-        <Icon type="bar-chart" style={{fontSize: '32px', color: record.color}}
-        onClick={() => this.changeData(record.key)}>
-          Click me
-        </Icon>
-  </Popover>
-</div>
-    }
-    if (record.dataType == 'Area') {
-      return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
-        <Icon type="area-chart" style={{fontSize: '32px', color: record.color}}
-        onClick={() => this.changeData(record.key)}>
-          Click me
-        </Icon>
-  </Popover>
-</div>
-    }
-    if (record.dataType == 'Line') {
-      return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
-        <Icon type="line-chart" style={{fontSize: '32px', color: record.color}}
-        onClick={() => this.changeData(record.key)}>
-          Click me
-        </Icon>
-  </Popover>
-</div>
-    }
-    if (record.dataType == 'Off') {
-      return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
-        <Icon type="close" style={{fontSize: '32px', color: record.color}}
-        onClick={() => this.changeData(record.key)}>
-          Click me
-        </Icon>
-  </Popover>
-</div>
-    }
-
-  },
-
-
-
-
-    width: 200,
-  },
-  {
-title: 'Color',
-dataIndex: 'color',
-key: 'color',
-render: (text, record, isSelected) =>
-(
-
-    <div style={{textAlign: 'left'}}>
-      <Popover content={content1} title="Select Color" trigger="click">
-        <Icon type="bg-colors" style={{fontSize: '24px', color: record.color}}
-        onClick={() => this.changeColor(record.key)}>
-          Click me
-        </Icon>
-  </Popover>
-    </div>
-
-)
-
-    ,
-width: 200,
-},
-
 
 
     ]
 
 
-    const content1 = (<div>
-      <SketchPicker
-    color={ this.state.color }
-    onChangeComplete={ this.overwriteColor }
-      />
-    </div>);
-
-    const content = (
-  <div>
-    <Row>
-    <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange}>
-<Radio.Button value="Bar">Bar</Radio.Button>
-<Radio.Button value="Line">Line</Radio.Button>
-<Radio.Button value="Area">Area</Radio.Button>
-<Radio.Button value="Off">Off</Radio.Button>
-</Radio.Group>
-  </Row>
-
-
-  <Row style={{paddingTop: '10px', textAlign: 'center'}}>
-  <Button type="primary"onClick={this.parameterOverwrite}>Save</Button>
-  </Row>
-</div>
-);
 
         const columns = this.state.tableKeys;
 
@@ -1496,108 +1218,61 @@ const csvData1 = this.state.currentData;
 
 
             <Drawer
-              title= "Fill in Sample Form"
+              title= "Fill in Maintenance Form"
               placement={this.state.placement}
               closable={false}
               onClose={this.onClose}
               visible={this.state.visible}
-              width={500}
+              width={600}
             >
             <Drawer
-            title="Add Parameter"
+            title="Add Maintenance Item"
             width={420}
             closable={false}
             onClose={this.onChildrenDrawerClose}
             visible={this.state.childrenDrawer}
           >
 
-          <div style={{display: this.state.inputAdd}}>
-            <form>
+
+          <form>
 
 
-          <FormGroup onSubmit={this.fillParameterInfo}>
+        <FormGroup onSubmit={this.fillParameterInfo}>
 
 
-            <Row style={{paddingTop: '10px'}}>
-              <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-                <b>Parameter</b>
-              </Col>
-              <Col xs={24} sm={16} md={16} lg={16} xl={16}>
-              <FormControl style={{display: this.state.inputAdd}} name="Sample_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Sample_Item} />
-              </Col>
-
-
-
-            </Row>
-
-            <Row style={{paddingTop: '20px'}}>
-              <Col xs={24} sm={8} md={8} lg={8} xl={8}>
-                <b>Units</b>
-              </Col>
-              <Col xs={24} sm={16} md={16} lg={16} xl={16}>
-              <FormControl style={{display: this.state.inputAdd}} name="units" onChange={this.handleChange} type="text" placeholder="Units"  value={this.state.units} />
-              </Col>
-            </Row>
-
-
-
-            <Row style={{paddingTop: '30px'}}>
-              <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                <b>Graph Type</b>
-              </Col>
-            </Row>
-
-
-
-            <Row style={{paddingTop: '10px'}}>
-            <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange1}>
-        <Radio.Button value="Bar">Bar</Radio.Button>
-        <Radio.Button value="Line">Line</Radio.Button>
-        <Radio.Button value="Area">Area</Radio.Button>
-        <Radio.Button value="Off">Off</Radio.Button>
-      </Radio.Group>
-        </Row>
-
-        <Row style={{paddingTop: '20px'}}>
-        <b>Color of Graph Data</b>
-        </Row>
-            <Row style={{paddingTop: '20px'}}>
-
-          <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-            <Button onClick={this.displayColor}>Pick a Color</Button>
+          <Row style={{paddingTop: '10px'}}>
+            <Col xs={24} sm={8} md={8} lg={8} xl={8}>
+              <b>Maintenance Item: </b>
             </Col>
-            <Col xs={24} sm={6} md={6} lg={6} xl={6}>
-            <Button style={{backgroundColor: this.state.color}}></Button>
-          </Col>
+            <Col xs={24} sm={16} md={16} lg={16} xl={16}>
+            <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Maintenance_Item} />
+            </Col>
 
 
-          <Col xs={24} sm={18} md={18} lg={18} xl={18} style={{display: this.state.colorDisplay}}>
-            <SketchPicker
-          color={ this.state.color }
-          onChangeComplete={ this.handleChangeComplete }
-            />
-          </Col>
-          </Row>
 
-          <Row>
-            <hr></hr>
-          </Row>
-          <Row style={{paddingTop: '20px'}}>
-
-        <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-          <Button  style={{display: this.state.inputAdd}} type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
-          </Col>
           </Row>
 
 
 
-        </FormGroup>
+        <Row>
+          <hr></hr>
+        </Row>
+        <Row style={{paddingTop: '20px'}}>
+
+      <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+        <Button   type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
+        </Col>
+        </Row>
+
+
+
+      </FormGroup>
 
 
 
 
-          </form>
-          </div>
+        </form>
+
 
 
 
@@ -1605,10 +1280,10 @@ const csvData1 = this.state.currentData;
 
           </Drawer>
 
-            <div style={{display: this.state.inputAdd}}>
+
             <Row style={{paddingTop: '10px'}} type="flex" justify="center">
               <Button type="primary" onClick={this.showChildrenDrawer}>
-            Add Sampling Parameter
+            Add Maintenance Item
           </Button>
 
 
@@ -1618,41 +1293,38 @@ const csvData1 = this.state.currentData;
               <Row style={{paddingTop: '10px'}} justify="center">
                 <form>
                   <Row style={{textAlign: 'right'}}>
-                  <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Sample</Icon>
+                  <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Maintenance Report</Icon>
                   </Row>
                   <Row>
                     <FormGroup>
                       <Row style={{paddingTop: '10px'}}>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
+                          <FormControl required  name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
                           onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '10px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>ID #</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl name='sampleID' type='text' placeholder="ID" value={this.state.sampleID}
+                          <FormControl  required name='sampleID' type='text' placeholder="ID" value={this.state.sampleID}
                             onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '10px'}}>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Title</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
+                          <FormControl  required name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '10px'}}>
                       <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Miscellaneous Notes</b></Col>
                       <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                      <FormControl name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
+                      <FormControl  required  name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
                         onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
                       </Col>
                       </Row>
-
-
-
                     </FormGroup>
                 </Row>
 
@@ -1662,10 +1334,10 @@ const csvData1 = this.state.currentData;
                               return (
                                 <Row style={{paddingTop: '10px'}}>
                           <FormGroup>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}  ({parameter.units})</b></Col>
-                            <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                            <FormControl name={parameter.Sample_Item} type="text"
-                              onChange={this.handleSampleChange(idx)}  placeholder="Concentration" value={parameter.Sample_Input} />
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                            <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+                            <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 70, width: '100%'}}
+                              onChange={this.handleSampleChange(idx)}   value={parameter.Maintenance_Input} />
                             </Col>
                             <Col xs={24} sm={4} md={4} lg={4} xl={4}>
                               <Icon type="delete" style={{fontSize: '24px'}}
@@ -1686,7 +1358,7 @@ const csvData1 = this.state.currentData;
 
 
                 <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-                <Button style={{display: this.state.addReport}} type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Sample Report</Button>
+                <Button  type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Maintenance Report</Button>
 
 
 
@@ -1701,9 +1373,19 @@ const csvData1 = this.state.currentData;
 
               </Row>
 
-              </div>
+            </Drawer>
+            <Drawer
+              title= "Fill in Maintenance Form"
+              placement={this.state.placement}
+              closable={false}
+              onClose={this.onClose}
+              visible={this.state.visibleEditMaintenance}
+              width={500}
+            >
 
-              <div style={{display: this.state.inputOverwrite}}>
+
+
+
 
                   <Row style={{paddingTop: '10px'}} justify="center">
                     <form>
@@ -1713,7 +1395,7 @@ const csvData1 = this.state.currentData;
                       <Row>
                         <FormGroup>
                           <Row style={{paddingTop: '10px'}}>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                               <FormControl name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
                               onChange={this.handleChange} />
@@ -1727,7 +1409,7 @@ const csvData1 = this.state.currentData;
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '10px'}}>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Title</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                               <FormControl name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
                                   onChange={this.handleChange} />
@@ -1740,8 +1422,6 @@ const csvData1 = this.state.currentData;
                             onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
                           </Col>
                           </Row>
-
-
                         </FormGroup>
                     </Row>
 
@@ -1751,20 +1431,17 @@ const csvData1 = this.state.currentData;
                     return (
                       <Row style={{paddingTop: '10px'}}>
                 <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item} </b></Col>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
                   <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                  <FormControl name={parameter.Sample_Item} type="text" componentClass="textarea" style={{ height: 60}}
-                    onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Sample_Input} />
+                  <FormControl name={parameter.Maintenance_Item} type="text" componentClass="textarea" style={{ height: 60}}
+                    onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Maintenance_Input} />
                   </Col>
                   <Col xs={24} sm={4} md={4} lg={4} xl={4}>
                     <Icon type="delete" style={{fontSize: '24px'}}
-                    onClick={() => this.removesample2(parameter.Sample_Item)}>
+                    onClick={() => this.removesample2(parameter.Maintenance_Item)}>
                       Click me
                     </Icon>
                     </Col>
-
-
-
 
                             </FormGroup>
                           </Row>
@@ -1775,22 +1452,17 @@ const csvData1 = this.state.currentData;
 
 
                   <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-                  <Button style={{display: this.state.overwriteReport}} type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Report</Button>
-                  <Icon style={{display: this.state.overwriteReport, fontSize: 20}} onClick={this.displayButtons} type="left" />
+                  <Button  type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Report</Button>
+
 
 
                   </Row>
-
-
-
-
-
 
                   </form>
 
                 </Row>
 
-                </div>
+
 
 
 
@@ -1799,20 +1471,16 @@ const csvData1 = this.state.currentData;
             </Drawer>
 
 
-
-
-
-
-
-
-
-
-
             </div>
 
             <div style={{ background: '#F4F7FA', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Row type="flex" justify="center">
+                <Col span={24} style={{textAlign: 'left'}}>
+                  <h2>Maintenance</h2>
+                </Col>
+              </Row>
 
               <Row type="flex" justify="center">
                 <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
@@ -1822,7 +1490,7 @@ const csvData1 = this.state.currentData;
 
 
 
-                    <TabPane tab="SAMPLING LOG" key="1">
+                    <TabPane tab="MAINTENANCE LOG" key="1">
                       <Row type="flex" justify="center">
                         <Col span={24} style={{textAlign: 'center'}}>
 
@@ -1832,7 +1500,7 @@ const csvData1 = this.state.currentData;
 
                         </Col>
                         <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'right'}}>
-                        <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Sample</Button>
+                        <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Report</Button>
                         </Col>
 
 
@@ -1856,7 +1524,7 @@ const csvData1 = this.state.currentData;
 
 
 
-                  <TabPane tab="PARAMETERS" key="2">
+                  <TabPane tab="ITEMS" key="2">
 
                     <Drawer
                       title= "Edit Parameter"
@@ -1868,59 +1536,31 @@ const csvData1 = this.state.currentData;
                     >
                     <Row>
                       <Col span={24}>
-                        <h2>{this.state.Sample_Item}  ({this.state.units})</h2>
+                        <h2>{this.state.Maintenance_Item}</h2>
                       </Col>
                     </Row>
 
-                    <Row style={{paddingTop: '10px'}}>
-                    <b>Graph Data Type</b>
-                  </Row>
 
 
-                    <Row style={{paddingTop: '10px'}}>
-                      <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange}>
-                  <Radio.Button value="Bar">Bar</Radio.Button>
-                  <Radio.Button value="Line">Line</Radio.Button>
-                  <Radio.Button value="Area">Area</Radio.Button>
-                  <Radio.Button value="Off">Off</Radio.Button>
-                </Radio.Group>
-                </Row>
 
 
-                <Row style={{paddingTop: '20px'}}>
-                <b>Color of Graph Data</b>
-                </Row>
-                    <Row style={{paddingTop: '20px'}}>
-
-                  <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-                    <Button onClick={this.displayColor}>Pick a Color</Button>
-                    </Col>
-                    <Col xs={24} sm={6} md={6} lg={6} xl={6}>
-                    <Button style={{backgroundColor: this.state.color}}></Button>
-                  </Col>
 
 
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18} style={{display: this.state.colorDisplay}}>
-                    <SketchPicker
-                  color={ this.state.color }
-                  onChangeComplete={ this.handleChangeComplete }
-                    />
-                  </Col>
-                  </Row>
+
                   <Row>
                     <hr></hr>
                   </Row>
                   <Row style={{paddingTop: '20px'}}>
 
                 <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-                  <Button type="primary" onClick={this.parameterOverwrite}>Overwrite Parameter</Button>
+                  <Button type="primary" onClick={this.parameterOverwrite}>Overwrite Report</Button>
                   </Col>
                   </Row>
 
 
                   </Drawer>
                   <Drawer
-                  title="Add Paraneter"
+                  title="Add Item"
                   width={420}
                   closable={false}
                   onClose={this.visible4Close}
@@ -1928,62 +1568,58 @@ const csvData1 = this.state.currentData;
                 >
 
 
-                  <form>
 
 
-                <FormGroup onSubmit={this.fillParameterInfo}>
-
-                  <Col xs={24} sm={10} md={10} lg={10} xl={10}>
-                    <b>SAMPLING PARAMETERS</b>
-                  </Col>
-                  <Row style={{paddingTop: '10px'}}>
-                  <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-                  <FormControl name="Sample_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Sample_Item} />
-                  </Col>
-                  </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                  <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-                  <FormControl  name="units" onChange={this.handleChange} type="text" placeholder="Units"  value={this.state.units} />
-                  </Col>
-                  </Row>
-
-                  <Row style={{paddingTop: '10px'}}>
-                    <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange}>
-                <Radio.Button value="Bar">Bar</Radio.Button>
-                <Radio.Button value="Line">Line</Radio.Button>
-                <Radio.Button value="Area">Area</Radio.Button>
-                <Radio.Button value="Off">Off</Radio.Button>
-              </Radio.Group>
-              </Row>
-
-                  <Row style={{paddingTop: '10px'}}>
-
-                <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-                  <Button onClick={this.displayColor}>Pick a Color</Button>
-                  <Button style={{backgroundColor: this.state.color}}></Button>
-                </Col>
+     <form>
 
 
-                <Col xs={24} sm={18} md={18} lg={18} xl={18} style={{display: this.state.colorDisplay}}>
-                  <SketchPicker
-                color={ this.state.color }
-                onChangeComplete={ this.handleChangeComplete }
-                  />
-                </Col>
-                </Row>
+   <FormGroup onSubmit={this.fillParameterInfo}>
 
-                <Row style={{paddingTop: '10px'}}>
-                  <Col xs={24} sm={4} md={4} lg={4} xl={4} >
-                        <Button type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
-                      </Col>
-                      </Row>
 
-              </FormGroup>
+     <Row style={{paddingTop: '10px'}}>
+       <Col xs={24} sm={8} md={8} lg={8} xl={8}>
+         <span><b>Maintenance Item <p style={{color: 'red'}}>*</p></b></span>
+       </Col>
+       <Col xs={24} sm={16} md={16} lg={16} xl={16}>
+
+           <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Maintenance_Item} />
+
+       </Col>
 
 
 
 
-                </form>
+
+     </Row>
+
+
+
+   <Row>
+     <hr></hr>
+   </Row>
+   <Row style={{paddingTop: '20px'}}>
+
+ <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+
+   <Button   type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
+
+   </Col>
+   </Row>
+   <div style={{display: this.state.error}}>
+   <p style={{color: 'red'}}>Double check that all required inputs are filled</p>
+</div>
+
+
+ </FormGroup>
+
+
+
+
+   </form>
+
+
+
+
 
 
 
@@ -2002,7 +1638,7 @@ const csvData1 = this.state.currentData;
                         </Col>
 
                         <Col xs={12} sm={12} md={12} lg={12} xl={12} style={{textAlign: 'right'}}>
-                          <Button size="large" type="primary" onClick={this.showDrawer4}>+ Add Parameter</Button>
+                          <Button size="large" type="primary" onClick={this.showDrawer4}>+ Add Item</Button>
 
                         </Col>
 

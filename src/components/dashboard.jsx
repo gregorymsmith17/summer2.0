@@ -173,13 +173,7 @@ export default class Dashboard extends Component {
         visible3: false,
 
         //Inputs for Profile Page
-        lakeName: '',
-        locationCity: '',
-        locationState: '',
-        managementContact: '',
-        hoaContact: '',
-        managementContactNumber: '',
-        hoaContactNumber: '',
+
 
 
 
@@ -230,248 +224,257 @@ export default class Dashboard extends Component {
         userID: user.uid,
       })
 
+      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      currentProjectRef.on('value', (snapshot) => {
+        let project = snapshot.child('currentProject').val();
+        console.log(project);
+        this.setState({
+          currentProject: project
+        })
 
+        const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport`);
+        parameterList1Ref.on('value', (snapshot) => {
+          let snapArray = this.snapshotToArray(snapshot);
 
-      const parameterList1Ref = fire.database().ref(`sampleReport/${user.uid}`);
-      parameterList1Ref.on('value', (snapshot) => {
-        let snapArray = this.snapshotToArray(snapshot);
-
-        if (snapArray.length == 0) {
-          console.log("do nothing")
-        }
-
-
-        if (snapArray.length > 0) {
-          let data = snapArray;
-
-
-          let tableData1 = [];
-          for (let i=0; i < snapArray.length; i++) {
-          //push send this data to the back of the chartData variable above.
-          tableData1.push(Object.keys(snapArray[i]));
+          if (snapArray.length == 0) {
+            console.log("do nothing")
           }
 
-          let tableData2 = tableData1.map(function(a){return a.length;});
-          tableData2.indexOf(Math.max.apply(Math, tableData2));
 
-          let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+          if (snapArray.length > 0) {
+            let data = snapArray;
 
-          let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
-          table1Keys = table1Keys.filter(e => e !== 'ID');
-          table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
-          table1Keys = table1Keys.filter(e => e !== 'date');
-          table1Keys = table1Keys.filter(e => e !== 'Title');
-          table1Keys = table1Keys.filter(e => e !== 'key');
-          table1Keys = table1Keys.filter(e => e !== 'key');
 
-          if (this.state.turnedOffKeys.length == 0) {
-            console.log("do nothing again")
-          }
+            let tableData1 = [];
+            for (let i=0; i < snapArray.length; i++) {
+            //push send this data to the back of the chartData variable above.
+            tableData1.push(Object.keys(snapArray[i]));
+            }
 
-          if (this.state.turnedOffKeys.lenth > 0) {
-            this.state.turnedOffKeys.map((item) => {
+            let tableData2 = tableData1.map(function(a){return a.length;});
+            tableData2.indexOf(Math.max.apply(Math, tableData2));
 
-              table1Keys = table1Keys.filter(e => e !== item);
+            let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+
+            let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
+            table1Keys = table1Keys.filter(e => e !== 'ID');
+            table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
+            table1Keys = table1Keys.filter(e => e !== 'date');
+            table1Keys = table1Keys.filter(e => e !== 'Title');
+            table1Keys = table1Keys.filter(e => e !== 'key');
+            table1Keys = table1Keys.filter(e => e !== 'key');
+
+            if (this.state.turnedOffKeys.length == 0) {
+              console.log("do nothing again")
+            }
+
+            if (this.state.turnedOffKeys.lenth > 0) {
+              this.state.turnedOffKeys.map((item) => {
+
+                table1Keys = table1Keys.filter(e => e !== item);
+              })
+            }
+
+            console.log(table1Keys)
+
+            this.setState({
+              smallGraphKeys: table1Keys,
             })
-          }
-
-          console.log(table1Keys)
-
-          this.setState({
-            smallGraphKeys: table1Keys,
-          })
 
 
-          let tableKeys = table1Keys.map((txt) => {
-            return (
+            let tableKeys = table1Keys.map((txt) => {
+              return (
 
-            {
-            title:txt,
-            dataIndex: txt,
-            key: txt,
-            ...this.getColumnSearchProps(txt),
+              {
+              title:txt,
+              dataIndex: txt,
+              key: txt,
+              ...this.getColumnSearchProps(txt),
+              sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+              sortDirections: ['descend', 'ascend'],
+
+              width: 200,
+            }
+            )})
+
+            tableKeys.unshift({
+            title: 'Title',
+            dataIndex: 'Title',
+            key: 'Title',
+            ...this.getColumnSearchProps('Title'),
             sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
             sortDirections: ['descend', 'ascend'],
-
             width: 200,
+
+            })
+
+            tableKeys.unshift({
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            ...this.getColumnSearchProps('date'),
+            sorter: (a, b) => { return a.date.localeCompare(b.date)},
+            sortDirections: ['descend', 'ascend'],
+            sortOrder: 'descend',
+            width: 130,
+            })
+
+            tableKeys.unshift({
+            title: 'ID #',
+            dataIndex: 'ID',
+            key: 'ID',
+            ...this.getColumnSearchProps('ID'),
+            sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
+            sortDirections: ['descend', 'ascend'],
+            width: 80,
+            })
+
+
+            tableKeys.unshift({
+              title: 'Edit',
+              dataIndex: '',
+              key: 'x',
+              fixed: 'left',
+              render: this.editRow.bind(this),
+              width: 60,
+
+            })
+
+            tableKeys.unshift({
+              title: 'Delete',
+              dataIndex: '',
+              fixed: 'left',
+              key: 'y',
+              render: this.deleteRow.bind(this),
+              width: 60,
+
+            })
+            console.log(data);
+            let reverseData = data.reverse();
+            console.log(data);
+            let threeData = [data[2], data[1], data[0]];
+            console.log(data[0]);
+            let latestSample = data[0];
+
+            delete latestSample.ID;
+            delete latestSample.Miscellaneous;
+            delete latestSample.key;
+            delete latestSample.Title;
+            console.log(data[0]);
+
+            this.setState({
+              latestSample: data[0],
+            })
+            console.log(this.state.latestSample)
+
+            console.log(this.state.latestSample.Nitrogen)
+
+
+            let sixData = [
+            data[5],
+            data[4],
+            data[3],
+            data[2],
+            data[1],
+            data[0]];
+            let twelveData = [
+              data[11],
+              data[10],
+              data[9],
+              data[8],
+              data[7],
+              data[6],
+            data[5],
+            data[4],
+            data[3],
+            data[2],
+            data[1],
+            data[0]];
+
+            let reverseData1 = data.reverse();
+
+
+            this.setState({
+              snapArray: data,
+              threeData: threeData,
+              sixData: sixData,
+              twelveData: twelveData,
+              graphData: data,
+              tableKeys: tableKeys,
+            })
+
+
           }
-          )})
-
-          tableKeys.unshift({
-          title: 'Title',
-          dataIndex: 'Title',
-          key: 'Title',
-          ...this.getColumnSearchProps('Title'),
-          sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
-          sortDirections: ['descend', 'ascend'],
-          width: 200,
-
-          })
-
-          tableKeys.unshift({
-          title: 'Date',
-          dataIndex: 'date',
-          key: 'date',
-          ...this.getColumnSearchProps('date'),
-          sorter: (a, b) => { return a.date.localeCompare(b.date)},
-          sortDirections: ['descend', 'ascend'],
-          sortOrder: 'descend',
-          width: 130,
-          })
-
-          tableKeys.unshift({
-          title: 'ID #',
-          dataIndex: 'ID',
-          key: 'ID',
-          ...this.getColumnSearchProps('ID'),
-          sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
-          sortDirections: ['descend', 'ascend'],
-          width: 80,
-          })
-
-
-          tableKeys.unshift({
-            title: 'Edit',
-            dataIndex: '',
-            key: 'x',
-            fixed: 'left',
-            render: this.editRow.bind(this),
-            width: 60,
-
-          })
-
-          tableKeys.unshift({
-            title: 'Delete',
-            dataIndex: '',
-            fixed: 'left',
-            key: 'y',
-            render: this.deleteRow.bind(this),
-            width: 60,
-
-          })
-          console.log(data);
-          let reverseData = data.reverse();
-          console.log(data);
-          let threeData = [data[2], data[1], data[0]];
-          console.log(data[0]);
-          let latestSample = data[0];
-          delete latestSample.date;
-          delete latestSample.ID;
-          delete latestSample.Miscellaneous;
-          delete latestSample.key;
-          delete latestSample.Title;
-          console.log(data[0]);
-
-          this.setState({
-            latestSample: data[0],
-          })
-          console.log(this.state.latestSample)
-
-          console.log(this.state.latestSample.Nitrogen)
-
-
-          let sixData = [
-          data[5],
-          data[4],
-          data[3],
-          data[2],
-          data[1],
-          data[0]];
-          let twelveData = [
-            data[11],
-            data[10],
-            data[9],
-            data[8],
-            data[7],
-            data[6],
-          data[5],
-          data[4],
-          data[3],
-          data[2],
-          data[1],
-          data[0]];
-
-          let reverseData1 = data.reverse();
-
-
-          this.setState({
-            snapArray: data,
-            threeData: threeData,
-            sixData: sixData,
-            twelveData: twelveData,
-            graphData: data,
-            tableKeys: tableKeys,
-          })
-
-
-        }
-
-         })
-
-         const sampleList2Ref = fire.database().ref(`sampleList/${user.uid}`);
-         sampleList2Ref.on('value', (snapshot) => {
-           let maintenanceArray = this.snapshotToArray(snapshot);
-           console.log(maintenanceArray)
-           this.setState({
-             snapArray1: maintenanceArray,
 
            })
-         })
+
+           const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
+           sampleList2Ref.on('value', (snapshot) => {
+             let maintenanceArray = this.snapshotToArray(snapshot);
+             console.log(maintenanceArray)
+             this.setState({
+               snapArray1: maintenanceArray,
+
+             })
+           })
 
 
-    const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
-    profileRef.on('value', (snapshot) => {
-      var that = this;
+           const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+           profileRef.on('value', (snapshot) => {
+             var that = this;
 
 
-    this.setState({
-      lakeName: snapshot.child('lakeName').val(),
-      locationCity: snapshot.child('locationCity').val(),
-      locationState: snapshot.child('locationState').val(),
-      managementContact: snapshot.child('managementContact').val(),
-      hoaContact: snapshot.child('hoaContact').val(),
-      managementContactNumber: snapshot.child('managementContactNumber').val(),
-      hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-      latitude: snapshot.child('latitude').val(),
-      longitude: snapshot.child('longitude').val(),
-      center: {
-        lat: parseFloat(snapshot.child('latitude').val()),
-        lng: parseFloat(snapshot.child('longitude').val())
-      },
+           this.setState({
+             lakeName: snapshot.child('lakeName').val(),
+             locationCity: snapshot.child('locationCity').val(),
+             locationState: snapshot.child('locationState').val(),
+             managementContact: snapshot.child('managementContact').val(),
+             hoaContact: snapshot.child('hoaContact').val(),
+             managementContactNumber: snapshot.child('managementContactNumber').val(),
+             hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+             latitude: snapshot.child('latitude').val(),
+             longitude: snapshot.child('longitude').val(),
+             center: {
+               lat: parseFloat(snapshot.child('latitude').val()),
+               lng: parseFloat(snapshot.child('longitude').val())
+             },
 
-    });
-
-
-    console.log(this.state.center);
-              var myLat = `${this.state.latitude}`;
-                var myLon = `${this.state.longitude}`;
-             let API_WEATHER = `http://api.openweathermap.org/data/2.5/weather?lat=${myLat}&lon=${myLon}&units=imperial&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`;
-
-             fetch(API_WEATHER)
-          .then(response => response.json())
-          .then(responseJson => {
-            console.log(responseJson);
-            console.log(responseJson.weather);
-            console.log(responseJson.name);
-            this.setState({
-              isLoading: false,
-              dataSource: responseJson,
-              currentCity: this.state.lakeName,
-              currentTemp: responseJson.main.temp,
-              currentIcon: 'http://openweathermap.org/img/w/' + responseJson.weather[0].icon + '.png',
-              currentDescription: responseJson.weather[0].main,
-              currentHumidity: responseJson.main.humidity,
+           });
 
 
-            });
-          })
-          .catch(error => {
-            console.log(error);
-          });
+           console.log(this.state.center);
+                     var myLat = `${this.state.latitude}`;
+                       var myLon = `${this.state.longitude}`;
+                    let API_WEATHER = `http://api.openweathermap.org/data/2.5/weather?lat=${myLat}&lon=${myLon}&units=imperial&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`;
+
+                    fetch(API_WEATHER)
+                 .then(response => response.json())
+                 .then(responseJson => {
+                   console.log(responseJson);
+                   console.log(responseJson.weather);
+                   console.log(responseJson.name);
+                   console.log(responseJson.weather[0].main);
+                   this.setState({
+                     isLoading: false,
+                     dataSource: responseJson,
+                     currentCity: this.state.lakeName,
+                     currentTemp: responseJson.main.temp,
+                     currentIcon: 'http://openweathermap.org/img/w/' + responseJson.weather[0].icon + '.png',
+                     currentDescription: responseJson.weather[0].main,
+                     currentHumidity: responseJson.main.humidity,
 
 
-  });
+                   });
+                 })
+                 .catch(error => {
+                   console.log(error);
+                 });
 
+
+         });
+
+
+      })
 
 
   });
@@ -562,7 +565,7 @@ export default class Dashboard extends Component {
     }
     removesample(itemId) {
 
-     const sampleRef = fire.database().ref(`/sampleReport/${this.state.userID}/${itemId}`);
+     const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
      sampleRef.remove();
     }
 
@@ -570,13 +573,13 @@ export default class Dashboard extends Component {
 
     removesample1(itemId) {
 
-    const sampleRef = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
+    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
     sampleRef.remove();
     }
 
     removesample2(itemId) {
 
-    const sampleRef = fire.database().ref(`/sampleReport/${this.state.userID}/${this.state.id}/${itemId}`);
+    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
     sampleRef.remove();
     this.fillStates(this.state.id);
 
@@ -616,8 +619,8 @@ export default class Dashboard extends Component {
 
         })
 
-      const sample1Ref = fire.database().ref(`/sampleList/${user.uid}/${itemId}`);
-      let id = fire.database().ref().child(`/sampleList/${user.uid}/${itemId}`).key;
+        const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`);
+        let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`).key;
       sample1Ref.on('value', (snapshot) => {
 
         this.setState({
@@ -634,57 +637,31 @@ export default class Dashboard extends Component {
     }
 
     parameterOverwrite = (e) => {
-    e.preventDefault();
-    //fire.database().ref('samples') refers to the main title of the fire database.
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = fire.database().ref(`sampleList/${user.uid}/${this.state.id}`);
-
-
-    var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id, units: this.state.units}
-      console.log(object);
-      sampleListRef.set(object);
-
-    //this.setState is used to clear the text boxes after the form has been submitted.
-
-
-    });
-    }
-
-
-    fillParameterInfo = (e, itemId) => {
       e.preventDefault();
       //fire.database().ref('samples') refers to the main title of the fire database.
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleListRef = fire.database().ref(`sampleList/${user.uid}`);
-      let id = fire.database().ref().child(`/sampleList/${user.uid}/${itemId}`).key;
-      const sampleInfo = {
-        Sample_Item: this.state.Sample_Item,
-        Sample_Input: '',
-        dataType: this.state.dataType,
-        color: this.state.color,
-        id: id,
+      const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList/${this.state.id}`);
 
-      }
 
-      sampleListRef.push(sampleInfo);
+    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
+        console.log(object);
+        sampleListRef.set(object);
+
       //this.setState is used to clear the text boxes after the form has been submitted.
-      this.setState({
-        Sample_Item: '',
-        dataType: '',
-        color: '#000000',
-        childrenDrawer: false,
-        visible4: false,
-      });
+
 
     });
     }
+
+
+
 
 
 
 
     changeData(itemId) {
-      const sample1Ref = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
-      let id = fire.database().ref().child(`/sampleList/${this.state.userID}/${itemId}`).key;
+      const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+      let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
       sample1Ref.on('value', (snapshot) => {
         this.setState({
           Sample_Item: snapshot.child('Sample_Item').val(),
@@ -726,8 +703,8 @@ export default class Dashboard extends Component {
     changeColor(itemId) {
 
 
-      const sample1Ref = fire.database().ref(`/sampleList/${this.state.userID}/${itemId}`);
-      let id = fire.database().ref().child(`/sampleList/${this.state.userID}/${itemId}`).key;
+      const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+      let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
       sample1Ref.on('value', (snapshot) => {
 
         this.setState({
@@ -744,7 +721,7 @@ export default class Dashboard extends Component {
 
     overwriteColor = (color) => {
 
-      const sampleListRef = fire.database().ref(`sampleList/${this.state.userID}/${this.state.id}`);
+      const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
 
        this.setState({ color: color.hex });
 
@@ -792,61 +769,7 @@ export default class Dashboard extends Component {
           });
         }
 
-        sampleSubmit = (e) => {
-          e.preventDefault();
-          //fire.database().ref('samples') refers to the main title of the fire database.
-          this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const sampleListRef = fire.database().ref(`sampleReport/${user.uid}`);
 
-
-      var arr = this.state.snapArray1;
-      console.log(arr);
-
-
-      if (arr.length == 0){
-        var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
-        console.log(object);
-        sampleListRef.push(object);
-      }
-
-    if (arr.length > 0){
-
-        var object = arr.reduce(
-            (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
-            console.log(object);
-            sampleListRef.push(object);
-
-            const sampleList2Ref = fire.database().ref(`sampleList/${user.uid}`);
-            sampleList2Ref.on('value', (snapshot) => {
-              let maintenanceArray = this.snapshotToArray(snapshot);
-
-              this.setState({
-                snapArray1: maintenanceArray,
-
-              })
-            })
-
-          }
-
-
-
-
-
-          //this.setState is used to clear the text boxes after the form has been submitted.
-          this.setState({
-            sampleDate: '',
-            sampleID: '',
-            sampleTitle: '',
-            sampleMisc: '',
-
-            visible: false,
-            visible1: false,
-            visible2: false,
-
-          });
-
-        });
-        }
 
         fillStates(itemId) {
 
@@ -894,7 +817,7 @@ export default class Dashboard extends Component {
 
     });
 
-    const sample2Ref = fire.database().ref(`/sampleReport/${user.uid}`);
+    const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
     sample2Ref.on('value', (snapshot) => {
     let maintenanceList = this.snapshotToArray(snapshot);
 
@@ -926,88 +849,13 @@ export default class Dashboard extends Component {
       }
 
 
-      sampleOverwrite = (e) => {
-        e.preventDefault();
-        //fire.database().ref('samples') refers to the main title of the fire database.
-        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const sampleListRef = fire.database().ref(`sampleReport/${user.uid}/${this.state.id}`);
-
-
-    var arr = this.state.arrayData2;
-    console.log(arr);
-
-
-    if (arr.length == 0){
-      var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
-      console.log(object);
-      sampleListRef.set(object);
-
-    }
-    else
-
-
-      var object = arr.reduce(
-          (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
-          console.log(object);
-          sampleListRef.set(object);
 
 
 
-        //this.setState is used to clear the text boxes after the form has been submitted.
-        this.setState({
 
 
-          visible: false,
-          visible1: false,
-          visible2: false,
-
-        });
-
-      });
-      }
 
 
-      displayButtons = () => {
-
-     this.setState({
-       overwriteReport: 'none',
-       addReport: null,
-       inputOverwrite: 'none',
-       inputAdd: null,
-     })
-
-
-      }
-
-
-      additionalItem = (e, itemId, id) => {
-        e.preventDefault();
-        //fire.database().ref('samples') refers to the main title of the fire database.
-
-        let array = this.state.arrayData2;
-
-        const parameterInfo = {
-
-          Sample_Item: this.state.Sample_Item,
-          Sample_Input: '',
-          dataType: this.state.dataType,
-          color: this.state.color,
-          id: id,
-
-        }
-
-        array.push(parameterInfo);
-        //this.setState is used to clear the text boxes after the form has been submitted.
-        this.setState({
-          Sample_Item: '',
-          arrayData2: array,
-          dataType: '',
-          color: '',
-
-        });
-
-
-      }
 
       onChange = (pagination, filters, sorter, extra: { currentDataSource: [] }) => {
         const data = extra.currentDataSource;
@@ -1041,13 +889,21 @@ export default class Dashboard extends Component {
 
     handleSizeChange = (e) => {
 
-    const sampleListRef = fire.database().ref(`sampleList/${this.state.userID}/${this.state.id}`);
-
+    const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
     this.setState({ dataType: e.target.value });
 
     var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
 
     sampleListRef.set(object);
+
+  }
+
+  handleSizeChange1 = (e) => {
+
+  this.setState({ dataType: e.target.value,
+  overwrite: null, });
+
+
 
   }
 
@@ -1127,24 +983,15 @@ export default class Dashboard extends Component {
    };
 
    visible3 = () => {
-     const sampleList2Ref = fire.database().ref(`sampleList/${this.state.userID}`);
+     const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList`);
      sampleList2Ref.on('value', (snapshot) => {
        let maintenanceArray = this.snapshotToArray(snapshot);
 
        this.setState({
-         arrayKeys1: [],
-         arrayValues1: [],
-         sampleDate: '',
-         sampleID: '',
-         sampleTitle: '',
-         sampleMisc: '',
+
          snapArray1: maintenanceArray,
-         visible: true,
-         Sample_Item: '',
-         dataType: '',
-         units: '',
-         color: '#000000',
-         childrenDrawer: false,
+
+
        visible3: true,
      })
    })
@@ -1273,23 +1120,22 @@ export default class Dashboard extends Component {
     </div>);
 
     const content = (
-    <div>
+  <div>
     <Row>
-    <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange}>
-    <Radio.Button value="Bar">Bar</Radio.Button>
-    <Radio.Button value="Line">Line</Radio.Button>
-    <Radio.Button value="Area">Area</Radio.Button>
-    <Radio.Button value="Off">Off</Radio.Button>
-    </Radio.Group>
-    </Row>
+    <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange1}>
+<Radio.Button value="Bar">Bar</Radio.Button>
+<Radio.Button value="Line">Line</Radio.Button>
+<Radio.Button value="Area">Area</Radio.Button>
+<Radio.Button value="Off">Off</Radio.Button>
+</Radio.Group>
+  </Row>
 
 
-    <Row style={{paddingTop: '10px', textAlign: 'center'}}>
-    <Button type="primary"onClick={this.parameterOverwrite}>Save</Button>
-    </Row>
-    </div>
-    );
-
+  <Row style={{paddingTop: '10px', textAlign: 'center'}}>
+  <Button type="primary"onClick={this.parameterOverwrite}>Save</Button>
+  </Row>
+</div>
+);
     const columns = this.state.tableKeys;
 
     const data = this.state.snapArray;
@@ -1309,7 +1155,6 @@ export default class Dashboard extends Component {
           placement={this.state.placement}
           closable={false}
           onClose={this.onClose}
-
           visible={this.state.visible3}
           width={500}
         >
@@ -1350,9 +1195,9 @@ export default class Dashboard extends Component {
                     <Col xs={24} sm={8} md={8} lg={8} xl={8}>
             <Card  style={{textAlign: 'left', height: 300,}} bordered={true} >
              <div style={{textAlign: 'center'}}>
-             <h3>{this.state.currentCity}</h3>
+             <p style={{fontSize: '18px'}}><b>{this.state.lakeName}</b></p>
                <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
-               <h3>{this.state.currentDescription}</h3>
+               <p>{this.state.currentDescription}</p>
                <p>Temperature: {this.state.currentTemp} F</p>
                <p>Humidity: {this.state.currentHumidity}%</p>
                </div>
@@ -1364,7 +1209,7 @@ export default class Dashboard extends Component {
             <Card  style={{textAlign: 'left', height: 300,}} bordered={true} >
              <div style={{  height: 250, width: '100%' }}>
                <GoogleMapReact
-                 onClick={this._onClick}
+
                  bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
                  center={this.state.center
                  }
