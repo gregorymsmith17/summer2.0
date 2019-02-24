@@ -65,6 +65,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
 
   },
+  
+  footer: {
+    textAlign: 'right',
+    fontSize: 8,
+    bottom: 8,
+    position: 'absolute',
+    
+  },
+
   pageNumber: {
     position: 'absolute',
     fontSize: 12,
@@ -1302,8 +1311,7 @@ this.setState({
         const MyDoc = (
           <Document>
             <Page size="A4" style={styles.body}>
-
-
+                
                     <Text style={styles.header} fixed>
                       {this.state.lakeName} Sampling Report
                     </Text>
@@ -1314,7 +1322,7 @@ this.setState({
                     <Text style={styles.subtitle}>
                       Monthly Sampling Data:
                     </Text>
-
+                    
                     <View>
                       {this.state.arrayData2.map((parameter, idx) => {
 
@@ -1323,11 +1331,14 @@ this.setState({
                           <Text style={styles.author}>{parameter.Sample_Item}:  {parameter.Sample_Input} mg/L</Text>
                           </View>
                         )
-
+                    
                       })}
 
                     </View>
-
+                    
+                    <Text style={styles.footer}>
+                     Created by LIMNO Source
+                     </Text>
 
 
 
@@ -1821,6 +1832,7 @@ const csvData1 = this.state.currentData;
 
               <Row type="flex" justify="center">
                 <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
+                
 
                   <Tabs style={{fontSize: '32px'}}defaultActiveKey="1" activeKey={this.state.key} onChange={this.handleSelect} >
 

@@ -1489,3 +1489,17 @@ for (let i=0; i < arrayKeys.length; i++) {
 arrayData.push({Maintenance_Input: arrayValues[i], Maintenance_Item: arrayKeys[i]});
 
 }
+
+for (let i=0; i < table1Keys.length; i++) {
+//push send this data to the back of the chartData variable above.
+let item = tableKeys[i];
+tableKeys.push({
+  title: table1Keys[i],
+  dataIndex: table1Keys[i],
+  key: table1Keys[i],
+  ...this.getColumnSearchProps(item),
+  sorter: (a, b) => { return a.item.localeCompare(b.item)},
+  sortDirections: ['descend', 'ascend'],
+  width: 120}
+);
+}

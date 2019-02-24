@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Radio,  Table, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, Table, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
@@ -15,15 +15,22 @@ import fileDownload from "js-file-download";
 
 import { LineChart, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Label} from 'recharts';
 
-import { Row, Col, Popover, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel } from 'antd';
+import { Row, Col, Popover, Tabs, message, Card, Drawer, Menu, Icon, Dropdown, Button, Layout, Carousel, Radio } from 'antd';
 
+import GoogleMapReact from 'google-map-react';
 
 
 
 const TabPane = Tabs.TabPane;
 
 
+var buttonStyle = {
 
+    background: 'linear-gradient(to top right, #ff5263 0%, #ff7381 35%, #fcbd01 100%)',
+    fontSize: '15px',
+    color: "#ffffff",
+    textShadow: "0 -1px 0 rgba(0, 0, 0, 0.25)"
+}
 
 
 
@@ -47,14 +54,21 @@ const gpsURL = (
 
 const gpsLink = (
   <Popover content={gpsURL} title="Find GPS Cordinates" trigger="hover">
-    <Icon style={{color: 'blue'}} type="info-circle" />
+    <Icon style={{color: 'F4F7FA'}} type="info-circle" />
   </Popover>
 )
 
-
+const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
 export default class profilePage extends Component {
 
+  static defaultProps = {
+  center: {
+  lat: 37.987636425563075,
+  lng: -121.63235758701154
+  },
+  zoom: 13
+  };
 
     constructor(props) {
         super(props);
@@ -69,8 +83,17 @@ export default class profilePage extends Component {
           hoaContact: '',
           managementContactNumber: '',
           hoaContactNumber: '',
-          latitude: '',
-          longitude: '',
+          isLoading: true,
+          dataSource: [],
+          latitude: 33.6595,
+          longitude: null,
+          error: null,
+          weather: -117.998970,
+          center: {
+            lat: 33.6595,
+            lng: -117.998970
+          },
+          successfulUpdate: '',
 
 
           //Misc. for chaing taps and id's
@@ -78,6 +101,7 @@ export default class profilePage extends Component {
           key: 1,
           idKey: '',
           page: '',
+          currentProject: '',
 
 
           //used for table data
@@ -125,6 +149,9 @@ export default class profilePage extends Component {
         });
 
         });
+        this.setState({
+          successfulUpdate: ''
+        });
         let newState = [];
 
 
@@ -137,7 +164,7 @@ export default class profilePage extends Component {
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const samplesRef = fire.database().ref(`profileInformation/${user.uid}`);
+        const samplesRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
 
 
 
@@ -163,11 +190,7 @@ export default class profilePage extends Component {
         samplesRef.set(profileInformation);
         //this.setState is used to clear the text boxes after the form has been submitted.
         this.setState({
-
-
-
-
-
+          successfulUpdate: 'Profile Updated'
         });
       });
     }
@@ -182,9 +205,17 @@ export default class profilePage extends Component {
       //snapshot.foreach(ss => {...}) **this looks in each "Sample" for the child of "user"**
       //child of user can be child of BOD or child of tss or whatever.  It finds the value that is a child to that label.
 
-      componentDidMount(itemId) {
+      componentDidMount() {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-          const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
+          const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+          currentProjectRef.on('value', (snapshot) => {
+
+          this.setState({
+            currentProject: snapshot.child('currentProject').val(),
+          });
+
+          console.log(this.state.currentProject)
+          const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
           profileRef.on('value', (snapshot) => {
 
 
@@ -198,11 +229,37 @@ export default class profilePage extends Component {
             hoaContactNumber: snapshot.child('hoaContactNumber').val(),
             latitude: snapshot.child('latitude').val(),
             longitude: snapshot.child('longitude').val(),
+            center: {
+              lat: parseFloat(snapshot.child('latitude').val()),
+              lng: parseFloat(snapshot.child('longitude').val())
+            },
 
           });
 
+          if (this.state.lakeName === null) {
+
+            this.setState({
+              lakeName: '',
+              locationCity: '',
+              locationState: '',
+              managementContact: '',
+              hoaContact: '',
+              managementContactNumber: '',
+              hoaContactNumber: '',
+              latitude: '',
+              longitude:  '',
+
+            });
+
+          }
 
         });
+
+
+        });
+
+
+
 
       });
 
@@ -513,6 +570,16 @@ preview = () => {
   })
 }
 
+_onClick = (obj) => {
+  console.log(obj.lat, obj.lng);
+
+  this.setState({
+    latitude: obj.lat,
+    longitude: obj.lng
+  })
+}
+
+
 
 
 
@@ -528,27 +595,39 @@ const options = {
   exportCSVBtn: this.createCustomExportCSVButton
 };
 
+const content = (
+
+    <Card  style={{textAlign: 'left', height: 350,}} bordered={true} >
+     <div style={{  height: 300, width: '100%' }}>
+       <GoogleMapReact
+         onClick={this._onClick}
+         bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
+         center={this.state.center
+         }
+         defaultZoom={this.props.zoom}
+       >
+         <AnyReactComponent
+           lat={this.state.latitude}
+           lng={this.state.longitude}
+           text={this.state.lakeName}
+         />
+       </GoogleMapReact>
+     </div>
+    </Card>
+
+
+
+);
+
 
 
 
         return (
           <Layout>
 
-            <div style={{ background: '#F0F0F0', padding: '5px' }}>
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-              <div style={{position: 'relative'}}>
-            <Col xs={24} sm={24} md={18} lg={18} xl={18}>
-              <h1><b>Profile Information</b></h1>
-
-            </Col>
 
 
-          </div>
-            </Row>
-
-            </div>
-
-            <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+            <div style={{ background: '#F4F7FA', padding: '5px' }}>
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
 
@@ -558,97 +637,114 @@ const options = {
 
                   >
                   <Tabs defaultActiveKey="1" >
-              <TabPane tab="Profile Information" key="1">
+              <TabPane tab="PROJECT INFORMATION" key="1">
                 <Row>
                 <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                <Row>
-
-                <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{paddingTop: '20px'}}>
-
-                    <p style={{lineHeight: '2px', paddingLeft: '0px', fontSize: '32px'}}><b>PROFILE INFORMATION</b></p>
 
 
-              </Col>
-            </Row>
-
-                <Row>
-                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                <Row style={{paddingTop: '10px'}} type="flex" justify="center">
+                <Col xs={24} sm={18} md={16} lg={16} xl={16}>
                   <form>
 
         <Row style={{paddingTop: '10px'}}>
+
+
+
+
           <FormGroup>
             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Lake Name</b></Col>
-            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-            <FormControl name="lakeName" onChange={this.handleChange} type="text" placeholder="Lake Name" style={{ width: 350}} value={this.state.lakeName} /></Col>
+            <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+            <FormControl name="lakeName" onChange={this.handleChange} type="text" placeholder="Lake Name"  value={this.state.lakeName} /></Col>
           </FormGroup>
           </Row>
           <Row style={{paddingTop: '10px'}}>
             <FormGroup>
               <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>City</b></Col>
-              <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-              <FormControl name="locationCity" onChange={this.handleChange} type="text" placeholder="Location"  style={{ width: 350}} value={this.state.locationCity} /></Col>
+              <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+              <FormControl name="locationCity" onChange={this.handleChange} type="text" placeholder="Location"  value={this.state.locationCity} /></Col>
             </FormGroup>
             </Row>
             <Row style={{paddingTop: '10px'}}>
               <FormGroup>
                 <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>State</b></Col>
-                <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                <FormControl name="locationState" onChange={this.handleChange} type="text" placeholder="Location" style={{ width: 350}} value={this.state.locationState} /></Col>
+                <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+                <FormControl name="locationState" onChange={this.handleChange} type="text" placeholder="Location"  value={this.state.locationState} /></Col>
               </FormGroup>
               </Row>
             <Row style={{paddingTop: '10px'}}>
               <FormGroup>
                 <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Management Contact</b></Col>
-                <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                <FormControl name="managementContact" onChange={this.handleChange} type="text" placeholder="Management Contact" style={{ width: 350}} value={this.state.managementContact} /></Col>
+                <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+                <FormControl name="managementContact" onChange={this.handleChange} type="text" placeholder="Management Contact"  value={this.state.managementContact} /></Col>
               </FormGroup>
               </Row>
               <Row style={{paddingTop: '10px'}}>
                 <FormGroup>
                   <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Management Contact Number</b></Col>
-                  <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                  <FormControl name="managementContactNumber" onChange={this.handleChange} type="text" placeholder="Management Number" style={{ width: 350}} value={this.state.managementContactNumber} /></Col>
+                  <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+                  <FormControl name="managementContactNumber" onChange={this.handleChange} type="text" placeholder="Management Number"  value={this.state.managementContactNumber} /></Col>
                 </FormGroup>
                 </Row>
                 <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
                     <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>HOA Contact</b></Col>
-                    <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                    <FormControl name="hoaContact" onChange={this.handleChange} type="text" placeholder="HOA Contact" style={{ width: 350}} value={this.state.hoaContact} /></Col>
+                    <Col offset={1} xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <FormControl name="hoaContact" onChange={this.handleChange} type="text" placeholder="HOA Contact"  value={this.state.hoaContact} /></Col>
                   </FormGroup>
                   </Row>
                   <Row style={{paddingTop: '10px'}}>
                     <FormGroup>
                       <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>HOA Contact Number</b></Col>
-                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                      <FormControl name="hoaContactNumber" onChange={this.handleChange} type="text" placeholder="HOA Number" style={{ width: 350}} value={this.state.hoaContactNumber} /></Col>
+                      <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+                      <FormControl name="hoaContactNumber" onChange={this.handleChange} type="text" placeholder="HOA Number"  value={this.state.hoaContactNumber} /></Col>
+                    </FormGroup>
+                    </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                    <FormGroup>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Latitude</b>   {gpsLink}</Col>
+                      <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+                      <FormControl name="latitude" onChange={this.handleChange} type="number" placeholder="Latitude"  value={this.state.latitude} /></Col>
                     </FormGroup>
                     </Row>
                     <Row style={{paddingTop: '10px'}}>
                       <FormGroup>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Latitude</b>   {gpsLink}</Col>
-                        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                        <FormControl name="latitude" onChange={this.handleChange} type="number" placeholder="Latitude" style={{ width: 350}} value={this.state.latitude} /></Col>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Longitude</b> {gpsLink}
+                      </Col>
+                        <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
+                        <FormControl name="longitude" onChange={this.handleChange} type="number" placeholder="Longitude"  value={this.state.longitude} /></Col>
                       </FormGroup>
-                      </Row>
-                      <Row style={{paddingTop: '10px'}}>
-                        <FormGroup>
-                          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Longitude</b> {gpsLink}
-                        </Col>
-                          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl name="longitude" onChange={this.handleChange} type="number" placeholder="Longitude" style={{ width: 350}} value={this.state.longitude} /></Col>
-                        </FormGroup>
+                    </Row>
+
+
+                    <Row style={{paddingTop: '20px'}}>
+
+                      <Card  style={{textAlign: 'left', height: 350,}} bordered={true} >
+                       <div style={{  height: 300, width: '100%' }}>
+                         <GoogleMapReact
+                           onClick={this._onClick}
+                           bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
+                           center={this.state.center
+                           }
+                           defaultZoom={this.props.zoom}
+                         >
+                           <AnyReactComponent
+                             lat={this.state.latitude}
+                             lng={this.state.longitude}
+                             text={this.state.lakeName}
+                           />
+                         </GoogleMapReact>
+                       </div>
+                      </Card>
 
                         </Row>
 
-
-
-
-
-
-            <Row style={{paddingTop: '10px', textAlign: 'left'}}>
+            <Row style={{paddingTop: '20px', textAlign: 'left'}}>
             <Button type="primary" onClick={this.handleSubmit} bsStyle="primary">Update Profile</Button>
             </Row>
+            <Row style={{paddingTop: '20px', textAlign: 'left'}}>
+            <p><b>{this.state.successfulUpdate}</b></p>
+            </Row>
+
           </form>
 
 
