@@ -9,7 +9,7 @@ import './assetManager/maintenanceReport.css';
 
 
 import { fire } from '../fire';
-
+import moment from 'moment';
 
 import domtoimage from 'dom-to-image';
 import { SketchPicker } from 'react-color';
@@ -18,9 +18,14 @@ import fileDownload from "js-file-download";
 
 import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, Tooltip, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Pagination, Popover, Icon, Cascader, Switch, Select, AutoComplete, Radio } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Pagination, Popover, Icon, Cascader, Calendar, Switch, Select, AutoComplete, Radio, DatePicker } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { CSVLink, CSVDownload } from "react-csv";
+
+
+
+const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+
 
 const TabPane = Tabs.TabPane;
 
@@ -29,6 +34,8 @@ const { Option } = Select;
 function onShowSizeChange(current, pageSize) {
   console.log(current, pageSize);
 }
+
+
 
 
 const styles = StyleSheet.create({
@@ -102,6 +109,7 @@ export default class monthlySamples extends Component {
           currentProject: '',
           key: "1",
           snapArray: [],
+          chartArray: [],
           snapArray1: [],
           arrayData1: [],
           arrayData2: [],
@@ -172,7 +180,8 @@ export default class monthlySamples extends Component {
           hoaContactNumber: '',
 
 
-
+          startDate: '',
+          endDate: '',
 
 
 
@@ -341,7 +350,7 @@ export default class monthlySamples extends Component {
                 ...this.getColumnSearchProps('date'),
                 sorter: (a, b) => { return a.date.localeCompare(b.date)},
                 sortDirections: ['descend', 'ascend'],
-                width: 200,
+
 
                 })
 
@@ -352,7 +361,7 @@ export default class monthlySamples extends Component {
                 ...this.getColumnSearchProps('ID'),
                 sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
                 sortDirections: ['descend', 'ascend'],
-                width: 60,
+
                 })
 
 
@@ -414,15 +423,14 @@ export default class monthlySamples extends Component {
 
 
                 let reverseData1 = data.reverse();
-
-
-
+                console.log(reverseData1);
 
 
 
 
                 this.setState({
-                  snapArray: data.reverse(),
+                  snapArray: data,
+                  chartArray: data.reverse(),
                   threeData: threeData,
                   sixData: sixData,
                   twelveData: twelveData,
@@ -1323,9 +1331,105 @@ this.setState({
 })
 }
 
+ onDateChange = (value, mode) => {
+  console.log(moment(value).format('YYYY[-]MM[-]DD'));
+  let startDate = moment(value).format('YYYY[-]MM[-]DD');
+  this.setState({
+    startDate: startDate
+  })
+
+}
+onDateChange1 = (value, mode) => {
+ console.log(moment(value).format('YYYY[-]MM[-]DD'));
+ let endDate = moment(value).format('YYYY[-]MM[-]DD');
+ this.setState({
+   endDate: endDate
+ })
+}
+
+onChangeDate = (date, dateString) => {
+
+  const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport`);
+  parameterList1Ref.on('value', (snapshot) => {
+    let snapArray = this.snapshotToArray(snapshot);
+    console.log(snapArray)
+    if (snapArray.length == 0) {
+      this.setState({
+        snapArray: [],
+      })
+    }
+    if (snapArray.length > 0) {
+      let data = snapArray;
+    let reverseData1 = data.reverse();
+      this.setState({
+        snapArray: data.reverse(),
+        chartArray: data.reverse(),
+      })
+    }
+     })
+
+  let startDate = dateString[0];
+  let endDate = dateString[1];
+  let dates = this.state.chartArray;
+
+  var dateRange = dates.filter((date)=> { if (date.date >= startDate && date.date <= endDate) {
+    return true
+  }});
+
+  this.setState({
+    startDate: dateString[0],
+    endDate: dateString[1],
+    snapArray: dateRange
+  })
+
+  console.log(dateRange);
+  console.log(startDate);
+  console.log(endDate);
+  console.log(dates);
+}
+
+clearDates = () => {
+
+
+      const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport`);
+      parameterList1Ref.on('value', (snapshot) => {
+        let snapArray = this.snapshotToArray(snapshot);
+        console.log(snapArray)
+        if (snapArray.length == 0) {
+          this.setState({
+            snapArray: [],
+
+          })
+        }
+
+
+
+        if (snapArray.length > 0) {
+          let data = snapArray;
+
+          let reverseData1 = data.reverse();
+
+          this.setState({
+            snapArray: data.reverse(),
+
+            startDate: '',
+            endDate: ''
+
+          })
+
+
+        }
+
+         })
+
+
+
+
+}
+
       render() {
 
-
+        const dateFormat = 'YYYY-MM-DD';
 
 
         let { file } = this.state
@@ -1889,12 +1993,21 @@ const csvData1 = this.state.currentData;
 
 
 
-                          <Row>
-                        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left'}}>
-                          <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
 
+                          <Row>
+                        <Col xs={24} sm={24} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
+                          <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
                         </Col>
-                        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'right'}}>
+
+                        <Col xs={24} sm={24} md={3} lg={3} xl={3} >
+                        <Button onClick={this.clearDates}>Clear Dates</Button>
+                        </Col>
+
+                        <Col xs={24} sm={24} md={7} lg={7} xl={7} >
+                        <RangePicker  allowClear={true} onChange={this.onChangeDate}  />
+                        </Col>
+
+                        <Col xs={24} sm={24} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
                         <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Sample</Button>
                         </Col>
 

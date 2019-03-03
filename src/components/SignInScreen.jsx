@@ -32,6 +32,10 @@ import manuals from './documents/manuals';
 
 import landingPage from './website/landingPage';
 
+import dashForecast from './dashForecast';
+
+import Drop from './Index';
+
 
 import { Link } from 'react-router-dom';
 import { FormGroup, FormControl} from 'react-bootstrap';
@@ -464,11 +468,11 @@ handleOk = (e) => {
 
 
 
-          <Header style={{backgroundColor: '#FFFFFF', background: '#FFFFFF', zIndex: 0}}>
+          <Header style={{backgroundColor: '#FFFFFF', background: '#FFFFFF', zIndex: 0, margin: 0, padding: 0}}>
 
             <Row type="flex" justify="center" align="middle" >
-              <Col span={24} >
-                <Col xs={0} sm={6} md={6} lg={6} xl={6} style={{textAlign: 'left', paddingTop: 10}}>
+
+                <Col xs={0} sm={6} md={6} lg={6} xl={6} style={{textAlign: 'left', paddingTop: 10, paddingLeft: 50}}>
                   <h2>AquaSource</h2>
                 </Col>
 
@@ -491,18 +495,15 @@ handleOk = (e) => {
 
 
 
-
-
-
               </Menu>
             </Col>
 
             <Col xs={24} sm={3} md={3} lg={3} xl={3} stlye={{textAlign: 'right', paddingBottom: 14}}>
-              <Button type='primary'><b>REQUEST A DEMO</b></Button>
+              <Button type='primary'><b>TRY A DEMO</b></Button>
             </Col>
 
 
-            </Col>
+
           </Row>
 
         </Header>
@@ -519,9 +520,17 @@ handleOk = (e) => {
                   closable={false}
                   onClose={this.onClose}
                   visible={this.state.visible}
-                  width={300}
-                >
-                  <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
+                  width={450}
+                ><Row>
+
+                <Col>
+
+
+                </Col>
+                <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
+
+              </Row>
+
                 </Drawer>
 
                 <Route exact path="/" component={landingPage} />
@@ -746,6 +755,9 @@ handleOk = (e) => {
           <Route path="/reports" component={reports} />
           <Route path="/drawings" component={drawings} />
           <Route path="/permits" component={permits} />
+          <Route path="/dashForecast" component={dashForecast} />
+          <Route path="/index" component={Drop} />
+
 
 
 

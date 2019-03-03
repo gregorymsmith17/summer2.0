@@ -13,15 +13,42 @@ import { fire } from '../fire';
 import { ChromePicker } from 'react-color';
 import GoogleMapReact from 'google-map-react';
 
-
+import { SketchPicker } from 'react-color';
 import {BootstrapTable, BootstrapButton, TableHeaderColumn} from 'react-bootstrap-table';
 import { TiArrowSortedDown, TiBrush, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
 
-import { LineChart, LabelList, ResponsiveContainer, BarChart, Bar, Surface, ReferenceLine, ReferenceArea, AreaChart, Brush, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
+import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, Tooltip, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, Card, Drawer, Menu, Icon, Button, Layout, Carousel } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, Select, AutoComplete, Radio } from 'antd';
+import Highlighter from 'react-highlight-words';
+import { CSVLink, CSVDownload } from "react-csv";
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
+import flow from 'lodash/flow';
+import { findDOMNode } from 'react-dom';
+
+import { DragDropContext, DropTarget, DragSource } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
+import update from 'immutability-helper';
+
+import dashForecast from './dashForecast';
+import { WiDaySunny, WiNightFog, WiDayFog, WiDaySprinkle, WiNightAltSprinkle, WiNightSprinkle, WiNightClear, WiNightAltCloudy, WiNightAltCloud, WiDayCloudy, WiNightAltCloudyWindy, WiDayWindy, WiSnow, WiRain, WiThunderstorm, WiTornado, WiSmoke, WiFog, WiSnowWind, WiDayCloudyWindy, WiSleet, WiRainMix, WiDust, WiCloud, WiHot, WiSnowflakeCold, WiRaindrops, WiSprinkle } from 'weather-icons-react';
+
+
+const AnyReactComponent = ({ text }) => <div>{text}<Icon type="environment" style={{color: 'red', paddingLeft: 10, fontSize: '18px'}}/></div>;
+
+
+
+
+const styleCard = {
+	border: '1px dashed gray',
+
+	padding: '0.5rem 1rem',
+	margin: '.5rem',
+	backgroundColor: 'white',
+	cursor: 'move'
+};
+
 
 const TabPane = Tabs.TabPane;
 
@@ -36,15 +63,17 @@ const tabListNoTitle = [{
   tab: 'project',
 }];
 
+
+
 export default class Dashboard extends Component {
 
   static defaultProps = {
-center: {
+  center: {
   lat: 37.987636425563075,
   lng: -121.63235758701154
-},
-zoom: 13
-};
+  },
+  zoom: 13
+  };
 
 
 
@@ -62,39 +91,19 @@ zoom: 13
 
         id: '',
         key: 1,
+        dataTable: [],
 
-        currentCity: '',
+        weatherData: [],
+        tonight: '',
+        currentWeather: [],
         currentTemp: '',
         currentIcon: '',
-        currentDescription: '',
-        currentHumidity: '',
 
         //checkbox status
-        checkboxState: true,
-        checkboxState1: true,
-        checkboxStatenitrogen: true,
-        checkboxStatephosphorus: true,
-        checkboxStatetds: true,
-        checkboxStatepH: true,
-        checkboxStatetss: true,
-        checkboxStatesalinity: true,
-        checkboxStateconductivity: true,
-        checkboxStatehardness: true,
-        checkboxStateturbidity: true,
-        checkboxStatedo: true,
+
 
         //these are for the graphs
-        tempPlot: 'temp',
-        doPlot: 'do',
-        conductivityPlot: 'conductivity',
-        tdsPlot: 'tds',
-        salinityPlot: 'salinity',
-        pHPlot: 'pH',
-        turbidityPlot: 'turbidity',
-        nitrogenPlot: 'nitrogen',
-        phosphorusPlot: 'phosphorus',
-        totalHardnessPlot: 'totalHardness',
-        tssPlot: 'tss',
+
 
         //this is the object array for the table
         samples: [],
@@ -105,31 +114,9 @@ zoom: 13
         blobUrl: null,
 
         //averages
-        nitrogenAverage: [],
-        nitrogenAvg: '',
-        nitrogenLatest: '',
-        nitrogenGraph: [],
-        phosphorusAverage: [],
-        phosphorusAvg: '',
-        phosphorusGraph: [],
-        phoshporusLatest: '',
-        dissolvedOxygenAverage: [],
-        dissolvedOxygenAvg: '',
-        dissolvedOxygenGraph: [],
-        dissolvedOxygenLatest: '',
 
-        turbidityLatest: '',
-        turbidityAverage: [],
-        turbidityAvg: '',
-        turbidityGraph: [],
-        tssLatest: '',
-        tssAverage: [],
-        tssAvg: '',
-        tssGraph: [],
-        salinityLatest: '',
-        salinityAverage: [],
-        salinityAvg: '',
-        salinityGraph: [],
+
+
 
         key: 'tab1',
         noTitleKey: 'app',
@@ -142,688 +129,1618 @@ zoom: 13
         hoaContact: '',
         managementContactNumber: '',
         hoaContactNumber: '',
+        isLoading: true,
+        dataSource: [],
+        latitude: null,
+        longitude: null,
+        error: null,
+        weather: '',
+        center: {
+          lat: '',
+          lng: ''
+        },
+
+        userID: '',
+        key: "1",
+        snapArray: [],
+        snapArray1: [],
+        cardList: [],
+        arrayData1: [],
+        arrayData2: [],
+        arrayKeys1: [],
+        arrayKeys2: [],
+        arrayValues2: [],
+        smallGraphKeys: [],
+
+        Sample_Item: '',
+        sampleDate: '',
+        sampleTitle: '',
+        sampleID: '',
+        sampleMisc: '',
+        dataType: '',
+        color: '#000000',
+
+        item: '',
+        timeFrame: "All",
+        graphData: [],
+        turnedOffKeys: [],
+        latestSample: [],
+
+        currentData: [],
+        colorDisplay: 'none',
+
+        childrenDrawer: false,
+        childrenDrawer1: false,
+
+        overwriteDisplay: 'none',
+        addDisplay: null,
+
+        overwriteReport: 'none',
+        addReport: null,
+
+        inputAdd: null,
+        inputOverwrite: 'none',
+
+
+        tableKeys: [],
+        searchText: '',
+        selectedRowKeys: [], // Check here to configure the default column
+        loading: false,
+
+
+
+        url: null,
+        blob: null,
+        file:null,
+        blobUrl: null,
+
+
+        //for drawers
+        visible: false,
+        visible1: false,
+        visible2: false,
+        visible3: false,
+
+        //Inputs for Profile Page
+
+
+
+
+
 
 
 
       }
+
+      this.handleChange = this.handleChange.bind(this);
+
+
 
     }
 
 
+    //event triggered when text boxes of forms, values are changed
+    handleChange(e) {
+      const name = e.target.name;
+  const value = e.target.value;
+  this.setState({ [name]: value });
+      this.setState({
+        [e.target.name]: e.target.value
+      });
 
 
 
+    }
+    //event triggered when form is submitted
 
-    //async allows await to be used for API calls.  Without ASYNC an error will be called saying that await is a reserved word.
 
-    //ComponentDidMount runs over and over again
+   snapshotToArray(snapshot) {
+      var returnArr = [];
 
+      snapshot.forEach(function(childSnapshot) {
+          var item = childSnapshot.val();
+          item.key = childSnapshot.key;
+
+          returnArr.push(item);
+      });
+
+      return returnArr;
+  };
   async componentDidMount() {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const samplesRef = fire.database().ref(`monthlySamples/${user.uid}`);
-      samplesRef.on('value', (snapshot) => {
-
-
-        let dataList = snapshot.val();
-        let filter = [];
-        let orders = snapshot.val();
-
-        let orders2 = snapshot.val();
-        let orders3 = [snapshot.val()]
-        console.log(orders3);
-
-        let newState = [];
-        let newState2 = [];
-        let newState3 = [];
-
-        let nitrogenAverage = [];
-        let phosphorusAverage = [];
-        let dissolvedOxygenAverage = [];
-        let tssAverage = [];
-        let turbidityAverage = [];
-        let salinityAverage = [];
-
-
-
-
-
-
-
-      for (let order in orders) {
-        newState.push({
-          id: order,
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
-          sampleNotes: orders[order].sampleNotes,
-        });
-        newState2.push({
-          id: order,
-          sampleDate: orders[order].sampleDate,
-          sampleTaker: orders[order].sampleTaker,
-          temp: orders[order].temp,
-          do: orders[order].do,
-          conductivity: orders[order].conductivity,
-          tds: orders[order].tds,
-          salinity: orders[order].salinity,
-          pH: orders[order].pH,
-          turbidity: orders[order].turbidity,
-          nitrogen: orders[order].nitrogen,
-          phosphorus: orders[order].phosphorus,
-          totalHardness: orders[order].totalHardness,
-          tss: orders[order].tss,
-          sampleNotes: orders[order].sampleNotes,
-        });
-
-
-
-
-      }
-
-      newState2.sort(function(a, b) {
-
-        if (a.sampleDate === b.sampleDate) {
-          return 0;
-        }
-        return a.sampleDate > b.sampleDate ? 1 : -1;
-    });
-    newState.sort(function(a, b) {
-
-      if (b.sampleDate === a.sampleDate) {
-        return 0;
-      }
-      return b.sampleDate > a.sampleDate ? 1 : -1;
-  });
-
-
 
       this.setState({
-        orders: newState,
-        orders2: newState2,
-        dataList: newState,
-        color: this.state.color,
-      });
-      console.log(orders2)
+        userID: user.uid,
+      })
 
-      snapshot.forEach(ss => {
-          nitrogenAverage.push({nitrogen: ss.child('nitrogen').val(), date: ss.child('sampleDate').val()} );
-          nitrogenAverage.sort(function(a, b) {
-            if (a.date === b.date) {
-              return 0;
-            }
-            return a.date > b.date ? 1 : -1;
-        });
-          this.setState({
-            nitrogenAverage: (nitrogenAverage),
-          })
-        });
-
-        let nitrogenData = [];
-        for (let i=0; i < nitrogenAverage.length; i++) {
-        //push send this data to the back of the chartData variable above.
-        nitrogenData.push(parseFloat(nitrogenAverage[i].nitrogen));
-
-      }
-
-
-      let nitrogenReverse2 = nitrogenAverage.reverse();
-
-
-      let nitrogenGraph = ([{nitrogen: nitrogenReverse2[2].nitrogen, date: nitrogenReverse2[2].date}, {nitrogen: nitrogenReverse2[1].nitrogen, date: nitrogenReverse2[1].date}, {nitrogen: nitrogenReverse2[0].nitrogen, date: nitrogenReverse2[0].date} ]);
-      console.log(nitrogenGraph)
-
-
-
-
-        let nitrogenReverse = nitrogenData.reverse();
-        let nitrogen = ([nitrogenReverse[0], nitrogenReverse[1], nitrogenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-
-        console.log(nitrogenReverse[0])
+      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      currentProjectRef.on('value', (snapshot) => {
+        let project = snapshot.child('currentProject').val();
+        console.log(project);
         this.setState({
-          nitrogenLatest: nitrogenReverse[0],
-          nitrogenAvg: nitrogen,
-          nitrogenGraph: nitrogenGraph,
+          currentProject: project
         })
-        snapshot.forEach(ss => {
-            phosphorusAverage.push({phosphorus: ss.child('phosphorus').val(), date: ss.child('sampleDate').val()} );
-            phosphorusAverage.sort(function(a, b) {
-              if (a.date === b.date) {
-                return 0;
-              }
-              return a.date > b.date ? 1 : -1;
-          });
-            this.setState({
-              phosphorusAverage: (phosphorusAverage),
-            })
-          });
+
+        const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport`);
+        parameterList1Ref.on('value', (snapshot) => {
+          let snapArray = this.snapshotToArray(snapshot);
+
+          if (snapArray.length == 0) {
+            console.log("do nothing")
+          }
 
 
-          let phosphorusReverse2 = phosphorusAverage.reverse();
-
-          let phosphorusGraph = ([{phosphorus: phosphorusReverse2[2].phosphorus, date: phosphorusReverse2[2].date}, {phosphorus: phosphorusReverse2[1].phosphorus, date: phosphorusReverse2[1].date}, {phosphorus: phosphorusReverse2[0].phosphorus, date: phosphorusReverse2[0].date} ]);
-
+          if (snapArray.length > 0) {
+            let data = snapArray;
 
 
-          let phosphorusData = [];
-          for (let i=0; i < phosphorusAverage.length; i++) {
-          //push send this data to the back of the chartData variable above.
-          phosphorusData.push(parseFloat(phosphorusAverage[i].phosphorus));
-
-        }
-          let phosphorusReverse = phosphorusData;
-          let phosphorus = ([phosphorusReverse[0], phosphorusReverse[1], phosphorusReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(2);
-          console.log(phosphorusReverse)
-          this.setState({
-            phosphorusLatest: phosphorusReverse[0],
-            phosphorusAvg: phosphorus,
-            phosphorusGraph: phosphorusGraph,
-          })
-
-
-
-          snapshot.forEach(ss => {
-              dissolvedOxygenAverage.push({dissolvedOxygen: ss.child('do').val(), date: ss.child('sampleDate').val()} );
-              dissolvedOxygenAverage.sort(function(a, b) {
-                if (a.date === b.date) {
-                  return 0;
-                }
-                return a.date > b.date ? 1 : -1;
-            });
-              this.setState({
-                dissolvedOxygenAverage: (dissolvedOxygenAverage),
-              })
-            });
-
-            let dissolvedOxygenData = [];
-            for (let i=0; i < dissolvedOxygenAverage.length; i++) {
+            let tableData1 = [];
+            for (let i=0; i < snapArray.length; i++) {
             //push send this data to the back of the chartData variable above.
-            dissolvedOxygenData.push(parseFloat(dissolvedOxygenAverage[i].dissolvedOxygen));
+            tableData1.push(Object.keys(snapArray[i]));
+            }
+
+            let tableData2 = tableData1.map(function(a){return a.length;});
+            tableData2.indexOf(Math.max.apply(Math, tableData2));
+
+            let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+
+            let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
+            table1Keys = table1Keys.filter(e => e !== 'ID');
+            table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
+            table1Keys = table1Keys.filter(e => e !== 'date');
+            table1Keys = table1Keys.filter(e => e !== 'Title');
+            table1Keys = table1Keys.filter(e => e !== 'key');
+            table1Keys = table1Keys.filter(e => e !== 'key');
+
+            if (this.state.turnedOffKeys.length == 0) {
+              console.log("do nothing again")
+            }
+
+            if (this.state.turnedOffKeys.lenth > 0) {
+              this.state.turnedOffKeys.map((item) => {
+
+                table1Keys = table1Keys.filter(e => e !== item);
+              })
+            }
+
+            console.log(table1Keys)
+
+            this.setState({
+              smallGraphKeys: table1Keys,
+            })
+
+
+            let tableKeys = table1Keys.map((txt) => {
+              return (
+
+              {
+              title:txt,
+              dataIndex: txt,
+              key: txt,
+              ...this.getColumnSearchProps(txt),
+              sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+              sortDirections: ['descend', 'ascend'],
+
+              width: 200,
+            }
+            )})
+
+            tableKeys.unshift({
+            title: 'Title',
+            dataIndex: 'Title',
+            key: 'Title',
+            ...this.getColumnSearchProps('Title'),
+            sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+            sortDirections: ['descend', 'ascend'],
+            width: 200,
+
+            })
+
+            tableKeys.unshift({
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+            ...this.getColumnSearchProps('date'),
+            sorter: (a, b) => { return a.date.localeCompare(b.date)},
+            sortDirections: ['descend', 'ascend'],
+            sortOrder: 'descend',
+            width: 130,
+            })
+
+            tableKeys.unshift({
+            title: 'ID #',
+            dataIndex: 'ID',
+            key: 'ID',
+            ...this.getColumnSearchProps('ID'),
+            sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
+            sortDirections: ['descend', 'ascend'],
+            width: 80,
+            })
+
+
+            tableKeys.unshift({
+              title: 'Edit',
+              dataIndex: '',
+              key: 'x',
+              fixed: 'left',
+              render: this.editRow.bind(this),
+              width: 60,
+
+            })
+
+            tableKeys.unshift({
+              title: 'Delete',
+              dataIndex: '',
+              fixed: 'left',
+              key: 'y',
+              render: this.deleteRow.bind(this),
+              width: 60,
+
+            })
+            console.log(data);
+            let reverseData = data.reverse();
+            console.log(data);
+            let threeData = [data[2], data[1], data[0]];
+            console.log(data[0]);
+            let latestSample = data[0];
+
+            delete latestSample.ID;
+            delete latestSample.Miscellaneous;
+            delete latestSample.key;
+            delete latestSample.Title;
+            console.log(data[0]);
+
+            this.setState({
+              latestSample: data[0],
+            })
+            console.log(this.state.latestSample)
+
+            console.log(this.state.latestSample.Nitrogen)
+
+
+            let sixData = [
+            data[5],
+            data[4],
+            data[3],
+            data[2],
+            data[1],
+            data[0]];
+            let twelveData = [
+              data[11],
+              data[10],
+              data[9],
+              data[8],
+              data[7],
+              data[6],
+            data[5],
+            data[4],
+            data[3],
+            data[2],
+            data[1],
+            data[0]];
+
+            let reverseData1 = data.reverse();
+
+
+            this.setState({
+              snapArray: data,
+              threeData: threeData,
+              sixData: sixData,
+              twelveData: twelveData,
+              graphData: data,
+              tableKeys: tableKeys,
+            })
+
+
+
+
 
           }
-            let dissolvedOxygenReverse = dissolvedOxygenData.reverse();
 
-            let dissolvedOxygenReverse2 = dissolvedOxygenAverage.reverse();
+           })
 
-            let dissolvedOxygenGraph = ([{do: dissolvedOxygenReverse2[2].dissolvedOxygen, date: dissolvedOxygenReverse2[2].date}, {do: dissolvedOxygenReverse2[1].dissolvedOxygen, date: dissolvedOxygenReverse2[1].date}, {do: dissolvedOxygenReverse2[0].dissolvedOxygen, date: dissolvedOxygenReverse2[0].date} ]);
-            console.log(dissolvedOxygenGraph)
+           const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
+           sampleList2Ref.on('value', (snapshot) => {
+             let maintenanceArray = this.snapshotToArray(snapshot);
+             console.log(maintenanceArray)
 
-
-
-            let dissolvedOxygen = ([dissolvedOxygenReverse[0], dissolvedOxygenReverse[1], dissolvedOxygenReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
-
-            console.log(phosphorusReverse)
-            this.setState({
-              dissolvedOxygenLatest: dissolvedOxygenReverse[0],
-              dissolvedOxygenAvg: dissolvedOxygen,
-              dissolvedOxygenGraph: dissolvedOxygenGraph,
-            })
-
-            snapshot.forEach(ss => {
-                tssAverage.push({tss: ss.child('tss').val(), date: ss.child('sampleDate').val()} );
-                tssAverage.sort(function(a, b) {
-                  if (a.date === b.date) {
-                    return 0;
-                  }
-                  return a.date > b.date ? 1 : -1;
-              });
-                this.setState({
-                  tssAverage: (tssAverage),
-                })
-              });
-
-              let tssData = [];
-              for (let i=0; i < tssAverage.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              tssData.push(parseFloat(tssAverage[i].tss));
-
-            }
-              let tssReverse = tssData.reverse();
-
-              let tssReverse2 = tssAverage.reverse();
-
-              let tssGraph = ([{tss: tssReverse2[2].tss, date: tssReverse2[2].date}, {tss: tssReverse2[1].tss, date: tssReverse2[1].date}, {tss: tssReverse2[0].tss, date: tssReverse2[0].date} ]);
-              console.log(tssGraph)
+             const list = [];
+             const data = this.state.graphData;
+             for (let i=0; i < maintenanceArray.length; i++) {
+             //push send this data to the back of the chartData variable above.
+             list.push({id: i, text: maintenanceArray[i].Sample_Item, color: maintenanceArray[i].color, dataType: maintenanceArray[i].dataType, graph: (
 
 
+                 <Row>
+                   <Row>
+                   <Col xs={4} sm={4} md={4} lg={4} xl={4}>
+                   <Icon type="up-circle"style={{fontSize: '32px',color: maintenanceArray[i].color}} />
+                   </Col>
+                   <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+                   <b style={{fontSize: '24px'}}>{maintenanceArray[i].Sample_Item}</b>
+                   </Col>
+                   </Row>
+                   <Row>
 
-              let tss = ([tssReverse[0], tssReverse[1], tssReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
+                     <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+                     <b style={{fontSize: '17px'}}>{maintenanceArray[i].units}</b>
+                     </Col>
+                     </Row>
+                   <Row>
 
-              console.log(phosphorusReverse)
-              this.setState({
-                tssLatest: tssReverse[0],
-                tssAvg: tss,
-                tssGraph: tssGraph,
-              })
-              snapshot.forEach(ss => {
-                  turbidityAverage.push({turbidity: ss.child('turbidity').val(), date: ss.child('sampleDate').val()} );
-                  turbidityAverage.sort(function(a, b) {
-                    if (a.date === b.date) {
-                      return 0;
-                    }
-                    return a.date > b.date ? 1 : -1;
-                });
-                  this.setState({
-                    turbidityAverage: (turbidityAverage),
-                  })
-                });
 
-                let turbidityData = [];
-                for (let i=0; i < turbidityAverage.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                turbidityData.push(parseFloat(turbidityAverage[i].turbidity));
+      <ResponsiveContainer width="100%" aspect={6/3.0} minHeight={90}>
 
-              }
-                let turbidityReverse = turbidityData.reverse();
+      <ComposedChart data={data}
+syncId="anyId">
 
-                let turbidityReverse2 = turbidityAverage.reverse();
+<XAxis tick={{fontSize: 10}} dataKey="date"></XAxis>
 
-                let turbidityGraph = ([{do: turbidityReverse2[2].turbidity, date: turbidityReverse2[2].date}, {do: turbidityReverse2[1].turbidity, date: turbidityReverse2[1].date}, {do: turbidityReverse2[0].turbidity, date: turbidityReverse2[0].date} ]);
-                console.log(turbidityGraph)
+<YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+<Tooltip />
+
+      <Line type="monotone" dataKey={maintenanceArray[i].Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={maintenanceArray[i].color} fill={"url(#" + maintenanceArray[i].Sample_Item + ")"}><LabelList dataKey={maintenanceArray[i].Sample_Item} position="top" /></Line>
+
+</ComposedChart>
+</ResponsiveContainer>
+
+</Row>
+</Row>
 
 
 
-                let turbidity = ([turbidityReverse[0], turbidityReverse[1], turbidityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
+    )});
 
-                console.log(phosphorusReverse)
-                this.setState({
-                  turbidityLatest: turbidityReverse[0],
-                  turbidityAvg: turbidity,
-                  turbidityGraph: turbidityGraph,
-                })
+             }
 
-                snapshot.forEach(ss => {
-                    salinityAverage.push({salinity: ss.child('salinity').val(), date: ss.child('sampleDate').val()} );
-                    salinityAverage.sort(function(a, b) {
-                      if (a.date === b.date) {
-                        return 0;
-                      }
-                      return a.date > b.date ? 1 : -1;
-                  });
-                    this.setState({
-                      salinityAverage: (salinityAverage),
-                    })
-                  });
+             this.setState({
+               snapArray1: maintenanceArray,
+               cardList: list,
+             })
 
-                  let salinityData = [];
-                  for (let i=0; i < salinityAverage.length; i++) {
-                  //push send this data to the back of the chartData variable above.
-                  salinityData.push(parseFloat(salinityAverage[i].salinity));
+             console.log(this.state.cardList)
 
-                }
-                  let salinityReverse = salinityData.reverse();
-
-                  let salinityReverse2 = salinityAverage.reverse();
-
-                  let salinityGraph = ([{do: salinityReverse2[2].salinity, date: salinityReverse2[2].date}, {do: salinityReverse2[1].salinity, date: salinityReverse2[1].date}, {do: salinityReverse2[0].salinity, date: salinityReverse2[0].date} ]);
-                  console.log(salinityGraph)
+           })
 
 
-
-                  let salinity = ([salinityReverse[0], salinityReverse[1], salinityReverse[2]].reduce((a, b) => a + b, 0)/ 3).toFixed(1);
-
-                  console.log(salinityReverse)
-                  this.setState({
-                    salinityLatest: salinityReverse[0],
-                    salinityAvg: salinity,
-                    salinityGraph: salinityGraph,
-                  })
+           const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+           profileRef.on('value', (snapshot) => {
+             var that = this;
 
 
-    });
-    const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
-    profileRef.on('value', (snapshot) => {
+           this.setState({
+             lakeName: snapshot.child('lakeName').val(),
+             locationCity: snapshot.child('locationCity').val(),
+             locationState: snapshot.child('locationState').val(),
+             managementContact: snapshot.child('managementContact').val(),
+             hoaContact: snapshot.child('hoaContact').val(),
+             managementContactNumber: snapshot.child('managementContactNumber').val(),
+             hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+             latitude: snapshot.child('latitude').val(),
+             longitude: snapshot.child('longitude').val(),
+             center: {
+               lat: parseFloat(snapshot.child('latitude').val()),
+               lng: parseFloat(snapshot.child('longitude').val())
+             },
+
+           });
 
 
-    this.setState({
-      lakeName: snapshot.child('lakeName').val(),
-      locationCity: snapshot.child('locationCity').val(),
-      locationState: snapshot.child('locationState').val(),
-      managementContact: snapshot.child('managementContact').val(),
-      hoaContact: snapshot.child('hoaContact').val(),
-      managementContactNumber: snapshot.child('managementContactNumber').val(),
-      hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+           console.log(this.state.latitude);
+           console.log(this.state.longitude);
+                     var myLat = `${this.state.latitude}`;
+                       var myLon = `${this.state.longitude}`;
+                    let API_WEATHER = `https://api.weather.gov/points/${myLat},${myLon}/forecast`;
 
-    });
+
+                    fetch(API_WEATHER)
+                 .then(response => response.json())
+                 .then(responseJson => {
+                   console.log(responseJson);
+                   console.log(responseJson.properties.periods);
+                   console.log([responseJson.properties.periods[0]]);
+                   this.setState({
+                     weatherData: [
+                       responseJson.properties.periods[1],
+                       responseJson.properties.periods[2],
+                       responseJson.properties.periods[3],
+                       responseJson.properties.periods[4],
+                       responseJson.properties.periods[5],
+                       responseJson.properties.periods[6],
+                       responseJson.properties.periods[7],
+                       responseJson.properties.periods[8],
+                       responseJson.properties.periods[9],
+                       responseJson.properties.periods[10],
+                       responseJson.properties.periods[11],
+                       responseJson.properties.periods[12],
+                       responseJson.properties.periods[13],
+                     ],
+                     currentWeather: [responseJson.properties.periods[0]],
+
+                   })
+
+
+                 })
+                 .catch(error => {
+                   console.log(error);
+                 });
+
+
+         });
+
+
+      })
 
 
   });
 
-    const colorsRef = fire.database().ref(`colors/${user.uid}`);
-
-    colorsRef.on('value', (snapshot) => {
-      let colorList = snapshot.val();
-      console.log(colorList);
-      this.setState({
-        tempColor: snapshot.child('tempColor').val(),
-
-      });
-
-
-    });
-
-  });
-    let weatherData = [];
-    let city = '';
-    let temp = '';
-    let icon = '';
-    let description = '';
-    let humidity = '';
-
-    let api_callWeather =  await fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${'37.997'}&lon=${'-121.71'}&units=${'imperial'}&appid=${'30573b68170d7f4400c7ac9c1c671ccf'}`);
-
-
-    let weatherResponse = await api_callWeather.json();
-
-    let symbol = weatherResponse.weather[0].icon;
-
-
-    console.log(weatherResponse)
-
-    this.setState({
-      currentCity: weatherResponse.name,
-      currentTemp: weatherResponse.main.temp,
-      currentIcon: 'http://openweathermap.org/img/w/' + weatherResponse.weather[0].icon + '.png',
-
-      currentDescription: weatherResponse.weather[0].main,
-      currentHumidity: weatherResponse.main.humidity,
-
-    })
 
 
 
 
 
-
-
-
-
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-      const samplesRef = fire.database().ref(`dailySamples/${user.uid}`);
-      samplesRef.on('value', (snapshot) => {
-
-
-    });
-  });
   }
 
 
 
-   imageFormatter = (cell, row) => {
-      return (
-<span><img src={cell} /></span>
-)
+
+
+
+  onSelectChange = (selectedRowKeys) => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  }
+
+  getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({
+        setSelectedKeys, selectedKeys, confirm, clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            ref={node => { this.searchInput = node; }}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => this.handleSearch(selectedKeys, confirm)}
+            style={{ width: 188, marginBottom: 8, display: 'block' }}
+          />
+          <Button
+            type="primary"
+            onClick={() => this.handleSearch(selectedKeys, confirm)}
+            icon="search"
+            size="small"
+            style={{ width: 90, marginRight: 8 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => this.handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+        </div>
+      ),
+      filterIcon: filtered => <Icon type="search" style={{ color: filtered ? '#1890ff' : undefined }} />,
+      onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => this.searchInput.select());
+        }
+      },
+
+    })
+
+    handleSearch = (selectedKeys, confirm) => {
+      confirm();
+      this.setState({ searchText: selectedKeys[0] });
+      console.log(selectedKeys[0]);
+      console.log(this.state.searchText);
     }
 
-    toggleNitrogen(event) {
+    handleReset = (clearFilters) => {
+      clearFilters();
+      this.setState({ searchText: '' });
+    }
+
+
+
+
+    deleteRow = (row, isSelected, e, id, key) =>
+    {
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.removesample(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+    removesample(itemId) {
+
+     const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
+     sampleRef.remove();
+    }
+
+
+
+    removesample1(itemId) {
+
+    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+    sampleRef.remove();
+    }
+
+    removesample2(itemId) {
+
+    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
+    sampleRef.remove();
+    this.fillStates(this.state.id);
+
+
+    }
+
+    editRow = (row, isSelected, e, id, key) =>
+    {
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillStates(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
+    editRow1 = (row, isSelected, e, id, key) =>
+    {
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="form" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillParameterStates(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
+    fillParameterStates(itemId) {
+
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
         this.setState({
-          checkboxState: !this.state.checkboxState
+          visible3: true,
+
+        })
+
+        const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`);
+        let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+
+        this.setState({
+          Sample_Item: snapshot.child('Sample_Item').val(),
+          dataType: snapshot.child('dataType').val(),
+          color: snapshot.child('color').val(),
+
+          id: id,
         });
-        const checkboxState = this.state.checkboxState;
-        if (checkboxState) {
-          this.setState({
-            nitrogenPlot: '',
-          })
-        } else {
-          this.setState({
-            nitrogenPlot: 'nitrogen',
-          })
-        }
-      }
-      togglePhosphorus(event) {
-          this.setState({
-            checkboxStatephosphorus: !this.state.checkboxStatephosphorus
+
+    });
+
+    });
+    }
+
+    parameterOverwrite = (e) => {
+      e.preventDefault();
+      //fire.database().ref('samples') refers to the main title of the fire database.
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+      const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList/${this.state.id}`);
+
+
+    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
+        console.log(object);
+        sampleListRef.set(object);
+
+      //this.setState is used to clear the text boxes after the form has been submitted.
+
+
+    });
+    }
+
+
+
+
+
+
+
+    changeData(itemId) {
+      const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+      let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+        this.setState({
+          Sample_Item: snapshot.child('Sample_Item').val(),
+          Sample_Input: '',
+          dataType: snapshot.child('dataType').val(),
+          color: snapshot.child('color').val(),
+          units: snapshot.child('units').val(),
+          id: id,
+      });
+  });
+
+
+    }
+
+    editRowColor = (row, isSelected, e, id, key) =>
+    {
+
+      const content = (
+    <div>
+      <SketchPicker
+    color={ this.state.color }
+    onChangeComplete={ this.overwriteColor }
+      />
+    </div>
+    );
+
+      return (
+        <div style={{textAlign: 'left'}}>
+          <Popover content={content} title="Title" trigger="click">
+            <Icon type="bg-colors" style={{fontSize: '24px', color: '#101441'}}
+            onClick={() => this.changeColor(isSelected.key)}>
+              Click me
+            </Icon>
+      </Popover>
+        </div>
+      )
+    }
+
+    changeColor(itemId) {
+
+
+      const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+      let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+
+        this.setState({
+          Sample_Item: snapshot.child('Sample_Item').val(),
+          Sample_Input: '',
+          dataType: snapshot.child('dataType').val(),
+          color: snapshot.child('color').val(),
+          id: id,
+        });
+
+    });
+
+    }
+
+    overwriteColor = (color) => {
+
+      const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+
+       this.setState({ color: color.hex });
+
+      var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
+
+      sampleListRef.set(object);
+
+
+     };
+
+
+
+
+
+
+    handleSampleChange = idx => evt => {
+      const newParameters = this.state.snapArray1.map((parameter, sidx) => {
+        if (idx !== sidx) return parameter;
+        return { ...parameter, Sample_Input: evt.target.value };
+      });
+      this.setState({ snapArray1: newParameters });
+
+
+
+      };
+
+      handleSampleChange1 = idx => evt => {
+        const newParameters = this.state.arrayData2.map((parameter, sidx) => {
+          if (idx !== sidx) return parameter;
+          return { ...parameter, Sample_Input: evt.target.value };
+        });
+        this.setState({ arrayData2: newParameters });
+
+
+
+        };
+
+
+      handleSubmit = (e) => {
+          e.preventDefault();
+          this.props.form.validateFieldsAndScroll((err, values) => {
+            if (!err) {
+              console.log('Received values of form: ', values);
+            }
           });
-          const checkboxState = this.state.checkboxStatephosphorus;
-          if (checkboxState) {
-            this.setState({
-              phosphorusPlot: '',
-            })
-          } else {
-            this.setState({
-              phosphorusPlot: 'phosphorus',
-            })
-          }
         }
-        toggleTemp(event) {
+
+
+
+        fillStates(itemId) {
+
+          this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
             this.setState({
-              checkboxStatenitrogen: !this.state.checkboxStatenitrogen
+              overwriteReport: null,
+              addReport: 'none',
+              inputOverwrite: null,
+              inputAdd: 'none',
+              visible: true,
+
+            })
+
+          const sample1Ref = fire.database().ref(`/sampleReport/${user.uid}/${itemId}`);
+          let id = fire.database().ref().child(`/sampleReport/${user.uid}/${itemId}`).key;
+          sample1Ref.on('value', (snapshot) => {
+
+            let maintenanceList = snapshot.val();
+
+
+
+
+            this.setState({
+              sampleDate: snapshot.child('date').val(),
+              sampleID: snapshot.child('ID').val(),
+              sampleTitle: snapshot.child('Title').val(),
+              sampleMisc: snapshot.child('Miscellaneous').val(),
+              id: id,
             });
-            const checkboxState = this.state.checkboxStatenitrogen;
-            if (checkboxState) {
-              this.setState({
-                tempPlot: '',
-              })
-            } else {
-              this.setState({
-                tempPlot: 'temp',
-              })
-            }
-          }
-          toggleTDS(event) {
-              this.setState({
-                checkboxStatetds: !this.state.checkboxStatetds
-              });
-              const checkboxState = this.state.checkboxStatetds;
-              if (checkboxState) {
-                this.setState({
-                  tdsPlot: '',
-                })
-              } else {
-                this.setState({
-                  tdsPlot: 'tds',
-                })
-              }
-            }
-            togglepH(event) {
-                this.setState({
-                  checkboxStatepH: !this.state.checkboxStatepH
-                });
-                const checkboxState = this.state.checkboxStatepH;
-                if (checkboxState) {
-                  this.setState({
-                    pHPlot: '',
-                  })
-                } else {
-                  this.setState({
-                    pHPlot: 'pH',
-                  })
-                }
-              }
-              toggletss(event) {
-                  this.setState({
-                    checkboxStatetss: !this.state.checkboxStatetss
-                  });
-                  const checkboxState = this.state.checkboxStatetss;
-                  if (checkboxState) {
-                    this.setState({
-                      tssPlot: '',
-                    })
-                  } else {
-                    this.setState({
-                      tssPlot: 'tss',
-                    })
-                  }
-                }
-                togglesalinity(event) {
-                    this.setState({
-                      checkboxStatesalinity: !this.state.checkboxStatesalinity
-                    });
-                    const checkboxState = this.state.checkboxStatesalinity;
-                    if (checkboxState) {
-                      this.setState({
-                        salinityPlot: '',
-                      })
-                    } else {
-                      this.setState({
-                        salinityPlot: 'salinity',
-                      })
-                    }
-                  }
-                  toggleHardness(event) {
-                      this.setState({
-                        checkboxStatehardness: !this.state.checkboxStatehardness
-                      });
-                      const checkboxState = this.state.checkboxStatehardness;
-                      if (checkboxState) {
-                        this.setState({
-                          totalHardnessPlot: '',
-                        })
-                      } else {
-                        this.setState({
-                          totalHardnessPlot: 'totalHardness',
-                        })
-                      }
-                    }
-                    toggleTurbidity(event) {
-                        this.setState({
-                          checkboxStateturbidity: !this.state.checkboxStateturbidity
-                        });
-                        const checkboxState = this.state.checkboxStateturbidity;
-                        if (checkboxState) {
-                          this.setState({
-                            turbidityPlot: '',
-                          })
-                        } else {
-                          this.setState({
-                            turbidityPlot: 'turbidity',
-                          })
-                        }
-                      }
-                      toggleDO(event) {
-                          this.setState({
-                            checkboxStatedo: !this.state.checkboxStatedo
-                          });
-                          const checkboxState = this.state.checkboxStatedo;
-                          if (checkboxState) {
-                            this.setState({
-                              doPlot: '',
-                            })
-                          } else {
-                            this.setState({
-                              doPlot: 'do',
-                            })
-                          }
-                        }
 
-                      handleClick = () => {
-                        this.setState({ displayColorPicker: !this.state.displayColorPicker })
-                      };
+            let arr = snapshot.val();
+            delete arr.date;
+            delete arr.ID;
+            delete arr.Title;
+            delete arr.Miscellaneous;
 
-                      handleClose = () => {
-                        this.setState({ displayColorPicker: false })
-                      };
+            let arrayKeys = Object.keys(arr);
+            let arrayValues = Object.values(arr);
+            this.setState({
+              arrayKeys1: arrayKeys,
+              arrayValues1: arrayValues,
 
-                      tempColorChange = (color) => {
+            })
 
-                          console.log(this.state.color);
-                          this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-                          const samplesRef = fire.database().ref(`colors/${user.uid}`);
-                          const orderID = fire.database().ref(`/colors/${user.uid}/${orderID}`);
-                          const sample = {
-                            tempColor: color.hex
-                          }
-                          samplesRef.set(sample);
-                          this.setState({
-                            tempColor: color.hex,
-                           });
-                          });
-                      }
+    });
 
-                      onSubmit(event) {
-                        event.preventDefault();
-                      }
+    const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
+    sample2Ref.on('value', (snapshot) => {
+    let maintenanceList = this.snapshotToArray(snapshot);
 
-                      onTabChange = (key, type) => {
-     console.log(key, type);
-     this.setState({ [type]: key });
+
+    let keys = [maintenanceList.map((parameter) => {
+    return (
+    parameter.key
+    )
+    })]
+
+    this.setState({
+    arrayData1: keys,
+    })
+    })
+
+    let arrayData = [];
+    for (let i=0; i < this.state.arrayKeys1.length; i++) {
+    //push send this data to the back of the chartData variable above.
+    arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
+
+    }
+
+    this.setState({
+    snapArray1: arrayData,
+    arrayData2: arrayData,
+    })
+
+        });
+      }
+
+
+
+
+
+
+
+
+
+
+      onChange = (pagination, filters, sorter, extra: { currentDataSource: [] }) => {
+        const data = extra.currentDataSource;
+     console.log(extra.currentDataSource);
+     this.setState({
+       currentData: extra.currentDataSource,
+     })
+    }
+
+    handleChangeComplete = (color) => {
+      this.setState({ color: color.hex, colorDisplay: 'none' });
+    };
+
+    showChildrenDrawer = () => {
+      this.setState({
+        childrenDrawer: true,
+      });
+    };
+
+    onChildrenDrawerClose = () => {
+      this.setState({
+        childrenDrawer: false,
+      });
+    };
+
+    displayColor = () => {
+      this.setState({
+        colorDisplay: null,
+      })
+    }
+
+    handleSizeChange = (e) => {
+
+    const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+    this.setState({ dataType: e.target.value });
+
+    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: e.target.value, Sample_Input: '', id: this.state.id};
+
+    sampleListRef.set(object);
+
+  }
+
+  handleSizeChange1 = (e) => {
+
+  this.setState({ dataType: e.target.value,
+  overwrite: null, });
+
+  const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+  this.setState({ dataType: e.target.value });
+
+  var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: e.target.value, Sample_Input: '', id: this.state.id};
+
+  sampleListRef.set(object);
+
+
+
+  }
+
+    handleTimeFrameChange = (e) => {
+    this.setState({ timeFrame: e.target.value });
+    console.log(this.state.timeFrame)
+    if (this.state.timeframe == 'three') {
+    console.log("it's 3!!")
+    this.setState({
+      graphData: this.state.threeData,
+    })
+    }
+
+
+    }
+
+
+
+    threeMonths = () => {
+    this.setState({
+    graphData: this.state.threeData,
+    })
+    console.log(this.state.graphData)
+    }
+    sixMonths = () => {
+    this.setState({
+    graphData: this.state.sixData,
+    })
+    }
+    twelveMonths = () => {
+    this.setState({
+    graphData: this.state.twelveData,
+    })
+    }
+    allMonths = () => {
+    this.setState({
+    graphData: this.state.snapArray,
+    })
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+   getLocation(){
+
+       // Get the current position of the user
+       navigator.geolocation.getCurrentPosition(
+       (position) => {
+           this.setState(
+           (prevState) => ({
+               latitude: 30,
+               longitude: 20
+               }), () => { this.getWeather(); }
+           );
+       },
+           (error) => this.setState({ weather: error.message }),
+           { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+       );
    }
+
+   onClose = () => {
+     this.setState({
+       visible: false,
+       visible1: false,
+       visible2: false,
+       visible3: false,
+
+     });
+   };
+
+   visible3 = () => {
+     const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList`);
+     sampleList2Ref.on('value', (snapshot) => {
+       let maintenanceArray = this.snapshotToArray(snapshot);
+
+       this.setState({
+
+         snapArray1: maintenanceArray,
+
+
+       visible3: true,
+     })
+   })
+
+
+   }
+   visible3Off = () => {
+     this.setState({
+       visible3: false,
+     })
+   }
+
+   test = () => {
+
+     const listOne = [
+       { id: 1, text: "Item 1" },
+       { id: 2, text: "Item 2" },
+       { id: 3, text: "Item 3" },
+       { id: 4, text: "Item 4" },
+       { id: 5, text: "Item 5" },
+     ];
+
+     console.log("test");
+
+
+
+
+
+
+
+   }
+
+
+
+
+
 
   render() {
 
-    const doCheckbox = (
-      <span>
-        <input
-        type="checkbox"
-        defaultChecked='true'
-        onClick={this.toggleDO.bind(this)}
-        />
-      <label>DO</label>
-      </span>
+    const columns = this.state.tableKeys;
+
+    const data = this.state.snapArray;
+    const dataReverse = this.state.graphData;
+    const data1 = this.state.snapArray1;
+    const csvData = this.state.snapArray;
+    const csvData1 = this.state.currentData;
+    const latestSample = this.state.latestSample;
+
+    const cardList = this.state.cardList;
+
+
+
+    class Card1 extends Component {
+
+    	render() {
+    		const { card, isDragging, connectDragSource, connectDropTarget } = this.props;
+    		const opacity = isDragging ? 0 : 1;
+
+    		return connectDragSource(connectDropTarget(
+    			<div style={{ ...styleCard, opacity }}>
+
+    				<Card >
+    				{card.graph}
+    				</Card>
+    			</div>
+    		));
+    	}
+    }
+
+    const cardSource = {
+
+    	beginDrag(props) {
+    		return {
+    			index: props.index,
+    			listId: props.listId,
+    			card: props.card
+    		};
+    	},
+
+    	endDrag(props, monitor) {
+    		const item = monitor.getItem();
+    		const dropResult = monitor.getDropResult();
+
+    		if ( dropResult && dropResult.listId !== item.listId ) {
+    			props.removeCard(item.index);
+    		}
+    	}
+    };
+
+    const cardTarget = {
+
+    	hover(props, monitor, component) {
+    		const dragIndex = monitor.getItem().index;
+    		const hoverIndex = props.index;
+    		const sourceListId = monitor.getItem().listId;
+
+    		// Don't replace items with themselves
+    		if (dragIndex === hoverIndex) {
+    			return;
+    		}
+
+    		// Determine rectangle on screen
+    		const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
+
+    		// Get vertical middle
+    		const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+    		// Determine mouse position
+    		const clientOffset = monitor.getClientOffset();
+
+    		// Get pixels to the top
+    		const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+    		// Only perform the move when the mouse has crossed half of the items height
+    		// When dragging downwards, only move when the cursor is below 50%
+    		// When dragging upwards, only move when the cursor is above 50%
+
+    		// Dragging downwards
+    		if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+    			return;
+    		}
+
+    		// Dragging upwards
+    		if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+    			return;
+    		}
+
+    		// Time to actually perform the action
+    		if ( props.listId === sourceListId ) {
+    			props.moveCard(dragIndex, hoverIndex);
+
+    			// Note: we're mutating the monitor item here!
+    			// Generally it's better to avoid mutations,
+    			// but it's good here for the sake of performance
+    			// to avoid expensive index searches.
+    			monitor.getItem().index = hoverIndex;
+    		}
+    	}
+    };
+
+    const CardGraph = flow(
+    	DropTarget("CARD", cardTarget, connect => ({
+    		connectDropTarget: connect.dropTarget()
+    	})),
+    	DragSource("CARD", cardSource, (connect, monitor) => ({
+    		connectDragSource: connect.dragSource(),
+    		isDragging: monitor.isDragging()
+    	}))
+    )(Card1);
+
+
+    class Container extends Component {
+
+    	constructor(props) {
+    		super(props);
+    		this.state = { cards: props.list };
+    	}
+
+    	pushCard(card) {
+    		this.setState(update(this.state, {
+    			cards: {
+    				$push: [ card ]
+    			}
+    		}));
+    	}
+
+    	removeCard(index) {
+    		this.setState(update(this.state, {
+    			cards: {
+    				$splice: [
+    					[index, 1]
+    				]
+    			}
+    		}));
+    	}
+
+    	moveCard(dragIndex, hoverIndex) {
+    		const { cards } = this.state;
+    		const dragCard = cards[dragIndex];
+
+    		this.setState(update(this.state, {
+    			cards: {
+    				$splice: [
+    					[dragIndex, 1],
+    					[hoverIndex, 0, dragCard]
+    				]
+    			}
+    		}));
+    	}
+
+    	render() {
+    		const { cards } = this.state;
+    		const { canDrop, isOver, connectDropTarget } = this.props;
+    		const isActive = canDrop && isOver;
+    		const style = {
+
+
+    			border: '1px dashed gray'
+    		};
+
+    		const backgroundColor = isActive ? 'lightgreen' : '#FFF';
+
+    		return connectDropTarget(
+    			<div style={{...style, backgroundColor}}>
+    				<Row>
+    				{cards.map((card, i) => {
+    					return (
+                <Col span={8}>
+    						<CardGraph
+    							key={card.id}
+    							index={i}
+    							listId={this.props.id}
+    							card={card}
+    							removeCard={this.removeCard.bind(this)}
+    							moveCard={this.moveCard.bind(this)} />
+    						</Col>
+    					);
+    				})}
+    				</Row>
+    			</div>
+    		);
+      }
+    }
+
+    const cardTarget1 = {
+    	drop(props, monitor, component ) {
+    		const { id } = props;
+    		const sourceObj = monitor.getItem();
+    		if ( id !== sourceObj.listId ) component.pushCard(sourceObj.card);
+    		return {
+    			listId: id
+    		};
+    	}
+    }
+
+    const ContainerGraph =  DropTarget("CARD", cardTarget1, (connect, monitor) => ({
+    	connectDropTarget: connect.dropTarget(),
+    	isOver: monitor.isOver(),
+    	canDrop: monitor.canDrop()
+    }))(Container);
+
+
+    let dragingIndex = -1;
+
+    class BodyRow extends React.Component {
+      render() {
+        const {
+          isOver,
+          connectDragSource,
+          connectDropTarget,
+          moveRow,
+          ...restProps
+        } = this.props;
+        const style = { ...restProps.style, cursor: 'move' };
+
+        let className = restProps.className;
+        if (isOver) {
+          if (restProps.index > dragingIndex) {
+            className += ' drop-over-downward';
+          }
+          if (restProps.index < dragingIndex) {
+            className += ' drop-over-upward';
+          }
+        }
+
+        return connectDragSource(
+          connectDropTarget(
+            <tr
+              {...restProps}
+              className={className}
+              style={style}
+            />
+          )
+        );
+      }
+    }
+
+    const rowSource = {
+      beginDrag(props) {
+        dragingIndex = props.index;
+        return {
+          index: props.index,
+        };
+      },
+    };
+
+    const rowTarget = {
+      drop(props, monitor) {
+        const dragIndex = monitor.getItem().index;
+        const hoverIndex = props.index;
+
+        // Don't replace items with themselves
+        if (dragIndex === hoverIndex) {
+          return;
+        }
+
+        // Time to actually perform the action
+        props.moveRow(dragIndex, hoverIndex);
+
+        // Note: we're mutating the monitor item here!
+        // Generally it's better to avoid mutations,
+        // but it's good here for the sake of performance
+        // to avoid expensive index searches.
+        monitor.getItem().index = hoverIndex;
+      },
+    };
+
+    const DragableBodyRow = DropTarget(
+      'row',
+      rowTarget,
+      (connect, monitor) => ({
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver(),
+      }),
+    )(
+      DragSource(
+        'row',
+        rowSource,
+        (connect) => ({
+          connectDragSource: connect.dragSource(),
+        }),
+      )(BodyRow),
     );
 
-    const nitrogenCheckbox = (
-      <span>
-        <input
-          inline
-        type="checkbox"
-        defaultChecked='true'
-        onClick={this.toggleNitrogen.bind(this)}
-        />
-      <label>Nitrogen</label>
-      </span>
-    );
-    const phosphorusCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.togglePhosphorus.bind(this)}/>
-      <label>Phosphorus</label>
-      </span>
-    );
-    const tempCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTemp.bind(this)}/>
-      <label>Temperature</label>
-      </span>
-    );
-    const tdsCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTDS.bind(this)}/>
-      <label>TDS</label>
-      </span>
-    );
-    const pHCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.togglepH.bind(this)}/>
-      <label>pH</label>
-      </span>
-    );
-    const tssCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggletss.bind(this)}/>
-      <label>TSS</label>
-      </span>
-    );
-    const salinityCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.togglesalinity.bind(this)}/>
-      <label>Salinity</label>
-      </span>
-    );
-    const hardnessCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleHardness.bind(this)}/>
-      <label>Total Hardness</label>
-      </span>
-    );
-    const turbidityCheckbox = (
-      <span><input type="checkbox" defaultChecked='true' onClick={this.toggleTurbidity.bind(this)}/>
-      <label>Turbidity</label>
-      </span>
-    );
-    const popover = {
-       position: 'absolute',
-       zIndex: '2',
+    const columns2 = [{
+   title: 'Title',
+   dataIndex: 'Sample_Item',
+   key: 'Sample_Item',
+   width: 180,
+   }];
+
+   class Cards extends React.Component {
+
+     state = {
+       cardList: cardList,
+
      }
-     const cover = {
-       position: 'fixed',
-       top: '0px',
-       right: '0px',
-       bottom: '0px',
-       left: '0px',
-     }
+
+    render() {
+
+      const style = {
+
+        paddingTop: "20px"
+      }
+
+
+
+
+
+      const listOne = cardList;
+
+
+
+
+
+
+      return (
+        <div style={{...style}}>
+         <Row>
+          <ContainerGraph id={1} list={listOne} />
+          </Row>
+        </div>
+      );
+    }
+   }
+   const Drop = DragDropContext(HTML5Backend)(Cards);
+
+    class DragSortingTable extends React.Component {
+      state = {
+        dataTable: data1,
+        dataType1: '',
+        graphType: Line
+      }
+
+      components = {
+        body: {
+          row: DragableBodyRow,
+        },
+      }
+
+      moveRow = (dragIndex, hoverIndex) => {
+        const { dataTable } = this.state;
+        const dragRow = dataTable[dragIndex];
+
+        this.setState(
+          update(this.state, {
+            dataTable: {
+              $splice: [[dragIndex, 1], [hoverIndex, 0, dragRow]],
+            },
+          }),
+          console.log(this.state.dataTable
+    )
+        );
+      }
+      handleSizeChange2 = (e) => {
+
+      if ( e.target.value == 'Line') {
+        this.setState({
+          graphType: Line
+        })
+      }
+      if ( e.target.value == 'Bar') {
+        this.setState({
+          graphType: Bar
+        })
+      }
+      if ( e.target.value == 'Area') {
+        this.setState({
+          graphType: Area
+        })
+      }
+
+
+      }
+
+
+
+      render() {
+
+
+        const table = (<Table
+          columns={columns2}
+          pagination={false}
+          dataSource={this.state.dataTable}
+          components={this.components}
+          onRow={(record, index) => ({
+            index,
+            moveRow: this.moveRow,
+          })}
+        />)
+
+        const CustomTag = this.state.graphType;
+
+        return (
+          <div>
+            <Row  type="flex" justify="center">
+              <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+              <p style={{paddingTop: '25px', paddingLeft: '20px', fontSize: '24px'}}>Water Quality</p>
+              </Col>
+              <Col xs={12} sm={12} md={12} lg={12} xl={12} style={{textAlign: 'right'}}>
+              <Radio.Group style={{paddingTop: '25px'}}size="default" value={this.state.dataType1} onChange={this.handleSizeChange2}>
+          <Radio.Button value="Bar">Bar</Radio.Button>
+          <Radio.Button value="Line">Line</Radio.Button>
+          <Radio.Button value="Area">Area</Radio.Button>
+          </Radio.Group>
+
+
+        </Col>
+              <Col xs={4} sm={4} md={4} lg={4} xl={4} style={{textAlign: 'right', paddingTop: '25px', paddingRight: '25px'}}>
+                <Popover  content={table} title="Title" trigger="click">
+                  <Button>Re-Order</Button>
+            </Popover>
+          </Col>
+
+            </Row>
+
+            <Row><Drop /></Row>
+
+          <Row  type="flex" justify="center">
+
+
+
+
+            {this.state.dataTable.map(parameter => {
+
+              const item = parameter.Sample_Item;
+              const item3 = item.replace(/^"(.*)"$/, '$1');
+              const item2 = latestSample[item3];
+
+
+              console.log(item);
+              console.log(item2);
+              console.log(item3);
+
+
+
+
+                return(
+                  <Col xs={24} sm={12} md={8} lg={8} xl={8}>
+      <Card >
+        <Row>
+          <Col xs={4} sm={4} md={4} lg={4} xl={4}>
+          <Icon type="up-circle"style={{fontSize: '32px',color: parameter.color}} />
+          </Col>
+          <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+          <b style={{fontSize: '24px'}}>{parameter.Sample_Item}</b>
+          </Col>
+          </Row>
+          <Row>
+
+            <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
+            <b style={{fontSize: '17px'}}>{item2} {parameter.units}</b>
+            </Col>
+            </Row>
+          <Row>
+
+                  <ResponsiveContainer width="100%" aspect={6/3.0} minHeight={90}>
+
+                  <ComposedChart data={dataReverse}
+            syncId="anyId">
+
+            <XAxis tick={{fontSize: 10}} dataKey="date"></XAxis>
+
+            <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+            <Tooltip />
+
+                  <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+
+          </ComposedChart>
+          </ResponsiveContainer>
+          </Row>
+          </Card>
+          </Col>
+
+                )
+
+            })}
+                    </Row>
+                    </div>
+
+        );
+      }
+    }
+
+    const Demo = DragDropContext(HTML5Backend)(DragSortingTable);
+
+
+
+
+
+
+    const center = {
+      lat: this.state.latitude,
+      lng: this.state.longitude
+    };
+
+
+
+    const columns1 = [
+     {
+    title: 'Title',
+    dataIndex: 'Sample_Item',
+    key: 'Sample_Item',
+    width: 180,
+    },
+    {
+    title: 'Data Type',
+    dataIndex: 'dataType',
+    key: 'dataType',
+    render: (text, record, isSelected, color) => {
+    if (record.dataType == 'Bar') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
+    <Icon type="bar-chart" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+    if (record.dataType == 'Area') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
+    <Icon type="area-chart" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+    if (record.dataType == 'Line') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
+    <Icon type="line-chart" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+    if (record.dataType == 'Off') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
+    <Icon type="close" style={{fontSize: '32px', color: record.color}}
+    onClick={() => this.changeData(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+    }
+
+    },
+
+
+
+
+
+    },
+    {
+    title: 'Color',
+    dataIndex: 'color',
+    key: 'color',
+    render: (text, record, isSelected) =>
+    (
+
+    <div style={{textAlign: 'left'}}>
+    <Popover content={content1} title="Select Color" trigger="click">
+    <Icon type="bg-colors" style={{fontSize: '24px', color: record.color}}
+    onClick={() => this.changeColor(record.key)}>
+      Click me
+    </Icon>
+    </Popover>
+    </div>
+
+    )
+
+    ,
+
+    },
+
+
+
+    ]
+
+    const demoPopover = ( <Demo />)
+
+
+    const content1 = (<div>
+    <SketchPicker
+    color={ this.state.color }
+    onChangeComplete={ this.overwriteColor }
+    />
+    </div>);
+
+    const content = (
+  <div>
+    <Row>
+    <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange1}>
+<Radio.Button value="Bar">Bar</Radio.Button>
+<Radio.Button value="Line">Line</Radio.Button>
+<Radio.Button value="Area">Area</Radio.Button>
+<Radio.Button value="Off">Off</Radio.Button>
+</Radio.Group>
+  </Row>
+</div>
+);
 
 
 
@@ -831,262 +1748,877 @@ zoom: 13
 
       <Layout>
 
+        <Drawer
 
-        <div style={{ background: '#F0F0F0', padding: '5px' }}>
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <div style={{position: 'relative'}}>
-        <Col xs={18} sm={18} md={18} lg={18} xl={18}>
-          <h1>Dashboard</h1>
-          <h3><b>{this.state.lakeName}</b></h3>
-        </Col>
+          placement={this.state.placement}
+          closable={false}
+          onClose={this.onClose}
+          visible={this.state.visible3}
+          width={500}
+        >
+        <Row>
 
+          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
+          <Icon type="right-circle" onClick={this.visible3Off} style={{fontSize: '24px'}}/>
 
+          </Col>
 
-
-
-      </div>
-        </Row>
-        </div>
-
-
-
-        <Row style={{backgroundColor: '#F0F0F0'}}>
-        <Col span={24}>
-        <hr style={{backgroundColor: 'black', height: '0px', border: 0}}></hr>
-        </Col>
         </Row>
 
-        <div style={{ background: '#F0F0F0', padding: '5px' }}>
-    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-        <div style={{position: 'relative'}}>
-          <div style={{ position: 'absolute',
-        top: '0%',
-        left: '0%', backgroundColor: 'lightBlue', height: '100%', width: '4%', zIndex: 1}} />
-        <Card  style={{textAlign: 'left'}} bordered={true}>
-          <h3>{this.state.nitrogenLatest} mg/L</h3>
-          <hr></hr>
-          <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
-          <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-        </Card>
-        </div>
-      </Col>
-      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-        <div style={{position: 'relative'}}>
-          <div style={{ position: 'absolute',
-        top: '0%',
-        left: '0%', backgroundColor: '#086788', height: '100%', width: '4%', zIndex: 1}} />
-        <Card  style={{textAlign: 'left'}} bordered={true}>
-          <h3>{this.state.phosphorusLatest} mg/L</h3>
-          <hr></hr>
-            <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
-            <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-        </Card>
-        </div>
-      </Col>
-      <Col xs={24} sm={24} md={8} lg={8} xl={8}>
-        <div style={{position: 'relative'}}>
-          <div style={{ position: 'absolute',
-        top: '0%',
-        left: '0%', backgroundColor: '#F0C808', height: '100%', width: '4%', zIndex: 1}} />
-      <Card  style={{textAlign: 'left'}} bordered={true}>
-          <h3>{this.state.dissolvedOxygenLatest} mg/L</h3>
-          <hr></hr>
-            <p style={{lineHeight: '2px'}}><b>DISSOLVED OXYGEN</b></p>
-            <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-        </Card>
-        </div>
-      </Col>
+        <Row style={{paddingTop: '10px'}} type="flex" justify="center">
 
 
-    </Row>
-  </div>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+              <Table columns={columns1} dataSource={data1} onChange={this.onChange} scroll={{ x: '100%'}} />
+
+            </Col>
+
+          </Row>
+
+
+      </Drawer>
 
 
 
-  <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px'}}>
-<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-  <div style={{position: 'relative'}}>
-    <div style={{ position: 'absolute',
-  top: '0%',
-  left: '0%', backgroundColor: '#5C80BC', height: '100%', width: '4%', zIndex: 1}} />
-  <Card  style={{textAlign: 'left'}} bordered={true}>
-    <h3>{this.state.tssLatest} mg/L</h3>
-    <hr></hr>
-    <p style={{lineHeight: '2px'}}><b>TSS</b></p>
-    <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-  </Card>
-  </div>
-</Col>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-  <div style={{position: 'relative'}}>
-    <div style={{ position: 'absolute',
-  top: '0%',
-  left: '0%', backgroundColor: '#30323D', height: '100%', width: '4%', zIndex: 1}} />
-  <Card  style={{textAlign: 'left'}} bordered={true}>
-    <h3>{this.state.turbidityLatest} mg/L</h3>
-    <hr></hr>
-      <p style={{lineHeight: '2px'}}><b>TURBIDITY</b></p>
-      <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-  </Card>
-  </div>
-</Col>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-  <div style={{position: 'relative'}}>
-    <div style={{ position: 'absolute',
-  top: '0%',
-  left: '0%', backgroundColor: '#CDD1C4', height: '100%', width: '4%', zIndex: 1}} />
-<Card  style={{textAlign: 'left'}} bordered={true}>
-    <h3>{this.state.salinityLatest} ppt</h3>
-    <hr></hr>
-      <p style={{lineHeight: '2px'}}><b>SALINITY</b></p>
-      <p style={{lineHeight: '2px'}}>LATEST SAMPLE</p>
-  </Card>
-  </div>
-</Col>
+
+        <div style={{ background: '#F4F7FA', padding: '5px' }}>
 
 
-</Row>
-</div>
+        <Row type="flex" justify="center">
+          <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'left'}}>
+
+            <Row style={{paddingTop: '20px'}} type="flex" justify="center">
+              <Col span={24}>
+
+                <Button onClick={this.test}>TEST</Button>
+
+                    <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+                      <Card>
+                        <Row>
 
 
 
-<Row style={{backgroundColor: '#F0F0F0'}}>
-<Col span={24}>
-<hr style={{backgroundColor: 'black', height: '0px', border: 0}}></hr>
-</Col>
-</Row>
 
-<div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-<Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                            {this.state.currentWeather.map((parameter) => {
+
+                              if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightFog;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain,30') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltSprinkle;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('skc') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightClear;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('skc') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDaySunny;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('few') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightClear;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('few') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDaySunny;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('sct') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightClear;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('sct') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDaySunny;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('bkn') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltCloudy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('bkn') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDayCloudy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('ovc') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltCloudy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('ovc') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDayCloudy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_skc') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_skc') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDayWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_few') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_few') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDayWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_sct') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_sct') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDayCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDayCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiNightAltCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDayCloudyWindy;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('snow') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSnow;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('snow') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiSnow;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_snow') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSnow;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_snow') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiSnow;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSleet;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiSleet;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSnow;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiSnow;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('fzra') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('fzra') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('sleet') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('sleet') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiRainMix;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiRain;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiRain;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_showers') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiRain;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_showers') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiRain;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiRain;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiRain;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tsra') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tsra') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tornado') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiTornado;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tornado') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiTornado;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('hurricane') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('hurricane') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiThunderstorm;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('dust') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiDust;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('dust') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiDust;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('smoke') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSmoke;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('smoke') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiSmoke;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('haze') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSmoke;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('haze') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiCloud;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('hot') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiHot;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('hot') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiHot;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('cold') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSnowflakeCold;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('cold') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiSnowflakeCold;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('blizzard') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiSnowWind;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('blizzard') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiSnowWind;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+                                const CustomTag = WiFog;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+                              if (parameter.icon.includes('fog') & parameter.icon.includes('day') ) {
+                                const CustomTag = WiFog;
+                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
 
-      <Card
+
+                          })}
+
+                        </Row>
+                        <Row>
+                    {this.state.weatherData.map((parameter) => {
+                      const forecastCard = (
+                        <div>
+
+                      <p>{parameter.name.substring(0,3)}</p>
+                      <p>{parameter.temperature}</p>
+
+                      </div>
+                    )
+
+                    if (parameter.name.includes('Night') ) {
+                      const CustomTag = WiNightFog;
+                      return (null)}
+
+                      if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightFog;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain,10')  ) {
+                        const CustomTag = WiDaySprinkle;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                        if (parameter.icon.includes('rain,20')  ) {
+                          const CustomTag = WiDaySprinkle;
+                          return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                          if (parameter.icon.includes('rain,30')  ) {
+                            const CustomTag = WiDaySprinkle;
+                            return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                            if (parameter.icon.includes('rain,40')  ) {
+                              const CustomTag = WiDaySprinkle;
+                              return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                              if (parameter.icon.includes('rain,50')  ) {
+                                const CustomTag = WiDaySprinkle;
+                                return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                if (parameter.icon.includes('rain,60')  ) {
+                                  const CustomTag = WiRain;
+                                  return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                  if (parameter.icon.includes('rain,70') ) {
+                                    const CustomTag = WiRain;
+                                    return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                    if (parameter.icon.includes('rain,80')  ) {
+                                      const CustomTag = WiRain;
+                                      return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                      if (parameter.icon.includes('rain,90')  ) {
+                                        const CustomTag = WiRain;
+                                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                        if (parameter.icon.includes('rain,100') ) {
+                                          const CustomTag = WiRain;
+                                          return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col> )}
+
+                      if (parameter.icon.includes('snow,10')  ) {
+                        const CustomTag = WiCloud;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                        if (parameter.icon.includes('snow,20')  ) {
+                          const CustomTag = WiCloud;
+                          return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                          if (parameter.icon.includes('snow,30')  ) {
+                            const CustomTag = WiCloud;
+                            return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                            if (parameter.icon.includes('snow,40')  ) {
+                              const CustomTag = WiDaySprinkle;
+                              return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                              if (parameter.icon.includes('snow,50')  ) {
+                                const CustomTag = WiDaySprinkle;
+                                return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                if (parameter.icon.includes('snow,60')  ) {
+                                  const CustomTag = WiSnow;
+                                  return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                  if (parameter.icon.includes('snow,70') ) {
+                                    const CustomTag = WiSnow;
+                                    return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                    if (parameter.icon.includes('snow,80')  ) {
+                                      const CustomTag = WiSnow;
+                                      return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                      if (parameter.icon.includes('snow,90')  ) {
+                                        const CustomTag = WiSnow;
+                                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                                        if (parameter.icon.includes('snow,100') ) {
+                                          const CustomTag = WiSnow;
+                                          return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col> )}
+
+                      if (parameter.icon.includes('skc') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightClear;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('skc') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDaySunny;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('few') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightClear;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('few') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDaySunny;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('sct') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightClear;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('sct') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDaySunny;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('bkn') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightAltCloudy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('bkn') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDayCloudy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('ovc') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightAltCloudy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('ovc') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDayCloudy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_skc') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightAltCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_skc') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDayWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_few') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightAltCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_few') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDayWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_sct') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightAltCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_sct') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDayCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightAltCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDayCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiNightAltCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDayCloudyWindy;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('snow') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSnow;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('snow') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiSnow;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_snow') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSnow;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_snow') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiSnow;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSleet;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiSleet;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSnow;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiSnow;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('fzra') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('fzra') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('sleet') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('sleet') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiRainMix;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiRain;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiRain;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_showers') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiRain;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_showers') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiRain;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiRain;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiRain;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tsra') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tsra') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tornado') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiTornado;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tornado') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiTornado;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('hurricane') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('hurricane') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiThunderstorm;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('dust') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiDust;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('dust') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiDust;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('smoke') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSmoke;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('smoke') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiSmoke;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('haze') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSmoke;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('haze') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiCloud;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('hot') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiHot;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('hot') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiHot;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('cold') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSnowflakeCold;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('cold') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiSnowflakeCold;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('blizzard') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiSnowWind;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('blizzard') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiSnowWind;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+                        const CustomTag = WiFog;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
+
+                      if (parameter.icon.includes('fog') & parameter.icon.includes('day') ) {
+                        const CustomTag = WiFog;
+                        return (<Col span={3} style={{textAlign: 'center', paddingLeft: 36}}><p style={{fontSize: 12}}>{parameter.name.substring(0,3)}</p><CustomTag size={36} color='#000000a8' /><p>{parameter.temperature}</p></Col>)}
 
 
-      >
-      <Tabs defaultActiveKey="1" >
-  <TabPane tab="Nutrients" key="1">
-    <Row style={{paddingTop: '15px'}}>
-    <Col span={24} >
 
-        <p style={{lineHeight: '2px'}}><b>NITROGEN AND PHOSPHORUS</b></p>
-        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
-        <hr></hr>
-  </Col>
-</Row>
 
-    <Row>
-    <Col span={24}>
-      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
-        <AreaChart data={this.state.orders2}
-  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-  <defs>
-    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
-    </linearGradient>
-    <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
-    </linearGradient>
+
+
+
+                    })}
+                    </Row>
+                    </Card>
+            </Col>
+
+
+            <Col offset={1} xs={24} sm={9} md={9} lg={9} xl={9}>
+            <Card  style={{textAlign: 'left', height: 397}} bordered={true} >
+             <div style={{  height: 357, width: '100%' }}>
+               <GoogleMapReact
+                 bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
+                 center={this.state.center
+                 }
+                 defaultZoom={this.props.zoom}
+               >
+                 <AnyReactComponent
+                   lat={this.state.latitude}
+                   lng={this.state.longitude}
+                   text={this.state.lakeName}
+                 />
+               </GoogleMapReact>
+             </div>
+            </Card>
+            </Col>
+
+
+
+
+
+
+            </Col>
+            </Row>
+
+
+
+
+          <Row type="flex" justify="center" style={{paddingTop: '20px'}}>
+            <Col span={24} style={{textAlign: 'center'}}>
+              <Card style={{ width: '100%' }}>
+                <Row>
+                  <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+
+
+                  </Col>
+                  <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+
+
+                  </Col>
+                  <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
+                    <Radio.Group size="small" style={{fontSize: '10px'}} value={this.state.timeFrame} onChange={this.handleTimeFrameChange} >
+              <Radio.Button value="three" onClick={this.threeMonths}>3 Months</Radio.Button>
+              <Radio.Button value="six" onClick={this.sixMonths}>6 Months</Radio.Button>
+              <Radio.Button value="twelve" onClick={this.twelveMonths}>12 Months</Radio.Button>
+              <Radio.Button value="All" onClick={this.allMonths}>All</Radio.Button>
+              <Radio.Button value="Edit Chart" onClick={this.visible3}>Edit</Radio.Button>
+            </Radio.Group>
+
+                  </Col>
+
+
+
+                </Row>
+
+
+
+        <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={300}>
+                  <ComposedChart data={dataReverse}
+            syncId="anyId">
+
+
+            <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+            <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+            <Tooltip />
+
+
+            <defs>
+              {data1.map(parameter => {
+                return (
+
+                    <linearGradient id={parameter.Sample_Item} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={parameter.color} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={parameter.color} stopOpacity={0.1}/>
+                    </linearGradient>
+
+
+                )
+              })}
   </defs>
-  <XAxis dataKey="sampleDate" />
-  <YAxis />
-  <CartesianGrid strokeDasharray="6 6" />
-  <Tooltip />
-
-  <Area type="monotone" dataKey="nitrogen" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="nitrogen" position="top" /></Area>
-  <Area type="monotone" dataKey="phosphorus" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="phosphorus" position="top" /></Area>
-  <Legend />
-</AreaChart>
- </ResponsiveContainer>
-
-</Col>
-</Row>
-
-  </TabPane>
-  <TabPane tab="Salinity and TDS" key="2">
-    <Row style={{paddingTop: '15px'}}>
-    <Col span={24}>
-
-        <p style={{lineHeight: '2px'}}><b>SALINITY AND TDS</b></p>
-        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
-        <hr></hr>
-  </Col>
-</Row>
-
-    <Row>
-    <Col span={24}>
-      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
-        <AreaChart data={this.state.orders2}
-  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-  <defs>
-    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#086788" stopOpacity={0}/>
-    </linearGradient>
-    <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#F0C808" stopOpacity={0}/>
-    </linearGradient>
-  </defs>
-  <XAxis dataKey="sampleDate" />
-  <YAxis domain={[0, 10]}/>
-  <CartesianGrid strokeDasharray="6 6" />
-  <Tooltip />
-
-  <Area type="monotone" dataKey="tds" stroke="#F0C808" fillOpacity={1} fill="url(#colorPv)"><LabelList dataKey="tds" position="top" /></Area>
-  <Area type="monotone" dataKey="salinity" stroke="#086788" fillOpacity={1} fill="url(#colorUv)" ><LabelList dataKey="salinity" position="top" /></Area>
-
-  <Legend />
-</AreaChart>
- </ResponsiveContainer>
-
-</Col>
-</Row>
 
 
 
-  </TabPane>
-  <TabPane tab="Turbidity and Dissolved Oxygen" key="3">
-    <Row style={{paddingTop: '15px'}}>
-    <Col span={24}>
 
-        <p style={{lineHeight: '2px'}}><b>TURBIDITY AND DISSOLVED OXYGEN</b></p>
-        <p style={{lineHeight: '2px'}}>18 MONTHS</p>
-        <hr></hr>
-  </Col>
-</Row>
+              {data1.map(parameter => {
 
-    <Row>
-    <Col span={24}>
-      <ResponsiveContainer width="100%" aspect={10/3.0} minHeight={200}>
-        <AreaChart data={this.state.orders2}
-  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-  <defs>
-    <linearGradient id="colorTurbidity" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#809848" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#809848" stopOpacity={0}/>
-    </linearGradient>
-    <linearGradient id="colorDO" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="5%" stopColor="#40798C" stopOpacity={0.8}/>
-      <stop offset="95%" stopColor="#40798C" stopOpacity={0}/>
-    </linearGradient>
-  </defs>
-  <XAxis dataKey="sampleDate" />
-  <YAxis />
-  <CartesianGrid strokeDasharray="6 6" />
-  <Tooltip />
+                if (parameter.dataType == 'Bar') {
+                  console.log('something 1')
+                  const CustomTag = Bar;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Line') {
+                  console.log('something 2')
+                  const CustomTag = Line;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                  )
+                }
+                if (parameter.dataType == 'Area') {
+                  console.log('something 3')
+                  const CustomTag = Area;
+                  return(
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                  )
+                }
 
-  <Area type="monotone" dataKey="turbidity" stroke="#809848" fillOpacity={1} fill="url(#colorTurbidity)"><LabelList dataKey="turbidity" position="top" /></Area>
-  <Area type="monotone" dataKey="do" stroke="#40798C" fillOpacity={1} fill="url(#colorDO)" ><LabelList dataKey="do" position="top" /></Area>
+                if (parameter.dataType == 'Off') {
+                  console.log('No graph')
 
-  <Legend />
-</AreaChart>
- </ResponsiveContainer>
+
+                }
+
+
+              })}
+
+
+
+
+
+
+
+            <Legend />
+
+          </ComposedChart>
+           </ResponsiveContainer>
+              </Card>
+            </Col>
+
+
+          </Row>
+
+          <Row style={{paddingTop: '20px'}} type="flex" justify="center">
+            <Col span={24}>
+
+
+            <Card style={{ width: '100%'}} bodyStyle={{padding: "0"}}>
+
+
+              <Demo />
+
+
+            </Card>
+            </Col>
+
+          </Row>
 
 </Col>
 </Row>
@@ -1094,224 +2626,7 @@ zoom: 13
 
 
 
-  </TabPane>
-</Tabs>
-
-      </Card>
-</Col>
-</Row>
-</div>
-
-
-
-
-
-
-
-
-
-
-
- <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-
-<Card   bordered={true}>
-
-
-  <Row>
-  <Col span={16}>
-
-      <p style={{lineHeight: '2px'}}><b>NITROGEN</b></p>
-      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
-      <p style={{lineHeight: '2px'}}>AVERAGE</p>
-
-</Col>
-<Col span={8}>
-
-    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.nitrogenAvg}mg/L</b></p>
-
-
-</Col>
-
-<Row>
-<Col span={24}>
-<hr></hr>
-</Col>
-</Row>
-
-</Row>
-
-<Row>
-<Col span={24}>
-
-    <ResponsiveContainer  width='100%' aspect={5/3.0}>
-      <BarChart    data={this.state.nitrogenGraph}
-           margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-           <defs>
-           <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-             <stop offset="5%" stopColor="#086788" stopOpacity={0.8}/>
-             <stop offset="95%" stopColor="#086788" stopOpacity={0.3}/>
-           </linearGradient>
-           </defs>
-
-      <XAxis dataKey="date" />
-
-      <Tooltip/>
-
-      <Bar barSize={30} dataKey="nitrogen" fillOpacity={1} fill="url(#colorBlue)">
-      <LabelList dataKey="nitrogen" position="top" /></Bar>
-       </BarChart>
-       </ResponsiveContainer>
-     </Col>
-     </Row>
-</Card>
-</Col>
-
-
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-<Card  bordered={true}>
-
-  <Row>
-  <Col span={16}>
-
-      <p style={{lineHeight: '2px'}}><b>PHOSPHORUS</b></p>
-      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
-      <p style={{lineHeight: '2px'}}>AVERAGE</p>
-
-  </Col>
-  <Col span={8}>
-
-    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.phosphorusAvg}mg/L</b></p>
-
-
-  </Col>
-
-  </Row>
-  <Row>
-  <Col span={24}>
-  <hr></hr>
-  </Col>
-</Row>
-
-
-  <Row> <Col span={24}>
-    <ResponsiveContainer  width='100%' aspect={5/3.0}>
-      <BarChart    data={this.state.phosphorusGraph}
-           margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-           <defs>
-           <linearGradient id="colorYellow" x1="0" y1="0" x2="0" y2="1">
-             <stop offset="5%" stopColor="#F0C808" stopOpacity={0.8}/>
-             <stop offset="95%" stopColor="#F0C808" stopOpacity={0.3}/>
-           </linearGradient>
-           </defs>
-      <XAxis dataKey="date"/>
-
-      <Tooltip/>
-
-      <Bar barSize={30} dataKey="phosphorus" fillOpacity={1} fill="url(#colorYellow)">
-      <LabelList dataKey="phosphorus" position="top" />
-    </Bar>
-       </BarChart>
-       </ResponsiveContainer>
-       </Col></Row>
-
-</Card>
-</Col>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
-<Card   bordered={true}>
-
-
-  <Row>
-  <Col span={16}>
-
-      <p style={{lineHeight: '2px'}}><b>DISSOLVED O<sub>2</sub></b></p>
-      <p style={{lineHeight: '2px'}}>LAST 3 MONTHS</p>
-      <p style={{lineHeight: '2px'}}>AVERAGE</p>
-
-  </Col>
-  <Col span={8}>
-
-    <p style={{lineHeight: '2px', paddingTop: '5px'}}><b style={{fontSize: '20px'}}>{this.state.dissolvedOxygenAvg}mg/L</b></p>
-
-
-  </Col>
-
-  <Row>
-  <Col span={24}>
-  <hr></hr>
-  </Col>
-  </Row>
-
-  </Row>
-
-  <Row>
-  <Col span={24}>
-
-
-  <ResponsiveContainer  width='100%' aspect={5/3.0}>
-    <BarChart    data={this.state.dissolvedOxygenGraph}
-         margin={{top: 20, right: 0, left: 0, bottom: 5}}>
-         <defs>
-         <linearGradient id="colorRed" x1="0" y1="0" x2="0" y2="1">
-           <stop offset="5%" stopColor="#DD1C1A" stopOpacity={0.8}/>
-           <stop offset="95%" stopColor="#DD1C1A" stopOpacity={0.3}/>
-         </linearGradient>
-         </defs>
-    <XAxis dataKey="date"/>
-
-    <Tooltip/>
-
-    <Bar barSize={30} dataKey="do" fillOpacity={1} fill="url(#colorRed)"><LabelList dataKey="do" position="top" /></Bar>
-     </BarChart>
-     </ResponsiveContainer>
-
-</Col></Row>
-</Card>
-</Col>
-</Row>
-</div>
-
-<div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
-<Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-<Col xs={24} sm={24} md={8} lg={8} xl={8}>
- <Card  style={{textAlign: 'left'}} bordered={true} >
-   <div style={{textAlign: 'center'}}>
-   <h3>{this.state.currentCity}</h3>
-     <img style={{width: '60px', height: '60px'}} src={this.state.currentIcon} />
-     <h3>{this.state.currentDescription}</h3>
-     <p>Temperature: {this.state.currentTemp} F</p>
-     <p>Humidity: {this.state.currentHumidity}%</p>
-     </div>
- </Card>
-</Col>
-
-<Col xs={24} sm={24} md={16} lg={16} xl={16}>
- <Card  style={{textAlign: 'left'}} bordered={true} >
-   <div style={{ height: '29vh', width: '100%' }}>
-     <GoogleMapReact
-       bootstrapURLKeys={{ key: 'AIzaSyAqe1Z8I94AcnNb3VsOam1tnUd_8WdubV4'}}
-       defaultCenter={this.props.center}
-       defaultZoom={this.props.zoom}
-     >
-       <AnyReactComponent
-         lat={37.987636425563075}
-         lng={-121.63235758701154}
-         text={'Summer Lake'}
-       />
-     </GoogleMapReact>
-   </div>
- </Card>
-
-</Col>
-
-
-</Row>
-</div>
-
-
-
-
+  </div>
 
 
 
