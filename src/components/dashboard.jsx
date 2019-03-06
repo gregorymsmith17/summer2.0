@@ -35,7 +35,7 @@ import dashForecast from './dashForecast';
 import { WiDaySunny, WiNightFog, WiDayFog, WiDaySprinkle, WiNightAltSprinkle, WiNightSprinkle, WiNightClear, WiNightAltCloudy, WiNightAltCloud, WiDayCloudy, WiNightAltCloudyWindy, WiDayWindy, WiSnow, WiRain, WiThunderstorm, WiTornado, WiSmoke, WiFog, WiSnowWind, WiDayCloudyWindy, WiSleet, WiRainMix, WiDust, WiCloud, WiHot, WiSnowflakeCold, WiRaindrops, WiSprinkle } from 'weather-icons-react';
 
 
-const AnyReactComponent = ({ text }) => <div>{text}<Icon type="environment" style={{color: 'red', paddingLeft: 10, fontSize: '18px'}}/></div>;
+const AnyReactComponent = ({ text }) => <div><Icon type="environment" style={{color: 'red', paddingLeft: 10, fontSize: '20px'}}/></div>;
 
 
 
@@ -1200,7 +1200,7 @@ syncId="anyId">
     		const opacity = isDragging ? 0 : 1;
 
     		return connectDragSource(connectDropTarget(
-    			<div style={{ opacity }}>
+    			<div style={{ ...styleCard, opacity }}>
 
     				<Card >
     				{card.graph}
@@ -1344,7 +1344,7 @@ syncId="anyId">
     				<Row>
     				{cards.map((card, i) => {
     					return (
-                <Col span={8}>
+                <Col xs={24} sm={12} md={8} lg={8} xl={8}>
     						<CardGraph
     							key={card.id}
     							index={i}
@@ -1509,6 +1509,7 @@ syncId="anyId">
 
       const list = [];
 
+
 			console.log(this.state.graphType)
 
 
@@ -1527,6 +1528,8 @@ syncId="anyId">
             </Row>
 
             <Row>
+
+							<Col  xs={0} sm={24} md={24} lg={24} xl={24}>
               <ResponsiveContainer width="100%" aspect={6/3.0} minHeight={100}>
 
                 <ComposedChart data={data}
@@ -1541,7 +1544,7 @@ syncId="anyId">
 
                 </ComposedChart>
               </ResponsiveContainer>
-
+						</Col>
             </Row>
           </div>
 
@@ -1615,18 +1618,6 @@ syncId="anyId">
       render() {
 
 
-        const table = (<Table
-          columns={columns2}
-          pagination={false}
-          dataSource={this.state.dataTable}
-          components={this.components}
-          onRow={(record, index) => ({
-            index,
-            moveRow: this.moveRow,
-          })}
-        />)
-
-        ;
 
         return (
           <div>
@@ -1766,6 +1757,9 @@ syncId="anyId">
 
 
 
+
+
+
     return (
 
       <Layout>
@@ -1815,297 +1809,592 @@ syncId="anyId">
 
 
                     <Col xs={24} sm={14} md={14} lg={14} xl={14}>
-                      <Card>
+                      <Card  style={{height: 397, paddingTop: 15}} bordered={true} >
+
                         <Row>
 
+													<Col xs={0} sm={24} md={24} lg={24} xl={24}>
 
 
+														{this.state.currentWeather.map((parameter) => {
 
-                            {this.state.currentWeather.map((parameter) => {
+															if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightFog;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightFog;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain,30') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltSprinkle;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain,30') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltSprinkle;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('skc') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightClear;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('skc') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightClear;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('skc') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDaySunny;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('skc') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDaySunny;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('few') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightClear;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('few') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightClear;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('few') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDaySunny;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('few') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDaySunny;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('sct') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightClear;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('sct') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightClear;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('sct') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDaySunny;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('sct') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDaySunny;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('bkn') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltCloudy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('bkn') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltCloudy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('bkn') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDayCloudy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('bkn') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDayCloudy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('ovc') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltCloudy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('ovc') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltCloudy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('ovc') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDayCloudy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('ovc') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDayCloudy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_skc') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_skc') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_skc') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDayWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_skc') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDayWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_few') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_few') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_few') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDayWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_few') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDayWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_sct') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_sct') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_sct') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDayCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_sct') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDayCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDayCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDayCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('night') ) {
+																const CustomTag = WiNightAltCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiNightAltCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDayCloudyWindy;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDayCloudyWindy;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('snow') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSnow;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('snow') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSnow;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('snow') & parameter.icon.includes('day') ) {
+																const CustomTag = WiSnow;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('snow') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiSnow;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_snow') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSnow;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_snow') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSnow;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_snow') & parameter.icon.includes('day') ) {
+																const CustomTag = WiSnow;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_snow') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiSnow;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSleet;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSleet;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('day') ) {
+																const CustomTag = WiSleet;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiSleet;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSnow;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSnow;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('day') ) {
+																const CustomTag = WiSnow;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiSnow;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('fzra') & parameter.icon.includes('night') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('fzra') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('fzra') & parameter.icon.includes('day') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('fzra') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('night') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('day') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('night') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('day') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('sleet') & parameter.icon.includes('night') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('sleet') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('sleet') & parameter.icon.includes('day') ) {
+																const CustomTag = WiRainMix;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('sleet') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiRainMix;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain') & parameter.icon.includes('night') ) {
+																const CustomTag = WiRain;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiRain;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain') & parameter.icon.includes('day') ) {
+																const CustomTag = WiRain;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiRain;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_showers') & parameter.icon.includes('night') ) {
+																const CustomTag = WiRain;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_showers') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiRain;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_showers') & parameter.icon.includes('day') ) {
+																const CustomTag = WiRain;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_showers') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiRain;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('night') ) {
+																const CustomTag = WiRain;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiRain;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('day') ) {
+																const CustomTag = WiRain;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiRain;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tsra') & parameter.icon.includes('night') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tsra') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tsra') & parameter.icon.includes('day') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tsra') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('night') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('day') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('night') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('day') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tornado') & parameter.icon.includes('night') ) {
+																const CustomTag = WiTornado;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tornado') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiTornado;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tornado') & parameter.icon.includes('day') ) {
+																const CustomTag = WiTornado;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tornado') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiTornado;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('hurricane') & parameter.icon.includes('night') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('hurricane') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('hurricane') & parameter.icon.includes('day') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('hurricane') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('night') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('day') ) {
+																const CustomTag = WiThunderstorm;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiThunderstorm;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('dust') & parameter.icon.includes('night') ) {
+																const CustomTag = WiDust;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('dust') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiDust;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('dust') & parameter.icon.includes('day') ) {
+																const CustomTag = WiDust;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('dust') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiDust;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('smoke') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSmoke;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('smoke') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSmoke;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('smoke') & parameter.icon.includes('day') ) {
+																const CustomTag = WiSmoke;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('smoke') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiSmoke;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('haze') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSmoke;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('haze') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSmoke;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('haze') & parameter.icon.includes('day') ) {
+																const CustomTag = WiCloud;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('haze') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiCloud;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('hot') & parameter.icon.includes('night') ) {
+																const CustomTag = WiHot;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('hot') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiHot;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('hot') & parameter.icon.includes('day') ) {
+																const CustomTag = WiHot;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('hot') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiHot;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('cold') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSnowflakeCold;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('cold') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSnowflakeCold;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('cold') & parameter.icon.includes('day') ) {
+																const CustomTag = WiSnowflakeCold;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('cold') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiSnowflakeCold;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('blizzard') & parameter.icon.includes('night') ) {
+																const CustomTag = WiSnowWind;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('blizzard') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiSnowWind;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('blizzard') & parameter.icon.includes('day') ) {
+																const CustomTag = WiSnowWind;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('blizzard') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiSnowWind;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+																const CustomTag = WiFog;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
-                                const CustomTag = WiFog;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+															if (parameter.icon.includes('fog') & parameter.icon.includes('day') ) {
+																const CustomTag = WiFog;
+																return (<Col span={24}><Col span={8}><p style={{fontSize: 22, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontSize: 18, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 45}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
-                              if (parameter.icon.includes('fog') & parameter.icon.includes('day') ) {
-                                const CustomTag = WiFog;
-                                return (<Col span={24}><Col span={8}><p style={{fontSize: 24, paddingLeft: 30}}><b>Current Weather</b></p><p style={{fontSize: 24, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
 
 
+													})}
 
-                          })}
+													</Col>
+
+												<Col xs={24} sm={0} md={0} lg={0} xl={0}>
+
+
+													{this.state.currentWeather.map((parameter) => {
+
+														if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightFog;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain,30') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltSprinkle;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('skc') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightClear;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('skc') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDaySunny;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('few') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightClear;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('few') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDaySunny;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('sct') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightClear;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('sct') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDaySunny;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('bkn') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltCloudy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('bkn') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDayCloudy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('ovc') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltCloudy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('ovc') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDayCloudy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_skc') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_skc') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDayWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_few') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_few') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDayWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_sct') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_sct') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDayCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_bkn') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDayCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('night') ) {
+															const CustomTag = WiNightAltCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('wind_ovc') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDayCloudyWindy;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('snow') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSnow;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('snow') & parameter.icon.includes('day') ) {
+															const CustomTag = WiSnow;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_snow') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSnow;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_snow') & parameter.icon.includes('day') ) {
+															const CustomTag = WiSnow;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSleet;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_sleet') & parameter.icon.includes('day') ) {
+															const CustomTag = WiSleet;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSnow;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('snow_sleet') & parameter.icon.includes('day') ) {
+															const CustomTag = WiSnow;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('fzra') & parameter.icon.includes('night') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('fzra') & parameter.icon.includes('day') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('night') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_fzra') & parameter.icon.includes('day') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('night') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('snow_fzra') & parameter.icon.includes('day') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('sleet') & parameter.icon.includes('night') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('sleet') & parameter.icon.includes('day') ) {
+															const CustomTag = WiRainMix;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain') & parameter.icon.includes('night') ) {
+															const CustomTag = WiRain;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain') & parameter.icon.includes('day') ) {
+															const CustomTag = WiRain;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_showers') & parameter.icon.includes('night') ) {
+															const CustomTag = WiRain;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_showers') & parameter.icon.includes('day') ) {
+															const CustomTag = WiRain;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('night') ) {
+															const CustomTag = WiRain;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('rain_showers_hi') & parameter.icon.includes('day') ) {
+															const CustomTag = WiRain;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tsra') & parameter.icon.includes('night') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tsra') & parameter.icon.includes('day') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('night') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tsra_sct') & parameter.icon.includes('day') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('night') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tsra_hi') & parameter.icon.includes('day') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tornado') & parameter.icon.includes('night') ) {
+															const CustomTag = WiTornado;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tornado') & parameter.icon.includes('day') ) {
+															const CustomTag = WiTornado;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('hurricane') & parameter.icon.includes('night') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('hurricane') & parameter.icon.includes('day') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('night') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('tropical_storm') & parameter.icon.includes('day') ) {
+															const CustomTag = WiThunderstorm;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('dust') & parameter.icon.includes('night') ) {
+															const CustomTag = WiDust;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('dust') & parameter.icon.includes('day') ) {
+															const CustomTag = WiDust;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('smoke') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSmoke;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('smoke') & parameter.icon.includes('day') ) {
+															const CustomTag = WiSmoke;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('haze') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSmoke;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('haze') & parameter.icon.includes('day') ) {
+															const CustomTag = WiCloud;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('hot') & parameter.icon.includes('night') ) {
+															const CustomTag = WiHot;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('hot') & parameter.icon.includes('day') ) {
+															const CustomTag = WiHot;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('cold') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSnowflakeCold;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('cold') & parameter.icon.includes('day') ) {
+															const CustomTag = WiSnowflakeCold;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('blizzard') & parameter.icon.includes('night') ) {
+															const CustomTag = WiSnowWind;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('blizzard') & parameter.icon.includes('day') ) {
+															const CustomTag = WiSnowWind;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('fog') & parameter.icon.includes('night') ) {
+															const CustomTag = WiFog;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+														if (parameter.icon.includes('fog') & parameter.icon.includes('day') ) {
+															const CustomTag = WiFog;
+															return (<Col span={24}><Col span={8}><p style={{fontsize: 16, paddingLeft: 30}}><b>{this.state.lakeName}</b></p><p style={{fontsize: 16, paddingLeft: 30}}>{parameter.shortForecast}</p><p style={{fontSize: 36, paddingLeft: 30}}>{parameter.temperature}{'\u00B0'} F</p></Col> <Col span={15} style={{paddingLeft: 15}}><CustomTag size={200} color='#000000a8' /></Col></Col>)}
+
+
+
+												})}
+
+												</Col>
+
 
                         </Row>
                         <Row>
@@ -2491,7 +2780,7 @@ syncId="anyId">
             </Col>
 
 
-            <Col offset={1} xs={24} sm={9} md={9} lg={9} xl={9}>
+            <Col xs={24} sm={{ span: 9, offset: 1 }} md={{ span: 9, offset: 1 }} lg={{ span: 9, offset: 1 }} xl={{ span: 9, offset: 1 }}>
             <Card  style={{textAlign: 'left', height: 397}} bordered={true} >
              <div style={{  height: 357, width: '100%' }}>
                <GoogleMapReact
@@ -2522,7 +2811,7 @@ syncId="anyId">
 
 
           <Row type="flex" justify="center" style={{paddingTop: '20px'}}>
-            <Col span={24} style={{textAlign: 'center'}}>
+            <Col xs={0} sm={0} md={24} lg={24} xl={24} style={{textAlign: 'center'}}>
               <Card style={{ width: '100%' }}>
                 <Row>
                   <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
@@ -2534,7 +2823,7 @@ syncId="anyId">
 
                   </Col>
                   <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
-                    <Radio.Group size="small" style={{fontSize: '10px'}} value={this.state.timeFrame} onChange={this.handleTimeFrameChange} >
+                    <Radio.Group size="small" style={{fontSize: '12px'}} value={this.state.timeFrame} onChange={this.handleTimeFrameChange} >
               <Radio.Button value="three" onClick={this.threeMonths}>3 Months</Radio.Button>
               <Radio.Button value="six" onClick={this.sixMonths}>6 Months</Radio.Button>
               <Radio.Button value="twelve" onClick={this.twelveMonths}>12 Months</Radio.Button>
@@ -2637,6 +2926,7 @@ syncId="anyId">
 
 
               <Demo />
+
 
 
             </Card>

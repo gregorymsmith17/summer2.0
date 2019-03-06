@@ -58,6 +58,7 @@ export default class uploadDocument extends Component {
         hover: false,
         border: '1px dashed gray',
         progressDisplay: 'none',
+        currentProject: '',
 
 
       }
@@ -82,22 +83,35 @@ this.handleChange = this.handleChange.bind(this);
       userID: user.uid,
 
     })
-    const samplesRef = fire.database().ref(`Reports/${user.uid}`);
-    samplesRef.on('value', (snapshot) => {
-    let reports = snapshot.val();
-    console.log(reports);
-    let newState = [];
-    for (let report in reports) {
-      newState.push({
-        id: report,
-        downloadLink: reports[report].downloadLink,
-        filename: reports[report].filename,
+
+    const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+    currentProjectRef.on('value', (snapshot) => {
+      let project = snapshot.child('currentProject').val();
+      console.log(project);
+      this.setState({
+        currentProject: project
+      })
+
+      const samplesRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/Reports`);
+      samplesRef.on('value', (snapshot) => {
+      let reports = snapshot.val();
+      console.log(reports);
+      let newState = [];
+      for (let report in reports) {
+        newState.push({
+          id: report,
+          downloadLink: reports[report].downloadLink,
+          filename: reports[report].filename,
+        });
+      }
+      this.setState({
+        reports: newState,
       });
-    }
-    this.setState({
-      reports: newState,
     });
-  });
+
+    })
+
+
 });
 
 
@@ -111,7 +125,7 @@ this.handleChange = this.handleChange.bind(this);
 
   removeReport(itemId) {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`/Reports/${user.uid}/${itemId}`);
+    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/Reports/${itemId}`);
     sampleRef.remove();
   });
   }
@@ -175,7 +189,7 @@ this.handleChange = this.handleChange.bind(this);
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log('Upload is ' + progress + '% done');
-        this.setState({ upload: progress });
+        this.setState({ upload: parseFloat(progress).toFixed(1) });
         switch (snapshot.state) {
           case firebase.storage.TaskState.PAUSED: // or 'paused'
             console.log('Upload is paused');
@@ -194,7 +208,7 @@ this.handleChange = this.handleChange.bind(this);
           console.log('File available at', downloadURL);
           this.setState({ downloadURL: downloadURL, documentType: 'Reports', })
 
-           const samplesRef = fire.database().ref(`Reports/${user.uid}`);
+           const samplesRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/Reports`);
            const metaDataReport = {
              downloadLink: this.state.downloadURL,
              filename: this.state.file.name,
@@ -218,7 +232,7 @@ this.handleChange = this.handleChange.bind(this);
 
 hoverOn = () => {
       this.setState({ hover: true,
-      border: '2px dashed #1890ff'  });
+      border: '4px dashed #1890ff'  });
     }
 hoverOff = () =>{
   this.setState({ hover: false,
@@ -249,7 +263,7 @@ onChangeFile(event) {
       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       console.log('Upload is ' + progress + '% done');
-      this.setState({ upload: progress });
+      this.setState({ upload: parseFloat(progress).toFixed(1) });
       switch (snapshot.state) {
         case firebase.storage.TaskState.PAUSED: // or 'paused'
           console.log('Upload is paused');
@@ -398,7 +412,7 @@ onClose = () => {
     return (
       <Layout>
         <Drawer
-          title= "Edit Sample"
+          title= "Edit File Name"
           placement={this.state.placement}
           closable={false}
           onClose={this.onClose}
@@ -438,7 +452,7 @@ onClose = () => {
    onChange={this.onChangeFile.bind(this)}
 />
 
-        <div style={{ background: '#F0F0F0', padding: '5px' }}>
+        <div style={{ background: '#F4F7FA', padding: '5px' }}>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <div style={{position: 'relative'}}>
         <Col xs={24} sm={24} md={18} lg={18} xl={18}>
@@ -452,7 +466,7 @@ onClose = () => {
 
         </div>
 
-        <div style={{ background: '#F0F0F0', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
+        <div style={{ background: '#F4F7FA', paddingTop: '15px', paddingRight: '5px', paddingLeft: '5px' }}>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
         <Col xs={24} sm={24} md={24} lg={24} xl={24}>
 
@@ -489,16 +503,16 @@ onClose = () => {
                       onMouseLeave={this.hoverOff}
                       onClick={()=>{this.upload.click()}}
                       style={{
-    border: this.state.border,
-    position: 'relative',
-    transition: 'border-color 0.3s',
-    cursor: 'pointer',
-    borderRadius: '4px',
-    textAlign: 'center',
-    width: '90%',
-    height: '100%',
+                        border: this.state.border,
+                        position: 'relative',
+                        transition: 'border-color 0.3s',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        textAlign: 'center',
+                        width: '90%',
+                        height: '200%',
 
-    backgroundColor: '#fafafa',
+                        backgroundColor: '#fafafa',
 }} onDragOver={this.onDrag} onDrop={this.onDrop}>
 <div style={{
     verticalAlign: 'middle', textAlign: 'center',}}>
@@ -541,7 +555,7 @@ onClose = () => {
             pagination
             >
 
-    <TableHeaderColumn width='130px'
+    <TableHeaderColumn width='350px'
       dataField='filename' isKey
 
       filter={ { type: 'RegexFilter', delay: 1000 }  } dataSort

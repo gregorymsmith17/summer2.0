@@ -515,19 +515,20 @@ handleOk = (e) => {
           <Content style={{ backgroundColor: '#F4F7FA',margin: 0, padding: 0 }}>
 
                 <Drawer
-                  title= "Login"
+
                   placement={this.state.placement}
                   closable={false}
                   onClose={this.onClose}
                   visible={this.state.visible}
-                  width={450}
+                  width={500}
                 ><Row>
 
-                <Col>
+                <Col span={24}>
 
+<StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
 
                 </Col>
-                <StyledFirebaseAuth uiConfig={this.uiConfig} firebaseAuth={firebase.auth()}/>
+
 
               </Row>
 
@@ -562,11 +563,11 @@ handleOk = (e) => {
       <Header style={{backgroundColor: '#0667D0', background: '#0667D0',}}>
 
         <Row type="flex" justify="center" align="middle" >
-          <Col span={16} style={{textAlign: 'left'}}>
-        <p style={{fontSize: '30px', color: 'white', paddingLeft: '80px'}}>AquaSource</p>
+          <Col xs={24} sm={24} md={16} lg={16} xl={16} style={{textAlign: 'left'}}>
+        <p style={{fontSize: '30px', color: 'white', paddingLeft: '25px'}}>AquaSource</p>
 
         </Col>
-        <Col span={8} style={{textAlign: 'right'}}>
+        <Col xs={24} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
           <Menu
             onClick={handleClick}
 
@@ -631,8 +632,8 @@ handleOk = (e) => {
       <Header style={{backgroundColor: '#FFFFFF', background: '#FFFFFF', zIndex: 1}}>
 
         <Row type="flex" justify="center" align="middle" >
-          <Col span={24} style={{textAlign: 'left', paddingLeft: '80px'}}>
-            <Col xs={20} sm={18} md={18} lg={18} xl={18}>
+          <Col span={24} style={{textAlign: 'left', paddingLeft: '25px'}}>
+            <Col xs={22} sm={22} md={22} lg={22} xl={22}>
           <Menu
             onClick={handleClick}
 
@@ -650,21 +651,21 @@ handleOk = (e) => {
 
             <SubMenu style={{padding: "0", margin: "0"}} title={<span style={{paddingleft: "5px", margin: "0"}} className="submenu-title-wrapper"><Icon type="tool"  style={{fontSize: '22px'}}/>Asset Manager</span>}>
               <MenuItemGroup >
-                <Menu.Item key="setting:1a"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/maintenanceReports"><Icon type="book" style={{fontSize: '22px'}}/>Maintenance Reports</Link></Menu.Item>
-                <Menu.Item key="setting:2a"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/chemicalApplications"><Icon type="experiment" rotate={180} style={{fontSize: '22px'}}/>Chemical Applications</Link></Menu.Item>
-                <Menu.Item key="setting:3a"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/fishStocking"><Icon type="gold" style={{fontSize: '22px'}}/>Fish Stocking</Link></Menu.Item>
+                <Menu.Item key="setting:1a"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/maintenanceReports"><Icon type="book" style={{fontSize: '22px'}}/>Maintenance Log</Link></Menu.Item>
+
                 <Menu.Item key="setting:4a"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/equipmentList"><Icon type="bars" style={{fontSize: '22px'}}/>Equipment List</Link></Menu.Item>
                 <Menu.Item key="setting:5a"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/vendorContacts"><Icon type="mail" style={{fontSize: '22px'}}/>Vendor Contacts</Link></Menu.Item>
+                <Menu.Item key="setting:2a"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/chemicalApplications"><Icon type="experiment" rotate={180} style={{fontSize: '22px'}}/>Chemical Applications</Link></Menu.Item>
               </MenuItemGroup>
 
             </SubMenu>
 
             <SubMenu style={{padding: "0", margin: "0"}} title={<span style={{paddingleft: "5px", margin: "0"}} className="submenu-title-wrapper"><Icon type="folder-open"  style={{fontSize: '22px'}}/>Documents</span>}>
               <MenuItemGroup >
-                <Menu.Item key="setting:1"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/uploadDocument"><Icon type="copy" style={{fontSize: '22px'}}/>Reports</Link></Menu.Item>
-                <Menu.Item key="setting:2"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/uploadDocument"><Icon type="snippets" style={{fontSize: '22px'}}/>Drawings</Link></Menu.Item>
-                <Menu.Item key="setting:3"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/uploadDocument"><Icon type="file-done" style={{fontSize: '22px'}}/>Permits</Link></Menu.Item>
-                <Menu.Item key="setting:4"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/uploadDocument"><Icon type="read" style={{fontSize: '22px'}}/>Manuals</Link></Menu.Item>
+                <Menu.Item key="setting:1"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/reports"><Icon type="copy" style={{fontSize: '22px'}}/>Reports</Link></Menu.Item>
+                <Menu.Item key="setting:2"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/drawings"><Icon type="snippets" style={{fontSize: '22px'}}/>Drawings</Link></Menu.Item>
+                <Menu.Item key="setting:3"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/permits"><Icon type="file-done" style={{fontSize: '22px'}}/>Permits</Link></Menu.Item>
+                <Menu.Item key="setting:4"><Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/manuals"><Icon type="read" style={{fontSize: '22px'}}/>Manuals</Link></Menu.Item>
 
               </MenuItemGroup>
             </SubMenu>
@@ -682,7 +683,7 @@ handleOk = (e) => {
 
 
     <Row type="flex" justify="center">
-      <Col span={20}>
+      <Col span={22}>
 
       <Content style={{ backgroundColor: '#F4F7FA', }}>
         <div style={{ padding: 5, paddingLeft: 15, backgroundColor: '#F4F7FA', background: '#F4F7FA', minHeight: 360 }}>

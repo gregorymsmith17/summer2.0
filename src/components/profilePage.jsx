@@ -47,7 +47,7 @@ const styles = {
 };
 
 const gpsURL = (
-  <div>
+  <div><p>Single Click on the map below to set coordinates or go to this link.</p>
     <a style={{ textDecoration: 'none', color: 'Blue' }} target="_blank" href="https://www.gps-coordinates.net/"><span><Icon type="search" /><span>Click Here for Coordinates</span></span></a>
   </div>
 );
@@ -58,7 +58,7 @@ const gpsLink = (
   </Popover>
 )
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
+const AnyReactComponent = ({ text }) => <div><Icon type="environment" style={{color: 'red', paddingLeft: 10, fontSize: '20px'}}/></div>;
 
 export default class profilePage extends Component {
 
@@ -652,9 +652,9 @@ const content = (
 
 
           <FormGroup>
-            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Lake Name</b></Col>
+            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Project Name</b></Col>
             <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
-            <FormControl name="lakeName" onChange={this.handleChange} type="text" placeholder="Lake Name"  value={this.state.lakeName} /></Col>
+            <FormControl name="lakeName" onChange={this.handleChange} type="text" placeholder="Project Name"  value={this.state.lakeName} /></Col>
           </FormGroup>
           </Row>
           <Row style={{paddingTop: '10px'}}>
@@ -673,32 +673,26 @@ const content = (
               </Row>
             <Row style={{paddingTop: '10px'}}>
               <FormGroup>
-                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Management Contact</b></Col>
+                <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Project Contact Name</b></Col>
                 <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
-                <FormControl name="managementContact" onChange={this.handleChange} type="text" placeholder="Management Contact"  value={this.state.managementContact} /></Col>
+                <FormControl name="managementContact" onChange={this.handleChange} type="text" placeholder="Project Contact"  value={this.state.managementContact} /></Col>
               </FormGroup>
               </Row>
               <Row style={{paddingTop: '10px'}}>
                 <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Management Contact Number</b></Col>
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Project Contact Number</b></Col>
                   <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
-                  <FormControl name="managementContactNumber" onChange={this.handleChange} type="text" placeholder="Management Number"  value={this.state.managementContactNumber} /></Col>
+                  <FormControl name="managementContactNumber" onChange={this.handleChange} type="text" placeholder="Contact Number"  value={this.state.managementContactNumber} /></Col>
                 </FormGroup>
                 </Row>
                 <Row style={{paddingTop: '10px'}}>
                   <FormGroup>
-                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>HOA Contact</b></Col>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Project Contact Email</b></Col>
                     <Col offset={1} xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <FormControl name="hoaContact" onChange={this.handleChange} type="text" placeholder="HOA Contact"  value={this.state.hoaContact} /></Col>
+                    <FormControl name="hoaContact" onChange={this.handleChange} type="text" placeholder="Contact Email"  value={this.state.hoaContact} /></Col>
                   </FormGroup>
                   </Row>
-                  <Row style={{paddingTop: '10px'}}>
-                    <FormGroup>
-                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>HOA Contact Number</b></Col>
-                      <Col offset={1} xs={24} sm={12} md={12} lg={12} xl={12}>
-                      <FormControl name="hoaContactNumber" onChange={this.handleChange} type="text" placeholder="HOA Number"  value={this.state.hoaContactNumber} /></Col>
-                    </FormGroup>
-                    </Row>
+
                     <Row style={{paddingTop: '10px'}}>
                     <FormGroup>
                       <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Latitude</b>   {gpsLink}</Col>

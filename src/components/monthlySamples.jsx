@@ -105,6 +105,9 @@ export default class monthlySamples extends Component {
     constructor(props) {
         super(props);
         this.state = {
+
+          parameterAdd: '',
+
           userID: '',
           currentProject: '',
           key: "1",
@@ -523,6 +526,16 @@ showDrawer = () => {
 
 
 
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList`);
+  sampleList2Ref.on('value', (snapshot) => {
+    let maintenanceArray = this.snapshotToArray(snapshot);
+    console.log(maintenanceArray)
+    this.setState({
+      snapArray1: maintenanceArray,
+
+    })
+  })
+
 
     this.setState({
       arrayKeys1: [],
@@ -541,18 +554,35 @@ showDrawer = () => {
 
 
 
+
+
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 showDrawer4 = () => {
 
 
     this.setState({
 
-
+      parameterAdd: 'none',
       visible4: true,
       Sample_Item: '',
       dataType: '',
       color: '#000000',
       units: '',
+
 
 
 
@@ -686,12 +716,23 @@ getColumnSearchProps = (dataIndex) => ({
 
   deleteRow = (row, isSelected, e, id, key) =>
   {
+
+    const content = (
+  <div style={{textAlign: 'center'}}>
+    <p>This will affect your dashboard graphs <br /> are you sure you want to delete?</p>
+    <Button type="primary" onClick={() => this.removesample(isSelected.key)}>Delete</Button>
+</div>
+);
+
+
     return (
       <div style={{textAlign: 'center'}}>
+        <Popover content={content} trigger="click">
       <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
-      onClick={() => this.removesample(isSelected.key)}>
+      >
         Click me
       </Icon>
+    </Popover>
       </div>
     )
   }
@@ -703,12 +744,23 @@ getColumnSearchProps = (dataIndex) => ({
 
  deleteRow1 = (row, isSelected, e, id, key) =>
  {
+
+   const content = (
+ <div style={{textAlign: 'center'}}>
+   <p>This will affect your dashboard graphs <br /> are you sure you want to delete?</p>
+   <Button type="primary" onClick={() => this.removesample1(isSelected.key)}>Delete</Button>
+</div>
+);
+
+
    return (
      <div style={{textAlign: 'center'}}>
+       <Popover content={content} trigger="click">
      <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
-     onClick={() => this.removesample1(isSelected.key)}>
+     >
        Click me
      </Icon>
+   </Popover>
      </div>
    )
  }
@@ -1262,6 +1314,15 @@ this.setState({
   showChildrenDrawer = () => {
     this.setState({
       childrenDrawer: true,
+      Sample_Item: '',
+      dataType: '',
+      color: '',
+      units: '',
+
+    });
+
+    this.setState({
+
     });
   };
 
@@ -1281,7 +1342,7 @@ this.setState({
 
   const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
 
-  this.setState({ dataType: e.target.value });
+  this.setState({ dataType: e.target.value, parameterAdd: null });
 
   var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
 
@@ -1291,7 +1352,8 @@ this.setState({
 
 handleSizeChange1 = (e) => {
 
-this.setState({ dataType: e.target.value});
+this.setState({ dataType: e.target.value,
+parameterAdd: null});
 
 
 
@@ -1507,13 +1569,13 @@ clearDates = () => {
         title: 'Title',
         dataIndex: 'Sample_Item',
         key: 'Sample_Item',
-        width: 200,
+
       },
       {
     title: 'Units',
     dataIndex: 'units',
     key: 'units',
-    width: 80,
+
   },
       {
     title: 'Data Type',
@@ -1566,7 +1628,7 @@ clearDates = () => {
 
 
 
-    width: 200,
+
   },
   {
 title: 'Color',
@@ -1587,7 +1649,7 @@ render: (text, record, isSelected) =>
 )
 
     ,
-width: 200,
+
 },
 
 
@@ -1647,11 +1709,11 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.closeSampleForm}
               visible={this.state.visibleSampleForm}
-              width={500}
+              width={600}
             >
             <Drawer
             title="Add Parameter"
-            width={420}
+            width={500}
             closable={false}
             onClose={this.onChildrenDrawerClose}
             visible={this.state.childrenDrawer}
@@ -1730,7 +1792,7 @@ const csvData1 = this.state.currentData;
               </Row>
               <Row style={{paddingTop: '20px'}}>
 
-            <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+            <Col xs={24} sm={14} md={14} lg={14} xl={14} >
               <Button  type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
               </Col>
               </Row>
@@ -1753,7 +1815,7 @@ const csvData1 = this.state.currentData;
 
 
             <Row style={{paddingTop: '10px'}} type="flex" justify="center">
-              <Button type="primary" onClick={this.showChildrenDrawer}>
+              <Button size="large" type="primary" onClick={this.showChildrenDrawer}>
             Add Sampling Parameter
           </Button>
 
@@ -1763,12 +1825,10 @@ const csvData1 = this.state.currentData;
 
               <Row style={{paddingTop: '10px'}} justify="center">
                 <form>
-                  <Row style={{textAlign: 'right'}}>
-                  <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Sample</Icon>
-                  </Row>
+
                   <Row>
                     <FormGroup>
-                      <Row style={{paddingTop: '10px'}}>
+                      <Row style={{paddingTop: '30px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                           <FormControl name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
@@ -1783,17 +1843,10 @@ const csvData1 = this.state.currentData;
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '10px'}}>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
-                        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
-                              onChange={this.handleChange} />
-                        </Col>
-                      </Row>
-                      <Row style={{paddingTop: '10px'}}>
                       <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Miscellaneous Notes</b></Col>
                       <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                      <FormControl name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
-                        onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
+                      <FormControl name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60, width: 400}}
+                        onChange={this.handleChange}  placeholder="Notes" value={this.state.sampleMisc} />
                       </Col>
                       </Row>
 
@@ -1808,12 +1861,13 @@ const csvData1 = this.state.currentData;
                               return (
                                 <Row style={{paddingTop: '10px'}}>
                           <FormGroup>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}  ({parameter.units})</b></Col>
-                            <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                            <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Sample_Item}  ({parameter.units})</b></Col>
+                            <Col xs={24} sm={13} md={13} lg={13} xl={13}>
                             <FormControl name={parameter.Sample_Item} type="text"
-                              onChange={this.handleSampleChange(idx)}  placeholder="Concentration" value={parameter.Sample_Input} />
+                              onChange={this.handleSampleChange(idx)}  placeholder="Value" value={parameter.Sample_Input} />
                             </Col>
-                            <Col xs={24} sm={4} md={4} lg={4} xl={4}>
+                            <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+
                               <Icon type="delete" style={{fontSize: '24px'}}
                               onClick={() => this.removesample1(parameter.key)}>
                                 Click me
@@ -1831,9 +1885,10 @@ const csvData1 = this.state.currentData;
 
 
 
-                <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-                <Button type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Sample Report</Button>
-
+                <Row style={{paddingTop: '25px', textAlign: 'right'}}>
+                  <Col xs={24} sm={22} md={22} lg={22} xl={22} >
+                <Button size="large" type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Sample</Button>
+                </Col>
 
 
                 </Row>
@@ -1854,89 +1909,83 @@ const csvData1 = this.state.currentData;
               title= "Edit Sample Form"
               placement={this.state.placement}
               closable={false}
-              onClose={this.visible5Close}
+
               visible={this.state.visible5}
-              width={500}
+              width={600}
             >
 
 
 
 
-                  <Row style={{paddingTop: '10px'}} justify="center">
-                    <form>
-                      <Row style={{textAlign: 'right'}}>
-                      <Icon type="right-circle"  style={{fontSize: '30px'}} onClick={() => this.onClose()}>+ Add Sample</Icon>
-                      </Row>
-                      <Row>
-                        <FormGroup>
-                          <Row style={{paddingTop: '10px'}}>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
-                            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
-                              onChange={this.handleChange} />
-                            </Col>
-                          </Row>
-                          <Row style={{paddingTop: '10px'}}>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>ID #</b></Col>
-                            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl name='sampleID' type='text' placeholder="ID" value={this.state.sampleID}
-                                onChange={this.handleChange} />
-                            </Col>
-                          </Row>
-                          <Row style={{paddingTop: '10px'}}>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
-                            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
-                                  onChange={this.handleChange} />
-                            </Col>
-                          </Row>
-                          <Row style={{paddingTop: '10px'}}>
-                          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Miscellaneous Notes</b></Col>
-                          <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                          <FormControl name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
-                            onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
-                          </Col>
-                          </Row>
+            <Row style={{paddingTop: '10px'}} justify="center">
+              <form>
 
-
-                        </FormGroup>
+                <Row>
+                  <FormGroup>
+                    <Row style={{paddingTop: '30px'}}>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Sample Date</b></Col>
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                        <FormControl name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
+                        onChange={this.handleChange} />
+                      </Col>
+                    </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>ID #</b></Col>
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                        <FormControl name='sampleID' type='text' placeholder="ID" value={this.state.sampleID}
+                          onChange={this.handleChange} />
+                      </Col>
+                    </Row>
+                    <Row style={{paddingTop: '10px'}}>
+                    <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Miscellaneous Notes</b></Col>
+                    <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <FormControl name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60, width: 400}}
+                      onChange={this.handleChange}  placeholder="Notes" value={this.state.sampleMisc} />
+                    </Col>
                     </Row>
 
 
-      {this.state.arrayData2.map((parameter, idx) => {
 
-                    return (
-                      <Row style={{paddingTop: '10px'}}>
-                <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}   </b></Col>
-                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                  <FormControl name={parameter.Sample_Item} type="text" componentClass="textarea" style={{ height: 60}}
-                    onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Sample_Input} />
-                  </Col>
-                  <Col xs={24} sm={4} md={4} lg={4} xl={4}>
-                    <Icon type="delete" style={{fontSize: '24px'}}
-                    onClick={() => this.removesample2(parameter.Sample_Item)}>
-                      Click me
-                    </Icon>
-                    </Col>
+                  </FormGroup>
+              </Row>
 
 
+              {this.state.snapArray1.map((parameter, idx) => {
 
+                            return (
+                              <Row style={{paddingTop: '10px'}}>
+                        <FormGroup>
+                          <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Sample_Item}  ({parameter.units})</b></Col>
+                          <Col xs={24} sm={13} md={13} lg={13} xl={13}>
+                          <FormControl name={parameter.Sample_Item} type="text"
+                            onChange={this.handleSampleChange(idx)}  placeholder="Value" value={parameter.Sample_Input} />
+                          </Col>
+                          <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
 
-                            </FormGroup>
-                          </Row>
-                          )})}
-
+                            <Icon type="delete" style={{fontSize: '24px'}}
+                            onClick={() => this.removesample1(parameter.key)}>
+                              Click me
+                            </Icon>
+                            </Col>
 
 
 
 
-                  <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-                  <Button  type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Report</Button>
+                        </FormGroup>
+                      </Row>
+                      )})}
+
+
+                      <Row style={{paddingTop: '25px', textAlign: 'right'}}>
+                        <Col xs={24} sm={22} md={22} lg={22} xl={22} >
+                      <Button  size="large" type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Report</Button>
+                      </Col>
+
+
+                      </Row>
 
 
 
-                  </Row>
 
 
 
@@ -2199,7 +2248,7 @@ const csvData1 = this.state.currentData;
                     </Row>
                     <Row style={{paddingTop: '20px'}}>
 
-                  <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+                  <Col xs={24} sm={14} md={14} lg={14} xl={14} style={{display: this.state.parameterAdd}}>
                     <Button  type="primary" onClick={this.fillParameterInfo} bsStyle="primary">Add Parameter</Button>
                     </Col>
                     </Row>

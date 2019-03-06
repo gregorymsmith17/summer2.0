@@ -18,9 +18,12 @@ import fileDownload from "js-file-download";
 
 import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, Tooltip, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 
-import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, Select, AutoComplete, Radio, Alert } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, Select, AutoComplete, Radio, Alert, Calendar, DatePicker } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { CSVLink, CSVDownload } from "react-csv";
+
+
+const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 
 const TabPane = Tabs.TabPane;
 
@@ -99,6 +102,12 @@ export default class maintenanceReports extends Component {
           userID: '',
           key: "1",
           snapArray: [],
+
+          save: '',
+          save1: '',
+
+          chartArray: [],
+
           snapArray1: [],
           arrayData1: [],
           arrayData2: [],
@@ -112,6 +121,8 @@ export default class maintenanceReports extends Component {
           sampleTitle: '',
           sampleID: '',
           sampleMisc: '',
+          Status: '',
+          court: '',
 
 
           item: '',
@@ -126,6 +137,8 @@ export default class maintenanceReports extends Component {
 
           childrenDrawer: false,
           childrenDrawer1: false,
+
+          childrenDrawerComment: false,
 
 
 
@@ -159,6 +172,8 @@ export default class maintenanceReports extends Component {
           hoaContact: '',
           managementContactNumber: '',
           hoaContactNumber: '',
+
+          currentProject: '',
 
 
         }
@@ -209,213 +224,249 @@ export default class maintenanceReports extends Component {
             userID: user.uid,
           })
 
-          const parameterList1Ref = fire.database().ref(`maintenanceReport/${user.uid}`);
-          parameterList1Ref.on('value', (snapshot) => {
-            let snapArray = this.snapshotToArray(snapshot);
+          const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+          currentProjectRef.on('value', (snapshot) => {
+            let project = snapshot.child('currentProject').val();
+            console.log(project);
+            this.setState({
+              currentProject: project
+            })
 
-            if (snapArray.length == 0) {
-              console.log("do nothing")
-            }
+            const parameterList1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
+            parameterList1Ref.on('value', (snapshot) => {
+              let snapArray = this.snapshotToArray(snapshot);
 
-
-
-
-
-
-
-            if (snapArray.length > 0) {
-              let data = snapArray;
-
-
-
-
-
-              let tableData1 = [];
-              for (let i=0; i < snapArray.length; i++) {
-              //push send this data to the back of the chartData variable above.
-              tableData1.push(Object.keys(snapArray[i]));
+              if (snapArray.length == 0) {
+                console.log("do nothing")
               }
 
-              let tableData2 = tableData1.map(function(a){return a.length;});
-              tableData2.indexOf(Math.max.apply(Math, tableData2));
-
-
-
-              let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 
 
 
 
-              let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
-              table1Keys = table1Keys.filter(e => e !== 'ID');
-              table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
-              table1Keys = table1Keys.filter(e => e !== 'date');
-              table1Keys = table1Keys.filter(e => e !== 'Title');
-              table1Keys = table1Keys.filter(e => e !== 'key');
-              table1Keys = table1Keys.filter(e => e !== 'key');
 
 
-              if (this.state.turnedOffKeys.length == 0) {
-                console.log("do nothing again")
-              }
+              if (snapArray.length > 0) {
+                let data = snapArray;
 
-              if (this.state.turnedOffKeys.lenth > 0) {
-                this.state.turnedOffKeys.map((item) => {
 
-                  table1Keys = table1Keys.filter(e => e !== item);
+
+
+
+                let tableData1 = [];
+                for (let i=0; i < snapArray.length; i++) {
+                //push send this data to the back of the chartData variable above.
+                tableData1.push(Object.keys(snapArray[i]));
+                }
+
+                let tableData2 = tableData1.map(function(a){return a.length;});
+                tableData2.indexOf(Math.max.apply(Math, tableData2));
+
+
+
+                let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
+
+
+
+
+                let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
+                table1Keys = table1Keys.filter(e => e !== 'ID');
+                table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
+                table1Keys = table1Keys.filter(e => e !== 'date');
+                table1Keys = table1Keys.filter(e => e !== 'Title');
+                table1Keys = table1Keys.filter(e => e !== 'Status');
+                table1Keys = table1Keys.filter(e => e !== 'court');
+                table1Keys = table1Keys.filter(e => e !== 'key');
+                table1Keys = table1Keys.filter(e => e !== 'key');
+
+
+                if (this.state.turnedOffKeys.length == 0) {
+                  console.log("do nothing again")
+                }
+
+                if (this.state.turnedOffKeys.lenth > 0) {
+                  this.state.turnedOffKeys.map((item) => {
+
+                    table1Keys = table1Keys.filter(e => e !== item);
+                  })
+                }
+
+                console.log(table1Keys)
+
+                this.setState({
+                  smallGraphKeys: table1Keys,
                 })
+
+
+
+                let tableKeys = table1Keys.map((txt) => {
+
+
+                  const item3 = txt.replace(/^"(.*)"$/, '$1');
+                  const item4 = "a"+"."+item3;
+
+
+                  console.log(item3);
+                  console.log(item4);
+
+                  return (
+
+                  {
+
+
+
+
+                }
+                )})
+
+                tableKeys.unshift({
+                title: 'Ball in Court',
+                dataIndex: 'court',
+                key: 'court',
+                ...this.getColumnSearchProps('court'),
+                sorter: (a, b) => { return a.court.localeCompare(b.court)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+                tableKeys.unshift({
+                title: 'Status',
+                dataIndex: 'Status',
+                key: 'Status',
+                ...this.getColumnSearchProps('Status'),
+                sorter: (a, b) => { return a.Status.localeCompare(b.Status)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+
+
+                tableKeys.unshift({
+                title: 'Date',
+                dataIndex: 'date',
+                key: 'date',
+                ...this.getColumnSearchProps('date'),
+                sorter: (a, b) => { return a.date.localeCompare(b.date)},
+                sortDirections: ['descend', 'ascend'],
+
+
+                })
+                tableKeys.unshift({
+                title: 'Title',
+                dataIndex: 'Title',
+                key: 'Title',
+                ...this.getColumnSearchProps('Title'),
+                sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+                sortDirections: ['descend', 'ascend'],
+
+
+                })
+
+                tableKeys.unshift({
+                title: 'ID #',
+                dataIndex: 'ID',
+                key: 'ID',
+                ...this.getColumnSearchProps('ID'),
+                sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+
+                tableKeys.unshift({
+                  title: 'Edit',
+                  dataIndex: '',
+                  key: 'x',
+                  fixed: 'left',
+                  render: this.editRow.bind(this),
+                  width: 50,
+
+
+                })
+
+                tableKeys.unshift({
+
+                  title: 'Delete',
+                  dataIndex: '',
+                  fixed: 'left',
+                  key: 'y',
+                  render: this.deleteRow.bind(this),
+                  width: 50,
+
+
+                })
+                tableKeys.push({
+
+                  title: 'Preview',
+                  dataIndex: '',
+                  fixed: 'right',
+                  key: 'z',
+                  render: this.previewReport.bind(this),
+                  width: 50,
+                })
+                console.log(data);
+                let reverseData = data.reverse();
+
+                let reverseData1 = data.reverse();
+
+
+                this.setState({
+                  snapArray: data.reverse(),
+
+                  tableKeys: tableKeys,
+                })
+
+
+
               }
 
-              console.log(table1Keys)
-
-              this.setState({
-                smallGraphKeys: table1Keys,
-              })
-
-
-
-              let tableKeys = table1Keys.map((txt) => {
-
-
-                const item3 = txt.replace(/^"(.*)"$/, '$1');
-                const item4 = "a"+"."+item3;
-
-
-                console.log(item3);
-                console.log(item4);
-
-                return (
-
-                {
-                title:txt,
-                dataIndex: txt,
-                key: txt,
-                ...this.getColumnSearchProps(txt),
-
-
-                width: 300,
-              }
-              )})
-
-              tableKeys.unshift({
-              title: 'Title',
-              dataIndex: 'Title',
-              key: 'Title',
-              ...this.getColumnSearchProps('Title'),
-              sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
-              sortDirections: ['descend', 'ascend'],
-              width: 200,
-
-              })
-
-              tableKeys.unshift({
-              title: 'Date',
-              dataIndex: 'date',
-              key: 'date',
-              ...this.getColumnSearchProps('date'),
-              sorter: (a, b) => { return a.date.localeCompare(b.date)},
-              sortDirections: ['descend', 'ascend'],
-
-              width: 130,
-              })
-
-              tableKeys.unshift({
-              title: 'ID #',
-              dataIndex: 'ID',
-              key: 'ID',
-              ...this.getColumnSearchProps('ID'),
-              sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
-              sortDirections: ['descend', 'ascend'],
-              width: 80,
-              })
-
-
-              tableKeys.unshift({
-                title: 'Edit',
-                dataIndex: '',
-                key: 'x',
-                fixed: 'left',
-                render: this.editRow.bind(this),
-                width: 60,
-
-
-              })
-
-              tableKeys.unshift({
-
-                title: 'Delete',
-                dataIndex: '',
-                fixed: 'left',
-                key: 'y',
-                render: this.deleteRow.bind(this),
-                width: 60,
-
-
-              })
-              tableKeys.push({
-
-                title: 'Preview',
-                dataIndex: '',
-                fixed: 'right',
-                key: 'z',
-                render: this.previewReport.bind(this),
-                width: 60,
-              })
-              console.log(data);
-              let reverseData = data.reverse();
-
-              let reverseData1 = data.reverse();
-
-
-              this.setState({
-                snapArray: data.reverse(),
-
-                tableKeys: tableKeys,
-              })
-
-
-
-            }
-
-
-             })
-
-             const sampleList2Ref = fire.database().ref(`maintenanceList/${user.uid}`);
-             sampleList2Ref.on('value', (snapshot) => {
-               let maintenanceArray = this.snapshotToArray(snapshot);
-               console.log(maintenanceArray)
-               this.setState({
-                 snapArray1: maintenanceArray,
 
                })
-             })
+
+               const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
+               sampleList2Ref.on('value', (snapshot) => {
+                 let maintenanceArray = this.snapshotToArray(snapshot);
+                 console.log(maintenanceArray)
+                 this.setState({
+                   snapArray1: maintenanceArray,
+
+                 })
+               })
 
 
 
-          const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
-          profileRef.on('value', (snapshot) => {
-            var that = this;
+            const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+            profileRef.on('value', (snapshot) => {
+              var that = this;
 
 
-          this.setState({
-            lakeName: snapshot.child('lakeName').val(),
-            locationCity: snapshot.child('locationCity').val(),
-            locationState: snapshot.child('locationState').val(),
-            managementContact: snapshot.child('managementContact').val(),
-            hoaContact: snapshot.child('hoaContact').val(),
-            managementContactNumber: snapshot.child('managementContactNumber').val(),
-            hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-            latitude: snapshot.child('latitude').val(),
-            longitude: snapshot.child('longitude').val(),
-            center: {
-              lat: snapshot.child('latitude').val(),
-              lng: snapshot.child('longitude').val()
-            },
+            this.setState({
+              lakeName: snapshot.child('lakeName').val(),
+              locationCity: snapshot.child('locationCity').val(),
+              locationState: snapshot.child('locationState').val(),
+              managementContact: snapshot.child('managementContact').val(),
+              hoaContact: snapshot.child('hoaContact').val(),
+              managementContactNumber: snapshot.child('managementContactNumber').val(),
+              hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+              latitude: snapshot.child('latitude').val(),
+              longitude: snapshot.child('longitude').val(),
+              center: {
+                lat: snapshot.child('latitude').val(),
+                lng: snapshot.child('longitude').val()
+              },
+
+            });
+
 
           });
 
 
-        });
+
+
+
+          })
+
+
 
 
 
@@ -433,7 +484,7 @@ export default class maintenanceReports extends Component {
 
 showDrawer = () => {
 
-  const sampleList2Ref = fire.database().ref(`maintenanceList/${this.state.userID}`);
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -444,6 +495,8 @@ showDrawer = () => {
       sampleID: '',
       sampleTitle: '',
       sampleMisc: '',
+      Status: '',
+      court: '',
       snapArray1: maintenanceArray,
       visible: true,
       Maintenance_Item: '',
@@ -570,18 +623,29 @@ getColumnSearchProps = (dataIndex) => ({
 
   deleteRow = (row, isSelected, e, id, key) =>
   {
+
+    const content = (
+  <div style={{textAlign: 'center'}}>
+    <p>Are you sure you want <br /> to delete this Maintenance Log?</p>
+    <Button type="primary" onClick={() => this.removesample(isSelected.key)}>Delete</Button>
+  </div>
+  );
+
+
     return (
       <div style={{textAlign: 'center'}}>
+        <Popover content={content} trigger="click">
       <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
-      onClick={() => this.removesample(isSelected.key)}>
+      >
         Click me
       </Icon>
+    </Popover>
       </div>
     )
   }
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`/maintenanceReport/${this.state.userID}/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
    sampleRef.remove();
  }
 
@@ -601,13 +665,13 @@ getColumnSearchProps = (dataIndex) => ({
 
  removesample1(itemId) {
 
-  const sampleRef = fire.database().ref(`/maintenanceList/${this.state.userID}/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList/${itemId}`);
   sampleRef.remove();
 }
 
 removesample2(itemId) {
 
-  const sampleRef = fire.database().ref(`/maintenanceReport/${this.state.userID}/${this.state.id}/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.id}/${itemId}`);
   sampleRef.remove();
   this.fillStates(this.state.id);
 
@@ -631,8 +695,8 @@ fillPreview(itemId) {
 
 
 
-  const sample1Ref = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
-  let id = fire.database().ref().child(`/maintenanceReport/${user.uid}/${itemId}`).key;
+  const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${itemId}`);
+  let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceReport/${itemId}`).key;
   sample1Ref.on('value', (snapshot) => {
 
     let maintenanceList = snapshot.val();
@@ -664,7 +728,7 @@ fillPreview(itemId) {
 
 });
 
-const sample2Ref = fire.database().ref(`/maintenanceReport/${user.uid}`);
+const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
 sample2Ref.on('value', (snapshot) => {
 let maintenanceList = this.snapshotToArray(snapshot);
 
@@ -732,8 +796,8 @@ arrayData2: arrayData,
 
       })
 
-    const sample1Ref = fire.database().ref(`/maintenanceList/${user.uid}/${itemId}`);
-    let id = fire.database().ref().child(`/maintenanceList/${user.uid}/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`);
+    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
 
       this.setState({
@@ -750,7 +814,7 @@ parameterOverwrite = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const sampleListRef = fire.database().ref(`maintenanceList/${user.uid}/${this.state.id}`);
+  const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList/${this.state.id}`);
 
 
 var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: '', id: this.state.id}
@@ -771,8 +835,8 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = fire.database().ref(`maintenanceList/${user.uid}`);
-    let id = fire.database().ref().child(`/maintenanceList/${user.uid}/${itemId}`).key;
+    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
+    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
 
     if (this.state.Maintenance_Item.length == 0) {
       console.log("do nothing")
@@ -803,15 +867,47 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     }
 
 
+  });
+
+
+  }
+
+  fillParameterInfo1 = (e, itemId) => {
+    e.preventDefault();
+    //fire.database().ref('samples') refers to the main title of the fire database.
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const sampleListRef = this.state.arrayData2
+    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
+
+    if (this.state.Maintenance_Item.length == 0) {
+      console.log("do nothing")
+      this.setState({
+        error: null,
+      })
+    }
+
+    if (this.state.Maintenance_Item.length != 0) {
+
+      const sampleInfo = {
+        Maintenance_Item: this.state.Maintenance_Item,
+        Maintenance_Input: this.state.Maintenance_Input,
 
 
 
+      }
 
 
 
+      sampleListRef.push(sampleInfo);
+      //this.setState is used to clear the text boxes after the form has been submitted.
+      this.setState({
+        Maintenance_Item: '',
+        Maintenance_Input: '',
 
 
+      });
 
+    }
 
 
   });
@@ -826,7 +922,9 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
       if (idx !== sidx) return parameter;
       return { ...parameter, Maintenance_Input: evt.target.value };
     });
-    this.setState({ snapArray1: newParameters });
+    this.setState({ snapArray1: newParameters,
+                    save: 'none',
+                  save1: null});
 
 
 
@@ -837,7 +935,7 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
         if (idx !== sidx) return parameter;
         return { ...parameter, Maintenance_Input: evt.target.value };
       });
-      this.setState({ arrayData2: newParameters });
+      this.setState({ arrayData2: newParameters, save: 'none', save1: null });
 
 
 
@@ -857,7 +955,7 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const sampleListRef = fire.database().ref(`maintenanceReport/${user.uid}`);
+        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
 
 
 
@@ -867,7 +965,7 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
 
 
     if (arr.length == 0){
-      var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
+      var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court,  Miscellaneous: this.state.sampleMisc}
       console.log(object);
       sampleListRef.push(object);
     }
@@ -875,11 +973,11 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
 if (arr.length > 0){
 
       var object = arr.reduce(
-          (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+          (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
           console.log(object);
           sampleListRef.push(object);
 
-          const sampleList2Ref = fire.database().ref(`maintenanceList/${user.uid}`);
+          const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
           sampleList2Ref.on('value', (snapshot) => {
             let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -901,6 +999,8 @@ if (arr.length > 0){
           sampleID: '',
           sampleTitle: '',
           sampleMisc: '',
+          Status: '',
+          court: '',
 
           visible: false,
           visible1: false,
@@ -921,11 +1021,13 @@ if (arr.length > 0){
             inputOverwrite: null,
             inputAdd: 'none',
             visibleEditMaintenance: true,
+            save: 'none',
+            save1: null,
 
           })
 
-        const sample1Ref = fire.database().ref(`/maintenanceReport/${user.uid}/${itemId}`);
-        let id = fire.database().ref().child(`/maintenanceList/${user.uid}/${itemId}`).key;
+        const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${itemId}`);
+        let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
         sample1Ref.on('value', (snapshot) => {
 
           let maintenanceList = snapshot.val();
@@ -938,6 +1040,8 @@ if (arr.length > 0){
             sampleID: snapshot.child('ID').val(),
             sampleTitle: snapshot.child('Title').val(),
             sampleMisc: snapshot.child('Miscellaneous').val(),
+            Status: snapshot.child('Status').val(),
+            court: snapshot.child('court').val(),
             id: id,
           });
 
@@ -945,6 +1049,8 @@ if (arr.length > 0){
           delete arr.date;
           delete arr.ID;
           delete arr.Title;
+          delete arr.Status;
+          delete arr.court;
           delete arr.Miscellaneous;
 
           let arrayKeys = Object.keys(arr);
@@ -959,7 +1065,7 @@ if (arr.length > 0){
 
   });
 
-const sample2Ref = fire.database().ref(`/maintenanceReport/${user.uid}`);
+const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
 sample2Ref.on('value', (snapshot) => {
 let maintenanceList = this.snapshotToArray(snapshot);
 
@@ -995,7 +1101,7 @@ this.setState({
       e.preventDefault();
       //fire.database().ref('samples') refers to the main title of the fire database.
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleListRef = fire.database().ref(`maintenanceReport/${user.uid}/${this.state.id}`);
+      const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
 
 
   var arr = this.state.arrayData2;
@@ -1003,7 +1109,7 @@ this.setState({
 
 
   if (arr.length == 0){
-    var object = {date: this.state.sampleDate, ID: this.state.sampleID,  Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc}
+    var object = {date: this.state.sampleDate, ID: this.state.sampleID,  Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc}
     console.log(object);
     sampleListRef.set(object);
 
@@ -1012,7 +1118,7 @@ this.setState({
 
 
     var object = arr.reduce(
-        (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+        (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
         console.log(object);
         sampleListRef.set(object);
 
@@ -1025,6 +1131,9 @@ this.setState({
         visible: false,
         visible1: false,
         visible2: false,
+        save: null,
+        save1: 'none',
+        visibleEditMaintenance: false,
 
       });
 
@@ -1094,16 +1203,115 @@ this.setState({
     });
   };
 
+  onChildrenDrawerCloseComment = () => {
+    this.setState({
+      childrenDrawerComment: false,
+    });
+  };
+  showChildrenDrawerComment = () => {
+    this.setState({
+      childrenDrawerComment: true,
+    });
+  };
 
 
 
 
+  handleSizeChange1 = (e) => {
+
+  this.setState({ Status: e.target.value});
+
+
+
+  }
+
+
+  onChangeDate = (date, dateString) => {
+
+    const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport`);
+    parameterList1Ref.on('value', (snapshot) => {
+      let snapArray = this.snapshotToArray(snapshot);
+      console.log(snapArray)
+      if (snapArray.length == 0) {
+        this.setState({
+          snapArray: [],
+        })
+      }
+      if (snapArray.length > 0) {
+        let data = snapArray;
+      let reverseData1 = data.reverse();
+        this.setState({
+          snapArray: data.reverse(),
+          chartArray: data.reverse(),
+        })
+      }
+       })
+
+    let startDate = dateString[0];
+    let endDate = dateString[1];
+    let dates = this.state.chartArray;
+
+    var dateRange = dates.filter((date)=> { if (date.date >= startDate && date.date <= endDate) {
+      return true
+    }});
+
+    this.setState({
+      startDate: dateString[0],
+      endDate: dateString[1],
+      snapArray: dateRange
+    })
+
+    console.log(dateRange);
+    console.log(startDate);
+    console.log(endDate);
+    console.log(dates);
+  }
+
+  clearDates = () => {
+
+
+        const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport`);
+        parameterList1Ref.on('value', (snapshot) => {
+          let snapArray = this.snapshotToArray(snapshot);
+          console.log(snapArray)
+          if (snapArray.length == 0) {
+            this.setState({
+              snapArray: [],
+
+            })
+          }
+
+
+
+          if (snapArray.length > 0) {
+            let data = snapArray;
+
+            let reverseData1 = data.reverse();
+
+            this.setState({
+              snapArray: data.reverse(),
+
+              startDate: '',
+              endDate: ''
+
+            })
+
+
+          }
+
+           })
+
+
+
+
+  }
 
 
 
 
       render() {
 
+        const dateFormat = 'YYYY-MM-DD';
 
         const content = (
           <Alert
@@ -1245,7 +1453,7 @@ const csvData1 = this.state.currentData;
               <b>Maintenance Item: </b>
             </Col>
             <Col xs={24} sm={16} md={16} lg={16} xl={16}>
-            <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Maintenance_Item} />
+            <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Item"  value={this.state.Maintenance_Item} />
             </Col>
 
 
@@ -1282,8 +1490,8 @@ const csvData1 = this.state.currentData;
 
 
             <Row style={{paddingTop: '10px'}} type="flex" justify="center">
-              <Button type="primary" onClick={this.showChildrenDrawer}>
-            Add Maintenance Item
+              <Button size="large"  style={{backgroundColor: 'orange', color: 'white'}} onClick={this.showChildrenDrawer}>
+            <b>Add Maintenance Item</b>
           </Button>
 
 
@@ -1298,7 +1506,7 @@ const csvData1 = this.state.currentData;
                   <Row>
                     <FormGroup>
                       <Row style={{paddingTop: '10px'}}>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Date</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                           <FormControl required  name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
                           onChange={this.handleChange} />
@@ -1312,16 +1520,39 @@ const csvData1 = this.state.currentData;
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '10px'}}>
-                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Title</b></Col>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                           <FormControl  required name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
-                      <Row style={{paddingTop: '10px'}}>
-                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Miscellaneous Notes</b></Col>
+                      <Row style={{paddingTop: '35px'}}>
+
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Status</b></Col>
+                        <Col xs={24} sm={18} md={18} lg={18} xl={18} style={{textAlign: 'left'}}>
+
+                        <Radio.Group value={this.state.Status} size="default" onChange={this.handleSizeChange1}>
+                    <Radio.Button value="Not Started">Not Started</Radio.Button>
+                    <Radio.Button value="In Progress">In Progress</Radio.Button>
+                    <Radio.Button value="Completed">Completed</Radio.Button>
+
+                  </Radio.Group>
+                </Col>
+                      </Row>
+
+                      <Row style={{paddingTop: '20px'}}>
+                        <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Ball in Court</b></Col>
+                        <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                          <FormControl  required name='court' type='text' placeholder="Name" value={this.state.court}
+                              onChange={this.handleChange} />
+                        </Col>
+                      </Row>
+
+
+                      <Row style={{paddingTop: '20px'}}>
+                      <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
                       <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                      <FormControl  required  name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
+                      <FormControl  required  name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60, width: 400}}
                         onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
                       </Col>
                       </Row>
@@ -1334,12 +1565,12 @@ const csvData1 = this.state.currentData;
                               return (
                                 <Row style={{paddingTop: '10px'}}>
                           <FormGroup>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                            <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Maintenance_Item}</b></Col>
                             <Col xs={24} sm={14} md={14} lg={14} xl={14}>
                             <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 70, width: '100%'}}
                               onChange={this.handleSampleChange(idx)}   value={parameter.Maintenance_Input} />
                             </Col>
-                            <Col xs={24} sm={4} md={4} lg={4} xl={4}>
+                            <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
                               <Icon type="delete" style={{fontSize: '24px'}}
                               onClick={() => this.removesample1(parameter.key)}>
                                 Click me
@@ -1357,7 +1588,7 @@ const csvData1 = this.state.currentData;
 
 
 
-                <Row style={{paddingTop: '10px', textAlign: 'right'}}>
+                <Row style={{paddingTop: '30px', textAlign: 'right'}}>
                 <Button  type="primary" onClick={this.sampleSubmit} bsStyle="primary">Add Maintenance Report</Button>
 
 
@@ -1375,13 +1606,74 @@ const csvData1 = this.state.currentData;
 
             </Drawer>
             <Drawer
-              title= "Fill in Maintenance Form"
+              title= "Update Maintenance Item  - Be Sure to Save"
               placement={this.state.placement}
               closable={false}
-              onClose={this.onClose}
+
               visible={this.state.visibleEditMaintenance}
-              width={500}
+              width={600}
             >
+
+            <Drawer
+            title="Add Comment"
+            width={500}
+            closable={false}
+            onClose={this.onChildrenDrawerCloseComment}
+            visible={this.state.childrenDrawerComment}
+          >
+
+
+          <form>
+
+
+        <FormGroup onSubmit={this.fillParameterInfo}>
+
+
+          <Row style={{paddingTop: '10px', textAlign: 'left'}}>
+            <Col xs={24} sm={8} md={7} lg={8} xl={8}>
+            <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Comment Title"  value={this.state.Maintenance_Item} />
+            </Col>
+
+          </Row>
+
+          <Row style={{paddingTop: '30px', textAlign: 'left'}}>
+            <Col xs={24} sm={22} md={22} lg={22} xl={22}>
+            <FormControl required name="Maintenance_Input" onChange={this.handleChange} type="textarea" componentClass="textarea" placeholder="Comment" style={{ height: 60, width: 400}} value={this.state.Maintenance_Input} />
+            </Col>
+
+
+
+          </Row>
+
+
+
+        <Row>
+          <hr></hr>
+        </Row>
+        <Row style={{paddingTop: '20px'}}>
+
+      <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+        <Button   type="primary" onClick={this.fillParameterInfo1} bsStyle="primary">Add Comment Item</Button>
+        </Col>
+        </Row>
+
+
+
+      </FormGroup>
+
+
+
+
+        </form>
+
+
+
+
+
+
+          </Drawer>
+
+
 
 
 
@@ -1395,30 +1687,53 @@ const csvData1 = this.state.currentData;
                       <Row>
                         <FormGroup>
                           <Row style={{paddingTop: '10px'}}>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Maintenance Date</b></Col>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Date</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
+                              <FormControl required  name='sampleDate' type='date' placeholder="Date" value={this.state.sampleDate}
                               onChange={this.handleChange} />
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '10px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>ID #</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl name='sampleID' type='text' placeholder="ID" value={this.state.sampleID}
+                              <FormControl  required name='sampleID' type='text' placeholder="ID" value={this.state.sampleID}
                                 onChange={this.handleChange} />
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '10px'}}>
-                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Report Title</b></Col>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Title</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
+                              <FormControl  required name='sampleTitle' type='text' placeholder="Title" value={this.state.sampleTitle}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
-                          <Row style={{paddingTop: '10px'}}>
-                          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Miscellaneous Notes</b></Col>
-                          <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                          <FormControl name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
+                          <Row style={{paddingTop: '35px'}}>
+
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Status</b></Col>
+                            <Col xs={24} sm={18} md={18} lg={18} xl={18} style={{textAlign: 'left'}}>
+
+                            <Radio.Group value={this.state.Status} size="default" onChange={this.handleSizeChange1}>
+                        <Radio.Button value="Not Started">Not Started</Radio.Button>
+                        <Radio.Button value="In Progress">In Progress</Radio.Button>
+                        <Radio.Button value="Completed">Completed</Radio.Button>
+
+                      </Radio.Group>
+                    </Col>
+                          </Row>
+
+                          <Row style={{paddingTop: '20px'}}>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Ball in Court</b></Col>
+                            <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                              <FormControl  required name='court' type='text' placeholder="Name" value={this.state.court}
+                                  onChange={this.handleChange} />
+                            </Col>
+                          </Row>
+
+
+                          <Row style={{paddingTop: '20px'}}>
+                          <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
+                          <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                          <FormControl  required  name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
                             onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
                           </Col>
                           </Row>
@@ -1432,11 +1747,11 @@ const csvData1 = this.state.currentData;
                       <Row style={{paddingTop: '10px'}}>
                 <FormGroup>
                   <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
-                  <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                  <FormControl name={parameter.Maintenance_Item} type="text" componentClass="textarea" style={{ height: 60}}
+                  <Col xs={24} sm={15} md={15} lg={15} xl={15}>
+                  <FormControl name={parameter.Maintenance_Item} type="text" componentClass="textarea" style={{ height: 80}}
                     onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Maintenance_Input} />
                   </Col>
-                  <Col xs={24} sm={4} md={4} lg={4} xl={4}>
+                  <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
                     <Icon type="delete" style={{fontSize: '24px'}}
                     onClick={() => this.removesample2(parameter.Maintenance_Item)}>
                       Click me
@@ -1448,15 +1763,33 @@ const csvData1 = this.state.currentData;
                           )})};
 
 
+                          <Row style={{paddingTop: '10px'}} type="flex" justify="right">
+                            <Col span={24} style={{textAlign: 'right'}}>
+                            <Button size="large"  style={{backgroundColor: 'orange', color: 'white'}} onClick={this.showChildrenDrawerComment}>
+                           <b>+ Add Comment</b>
+                        </Button>
+                        </Col>
 
 
+                            </Row>
 
-                  <Row style={{paddingTop: '10px', textAlign: 'right'}}>
-                  <Button  type="primary" onClick={this.sampleOverwrite} bsStyle="primary">Overwrite Report</Button>
 
+                  <Row style={{paddingTop: '30px', textAlign: 'right'}}>
+
+                    <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{textAlign: 'center'}}>
+                  <div style={{display: this.state.save1}}><p style={{color: 'red', fontSize: '24px'}}><b>Be sure to save!</b></p></div>
+                  <div style={{display: this.state.save}}><p style={{color: 'red', fontSize: '24px'}}><b>Saved!</b></p></div>
+                </Col>
+
+
+                    <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                  <Button  size="large" type="primary" onClick={this.sampleOverwrite} bsStyle="primary"><b>Save Log</b></Button>
+                  </Col>
 
 
                   </Row>
+
+
 
                   </form>
 
@@ -1478,7 +1811,7 @@ const csvData1 = this.state.currentData;
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Row type="flex" justify="center">
                 <Col span={24} style={{textAlign: 'left'}}>
-                  <h2>Maintenance</h2>
+                  <h2>Maintenance Log</h2>
                 </Col>
               </Row>
 
@@ -1494,17 +1827,27 @@ const csvData1 = this.state.currentData;
                       <Row type="flex" justify="center">
                         <Col span={24} style={{textAlign: 'center'}}>
 
-                          <Row>
-                        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left'}}>
-                          <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
-
-                        </Col>
-                        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'right'}}>
-                        <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Report</Button>
-                        </Col>
 
 
-                      </Row>
+                      <Row>
+                    <Col xs={24} sm={24} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
+                      <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
+                    </Col>
+
+                    <Col xs={24} sm={24} md={3} lg={3} xl={3} >
+                    <Button onClick={this.clearDates}>Clear Dates</Button>
+                    </Col>
+
+                    <Col xs={24} sm={24} md={7} lg={7} xl={7} >
+                    <RangePicker  allowClear={true} onChange={this.onChangeDate}  />
+                    </Col>
+
+                    <Col xs={24} sm={24} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
+                    <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Item</Button>
+                    </Col>
+
+
+                  </Row>
 
                       <Row style={{paddingTop: '10px'}} type="flex" justify="center">
 
@@ -1524,7 +1867,7 @@ const csvData1 = this.state.currentData;
 
 
 
-                  <TabPane tab="ITEMS" key="2">
+                  <TabPane  key="2">
 
                     <Drawer
                       title= "Edit Parameter"
@@ -1582,7 +1925,7 @@ const csvData1 = this.state.currentData;
        </Col>
        <Col xs={24} sm={16} md={16} lg={16} xl={16}>
 
-           <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Sample Parameter"  value={this.state.Maintenance_Item} />
+           <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Item"  value={this.state.Maintenance_Item} />
 
        </Col>
 
