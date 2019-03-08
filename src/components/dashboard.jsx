@@ -1523,8 +1523,16 @@ syncId="anyId">
             <Icon type="up-circle"style={{fontSize: '32px',color: data1[i].color}} />
             </Col>
             <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
-            <b style={{fontSize: '24px'}}>{data1[i].Sample_Item} </b><p>{data1[i].units}</p>
+            <b style={{fontSize: '24px'}}>{data1[i].Sample_Item}</b>
             </Col>
+
+						<Col  xs={4} sm={4} md={4} lg={4} xl={4}>
+            <p>{data1[i].units}</p>
+            </Col>
+
+
+
+
             </Row>
 
             <Row>
@@ -1567,7 +1575,7 @@ syncId="anyId">
 						</Col>
 
 						<Col xs={24} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
-						<p style={{paddingTop: '25px', paddingRight: '50px', fontSize: '12px'}}>(Click and Drag to ReOrder)</p>
+						<p style={{paddingTop: '50px', paddingRight: '50px', fontSize: '12px'}}>(Click and Drag to ReOrder)</p>
 						</Col>
 
 
@@ -2916,7 +2924,7 @@ syncId="anyId">
 
           </Row>
 
-          <Row style={{paddingTop: '20px'}} type="flex" justify="center">
+          <Row style={{paddingTop: '20px'}}  justify="center">
             <Col span={24}>
 
 

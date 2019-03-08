@@ -1064,7 +1064,8 @@ this.setState({
       if (idx !== sidx) return parameter;
       return { ...parameter, Sample_Input: evt.target.value };
     });
-    this.setState({ snapArray1: newParameters });
+    this.setState({ snapArray1: newParameters,
+                    arrayData2: newParameters});
 
 
 
@@ -1229,6 +1230,7 @@ this.setState({
       e.preventDefault();
       //fire.database().ref('samples') refers to the main title of the fire database.
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+        console.log(this.state.id);
       const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport/${this.state.id}`);
 
 
@@ -1242,9 +1244,9 @@ this.setState({
     sampleListRef.set(object);
 
   }
-  else
 
 
+  if (arr.length > 0){
     var object = arr.reduce(
         (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
         console.log(object);
@@ -1260,6 +1262,7 @@ this.setState({
 
 
       });
+    }
 
     });
     }

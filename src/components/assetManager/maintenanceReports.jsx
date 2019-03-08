@@ -1609,7 +1609,7 @@ const csvData1 = this.state.currentData;
               title= "Update Maintenance Item  - Be Sure to Save"
               placement={this.state.placement}
               closable={false}
-
+              onClose={this.onClose}
               visible={this.state.visibleEditMaintenance}
               width={600}
             >
@@ -1777,8 +1777,7 @@ const csvData1 = this.state.currentData;
                   <Row style={{paddingTop: '30px', textAlign: 'right'}}>
 
                     <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{textAlign: 'center'}}>
-                  <div style={{display: this.state.save1}}><p style={{color: 'red', fontSize: '24px'}}><b>Be sure to save!</b></p></div>
-                  <div style={{display: this.state.save}}><p style={{color: 'red', fontSize: '24px'}}><b>Saved!</b></p></div>
+
                 </Col>
 
 
