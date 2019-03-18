@@ -1,0 +1,1 @@
+{"ast":null,"code":"export default function limitValue(value, min, max) {\n  return Math.max(Math.min(value, max), min);\n}","map":null,"metadata":{},"sourceType":"module"}

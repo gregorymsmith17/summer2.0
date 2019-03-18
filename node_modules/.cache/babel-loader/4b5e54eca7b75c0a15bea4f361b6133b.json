@@ -1,0 +1,1 @@
+{"ast":null,"code":"import alignElements from './align-elements';\nexport default function align(elements, rect, alignment) {\n  alignElements(elements, rect, alignment, \"x\", \"width\");\n}","map":null,"metadata":{},"sourceType":"module"}

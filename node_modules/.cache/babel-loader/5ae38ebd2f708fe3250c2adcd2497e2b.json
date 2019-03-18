@@ -1,0 +1,1 @@
+{"ast":null,"code":"import defined from './defined';\nexport default function valueOrDefault(value, defaultValue) {\n  return defined(value) ? value : defaultValue;\n}","map":null,"metadata":{},"sourceType":"module"}

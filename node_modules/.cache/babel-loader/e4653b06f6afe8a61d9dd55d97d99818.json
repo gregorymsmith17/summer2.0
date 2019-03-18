@@ -1,0 +1,1 @@
+{"ast":null,"code":"import stackElements from './stack-elements';\nimport createStackElements from './create-stack-elements';\nexport default function vStack(elements) {\n  stackElements(createStackElements(elements), \"y\", \"x\", \"height\");\n}","map":null,"metadata":{},"sourceType":"module"}

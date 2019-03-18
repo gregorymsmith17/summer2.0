@@ -1,0 +1,1 @@
+{"ast":null,"code":"export default function promiseAll(promises) {\n  return Promise.all(promises);\n}","map":null,"metadata":{},"sourceType":"module"}

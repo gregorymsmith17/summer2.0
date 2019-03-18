@@ -1,0 +1,1 @@
+{"ast":null,"code":"import alignElements from './align-elements';\nexport default function vAlign(elements, rect, alignment) {\n  alignElements(elements, rect, alignment, \"y\", \"height\");\n}","map":null,"metadata":{},"sourceType":"module"}

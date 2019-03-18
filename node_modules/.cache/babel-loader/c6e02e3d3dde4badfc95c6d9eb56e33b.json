@@ -1,0 +1,1 @@
+{"ast":null,"code":"import defined from './defined';\nexport default function eventCoordinates(e) {\n  if (defined((e.x || {}).location)) {\n    return {\n      x: e.x.location,\n      y: e.y.location\n    };\n  }\n\n  return {\n    x: e.pageX || e.clientX || 0,\n    y: e.pageY || e.clientY || 0\n  };\n}","map":null,"metadata":{},"sourceType":"module"}

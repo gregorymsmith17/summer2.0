@@ -1,0 +1,24 @@
+
+element.style {
+    width: 8982px;
+    opacity: 1;
+
+    transition-duration: 1000ms;
+    transition-timing-function: ease;
+    transition-delay: 5s;
+}
+.ant-carousel .slick-slider .slick-track, .ant-carousel .slick-slider .slick-list {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    transition-duration: 1000ms;
+    transition-delay: 5s;
+}
+.ant-carousel .slick-list {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    margin: 0;
+    padding: 0;
+    transition-duration: 1000ms;
+    transition-delay: 5s;
+}

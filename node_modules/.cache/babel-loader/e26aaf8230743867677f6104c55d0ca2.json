@@ -1,0 +1,1 @@
+{"ast":null,"code":"import Transformation from './transformation';\nexport default function transform(matrix) {\n  if (matrix === null) {\n    return null;\n  }\n\n  if (matrix instanceof Transformation) {\n    return matrix;\n  }\n\n  return new Transformation(matrix);\n}","map":null,"metadata":{},"sourceType":"module"}

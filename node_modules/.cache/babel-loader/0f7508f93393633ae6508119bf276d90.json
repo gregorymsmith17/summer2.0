@@ -1,0 +1,1 @@
+{"ast":null,"code":"import close from './close';\nexport default function closeOrLess(a, b, tolerance) {\n  return a < b || close(a, b, tolerance);\n}","map":null,"metadata":{},"sourceType":"module"}

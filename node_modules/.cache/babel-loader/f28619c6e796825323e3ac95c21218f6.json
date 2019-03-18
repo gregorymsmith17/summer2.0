@@ -1,0 +1,1 @@
+{"ast":null,"code":"export default function last(array) {\n  if (array) {\n    return array[array.length - 1];\n  }\n}","map":null,"metadata":{},"sourceType":"module"}

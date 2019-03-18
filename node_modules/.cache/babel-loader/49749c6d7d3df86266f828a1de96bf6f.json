@@ -1,0 +1,1 @@
+{"ast":null,"code":"import TextMetrics from './text-metrics';\nexport default function measureText(text, style, measureBox) {\n  return TextMetrics.current.measure(text, style, measureBox);\n}","map":null,"metadata":{},"sourceType":"module"}

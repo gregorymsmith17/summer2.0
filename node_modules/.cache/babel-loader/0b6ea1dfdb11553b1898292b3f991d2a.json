@@ -1,0 +1,1 @@
+{"ast":null,"code":"import wrapElements from './wrap-elements';\nexport default function wrap(elements, rect) {\n  return wrapElements(elements, rect, \"x\", \"y\", \"width\");\n}","map":null,"metadata":{},"sourceType":"module"}
