@@ -149,6 +149,7 @@ export default class chemicalApplications extends Component {
 
 
           tableKeys: [],
+          tableKeysSmall: [],
           searchText: '',
           selectedRowKeys: [], // Check here to configure the default column
           loading: false,
@@ -179,6 +180,11 @@ export default class chemicalApplications extends Component {
           hoaContactNumber: '',
 
           currentProject: '',
+
+          applicationDrawerWidth: '',
+          childApplicationDrawerWidth: '',
+          editDrawerWidth: '',
+          childEditDrawerWidth: '',
 
 
         }
@@ -310,16 +316,22 @@ export default class chemicalApplications extends Component {
                   const item3 = txt.replace(/^"(.*)"$/, '$1');
                   const item4 = "a"+"."+item3;
 
-
-                  console.log(item3);
-                  console.log(item4);
-
                   return (
 
                   {
 
+                }
+                )})
+
+                let tableKeysSmall = table1Keys.map((txt) => {
 
 
+                  const item3 = txt.replace(/^"(.*)"$/, '$1');
+                  const item4 = "a"+"."+item3;
+
+                  return (
+
+                  {
 
                 }
                 )})
@@ -405,11 +417,81 @@ export default class chemicalApplications extends Component {
 
                 let reverseData1 = data.reverse();
 
+                tableKeysSmall.unshift({
+                title: 'Amount',
+                dataIndex: 'amount',
+                key: 'amount',
+                ...this.getColumnSearchProps('amount'),
+                sorter: (a, b) => { return a.amount.localeCompare(b.amount)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+
+
+                tableKeysSmall.unshift({
+                title: 'Supplier',
+                dataIndex: 'supplier',
+                key: 'supplier',
+                ...this.getColumnSearchProps('supplier'),
+                sorter: (a, b) => { return a.supplier.localeCompare(b.supplier)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+                tableKeysSmall.unshift({
+                title: 'Chemical',
+                dataIndex: 'chemical',
+                key: 'chemical',
+                ...this.getColumnSearchProps('chemical'),
+                sorter: (a, b) => { return a.chemical.localeCompare(b.chemical)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+                tableKeysSmall.unshift({
+                title: 'Date',
+                dataIndex: 'date',
+                key: 'date',
+                ...this.getColumnSearchProps('date'),
+                sorter: (a, b) => { return a.date.localeCompare(b.date)},
+                sortDirections: ['descend', 'ascend'],
+
+
+                })
+
+
+
+                tableKeysSmall.unshift({
+                  title: 'Edit',
+                  dataIndex: '',
+                  key: 'x',
+
+                  render: this.editRowSmall.bind(this),
+
+
+
+                })
+
+                tableKeysSmall.unshift({
+
+                  title: 'Delete',
+                  dataIndex: '',
+
+                  key: 'y',
+                  render: this.deleteRow.bind(this),
+                  
+
+
+                })
+
+
 
                 this.setState({
                   snapArray: data.reverse(),
 
                   tableKeys: tableKeys,
+                  tableKeysSmall: tableKeysSmall,
                 })
 
 
@@ -494,6 +576,37 @@ showDrawer = () => {
       chemicalnotes: '',
       snapArray1: maintenanceArray,
       visible: true,
+      applicationDrawerWidth: 600,
+      childApplicationDrawerWidth: 500,
+      Maintenance_Item: '',
+
+      childrenDrawer: false,
+      visible4: false,
+    })
+  })
+
+
+
+};
+
+showDrawerSmall = () => {
+
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalList`);
+  sampleList2Ref.on('value', (snapshot) => {
+    let maintenanceArray = this.snapshotToArray(snapshot);
+
+    this.setState({
+      arrayKeys1: [],
+      arrayValues1: [],
+      chemicalName: '',
+      chemicalSupplier: '',
+      chemicalAmount: '',
+      chemicalDate: '',
+      chemicalnotes: '',
+      snapArray1: maintenanceArray,
+      visible: true,
+      applicationDrawerWidth: 300,
+      childApplicationDrawerWidth: 250,
       Maintenance_Item: '',
 
       childrenDrawer: false,
@@ -772,6 +885,17 @@ arrayData2: arrayData,
       </div>
     )
   }
+  editRowSmall = (row, isSelected, e, id, key) =>
+  {
+    return (
+      <div style={{textAlign: 'center'}}>
+      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+      onClick={() => this.fillStatesSmall(isSelected.key)}>
+        Click me
+      </Icon>
+      </div>
+    )
+  }
 
   editRow1 = (row, isSelected, e, id, key) =>
   {
@@ -1021,6 +1145,8 @@ if (arr.length > 0){
             visibleEditMaintenance: true,
             save: 'none',
             save1: null,
+            editDrawerWidth: 600,
+            childEditDrawerWidth: 500,
 
           })
 
@@ -1095,6 +1221,95 @@ this.setState({
 
       });
     }
+
+    fillStatesSmall(itemId) {
+
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+        this.setState({
+          overwriteReport: null,
+          addReport: 'none',
+          inputOverwrite: null,
+          inputAdd: 'none',
+          visibleEditMaintenance: true,
+          save: 'none',
+          save1: null,
+          editDrawerWidth: 300,
+          childEditDrawerWidth: 250,
+
+        })
+
+      const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications/${itemId}`);
+      let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/chemicalList/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+
+        let maintenanceList = snapshot.val();
+        console.log(maintenanceList);
+
+
+
+        this.setState({
+          chemicalName: snapshot.child('chemical').val(),
+          chemicalSupplier: snapshot.child('supplier').val(),
+          chemicalAmount: snapshot.child('amount').val(),
+          chemicalDate: snapshot.child('date').val(),
+          chemicalnotes: snapshot.child('Miscellaneous').val(),
+          id: id,
+        });
+
+        let arr = snapshot.val();
+        delete arr.date;
+        delete arr.ID;
+        delete arr.Title;
+        delete arr.Status;
+        delete arr.court;
+        delete arr.Miscellaneous;
+        delete arr.chemical;
+        delete arr.amount;
+        delete arr.supplier;
+
+        let arrayKeys = Object.keys(arr);
+        let arrayValues = Object.values(arr);
+
+
+        this.setState({
+          arrayKeys1: arrayKeys,
+          arrayValues1: arrayValues,
+
+        })
+
+});
+
+const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications`);
+sample2Ref.on('value', (snapshot) => {
+let maintenanceList = this.snapshotToArray(snapshot);
+
+
+let keys = [maintenanceList.map((parameter) => {
+return (
+parameter.key
+)
+})]
+
+this.setState({
+arrayData1: keys,
+})
+})
+
+let arrayData = [];
+for (let i=0; i < this.state.arrayKeys1.length; i++) {
+//push send this data to the back of the chartData variable above.
+arrayData.push({Maintenance_Input: this.state.arrayValues1[i], Maintenance_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
+
+}
+console.log(arrayData);
+this.setState({
+snapArray1: arrayData,
+arrayData2: arrayData,
+})
+
+    });
+  }
 
 
     sampleOverwrite = (e) => {
@@ -1405,6 +1620,7 @@ this.setState({
 
 
         const columns = this.state.tableKeys;
+        const columnsSmall = this.state.tableKeysSmall;
 
 const data = this.state.snapArray;
 const dataReverse = this.state.graphData;
@@ -1431,11 +1647,11 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.onClose}
               visible={this.state.visible}
-              width={600}
+              width={this.state.applicationDrawerWidth}
             >
             <Drawer
             title="Add Application Item"
-            width={420}
+            width={this.state.childApplicationDrawerWidth}
             closable={false}
             onClose={this.onChildrenDrawerClose}
             visible={this.state.childrenDrawer}
@@ -1516,21 +1732,21 @@ const csvData1 = this.state.currentData;
                       <Row style={{paddingTop: '20px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Chemical Name</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl  required name='chemicalName' type='text' placeholder="Title" value={this.state.chemicalName}
+                          <FormControl  required name='chemicalName' type='text' placeholder="Chemical" value={this.state.chemicalName}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '20px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Supplier</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl  required name='chemicalSupplier' type='text' placeholder="Title" value={this.state.chemicalSupplier}
+                          <FormControl  required name='chemicalSupplier' type='text' placeholder="Supplier" value={this.state.chemicalSupplier}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '20px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Amount</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl  required name='chemicalAmount' type='text' placeholder="Title" value={this.state.chemicalAmount}
+                          <FormControl  required name='chemicalAmount' type='text' placeholder="Amount" value={this.state.chemicalAmount}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
@@ -1545,7 +1761,7 @@ const csvData1 = this.state.currentData;
                       <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
                       <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                       <FormControl  required  name='chemicalnotes' type="textarea" componentClass="textarea" style={{ height: 80}}
-                        onChange={this.handleChange}  placeholder="Report" value={this.state.chemicalnotes} />
+                        onChange={this.handleChange}  placeholder="Notes" value={this.state.chemicalnotes} />
                       </Col>
                       </Row>
                     </FormGroup>
@@ -1555,14 +1771,14 @@ const csvData1 = this.state.currentData;
                 {this.state.snapArray1.map((parameter, idx) => {
 
                               return (
-                                <Row style={{paddingTop: '10px'}}>
+                                <Row style={{paddingTop: '20px'}}>
                           <FormGroup>
-                            <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Maintenance_Item}</b></Col>
-                            <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                            <Col xs={24} sm={16} md={16} lg={16} xl={16}>
                             <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 70, width: '100%'}}
                               onChange={this.handleSampleChange(idx)}   value={parameter.Maintenance_Input} />
                             </Col>
-                            <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                            <Col xs={24} sm={2} md={2} lg={2} xl={2} style={{textAlign: 'center'}}>
                               <Icon type="delete" style={{fontSize: '24px'}}
                               onClick={() => this.removesample1(parameter.key)}>
                                 Click me
@@ -1603,12 +1819,12 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.onClose}
               visible={this.state.visibleEditMaintenance}
-              width={600}
+              width={this.state.editDrawerWidth}
             >
 
             <Drawer
             title="Add Comment"
-            width={500}
+            width={this.state.childEditDrawerWidth}
             closable={false}
             onClose={this.onChildrenDrawerCloseComment}
             visible={this.state.childrenDrawerComment}
@@ -1689,21 +1905,21 @@ const csvData1 = this.state.currentData;
                           <Row style={{paddingTop: '20px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Chemical Name</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl  required name='chemicalName' type='text' placeholder="Title" value={this.state.chemicalName}
+                              <FormControl  required name='chemicalName' type='text' placeholder="Chemical" value={this.state.chemicalName}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '20px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Supplier</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl  required name='chemicalSupplier' type='text' placeholder="Title" value={this.state.chemicalSupplier}
+                              <FormControl  required name='chemicalSupplier' type='text' placeholder="Supplier" value={this.state.chemicalSupplier}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '20px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Amount</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl  required name='chemicalAmount' type='text' placeholder="Title" value={this.state.chemicalAmount}
+                              <FormControl  required name='chemicalAmount' type='text' placeholder="Amount" value={this.state.chemicalAmount}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
@@ -1718,7 +1934,7 @@ const csvData1 = this.state.currentData;
                           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
                           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                           <FormControl  required  name='chemicalnotes' type="textarea" componentClass="textarea" style={{ height: 80}}
-                            onChange={this.handleChange}  placeholder="Report" value={this.state.chemicalnotes} />
+                            onChange={this.handleChange}  placeholder="Notes" value={this.state.chemicalnotes} />
                           </Col>
                           </Row>
                         </FormGroup>
@@ -1728,14 +1944,14 @@ const csvData1 = this.state.currentData;
       {this.state.arrayData2.map((parameter, idx) => {
 
                     return (
-                      <Row style={{paddingTop: '10px'}}>
+                      <Row style={{paddingTop: '20px'}}>
                 <FormGroup>
                   <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
-                  <Col xs={24} sm={15} md={15} lg={15} xl={15}>
+                  <Col xs={24} sm={16} md={16} lg={16} xl={16}>
                   <FormControl name={parameter.Maintenance_Item} type="text" componentClass="textarea" style={{ height: 80}}
                     onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Maintenance_Input} />
                   </Col>
-                  <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                  <Col xs={24} sm={2} md={2} lg={2} xl={2} style={{textAlign: 'center'}}>
                     <Icon type="delete" style={{fontSize: '24px'}}
                     onClick={() => this.removesample2(parameter.Maintenance_Item)}>
                       Click me
@@ -1813,19 +2029,22 @@ const csvData1 = this.state.currentData;
 
 
                       <Row>
-                    <Col xs={24} sm={24} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
+                    <Col xs={0} sm={0} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
                       <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
                     </Col>
 
-                    <Col xs={24} sm={24} md={3} lg={3} xl={3} >
+                    <Col xs={12} sm={12} md={3} lg={3} xl={3} >
                     <Button onClick={this.clearDates}>Clear Dates</Button>
+                    </Col>
+                    <Col xs={12} sm={12} md={0} lg={0} xl={0} style={{textAlign: 'right'}}>
+                    <Button size="large" type="primary" onClick={() => this.showDrawerSmall()}>+ Add Application</Button>
                     </Col>
 
                     <Col xs={24} sm={24} md={7} lg={7} xl={7} >
                     <RangePicker  allowClear={true} onChange={this.onChangeDate}  />
                     </Col>
 
-                    <Col xs={24} sm={24} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
+                    <Col xs={0} sm={0} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
                     <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Application</Button>
                     </Col>
 
@@ -1835,8 +2054,13 @@ const csvData1 = this.state.currentData;
                       <Row style={{paddingTop: '10px'}} type="flex" justify="center">
 
                         <Card style={{ width: '100%' }}>
-                          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                          <Col xs={0} sm={0} md={24} lg={24} xl={24}>
                             <Table columns={columns} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
+
+                          </Col>
+
+                          <Col xs={24} sm={24} md={0} lg={0} xl={0}>
+                            <Table columns={columnsSmall} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
 
                           </Col>
                         </Card>

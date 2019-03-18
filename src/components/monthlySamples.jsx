@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
-import { Page, Text, View, Document, StyleSheet, Image,  PDFDownloadLink, Font,  } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image,  PDFDownloadLink, Font, PDFViewer  } from '@react-pdf/renderer';
 import styled from '@react-pdf/styled-components';
 
 import './assetManager/maintenanceReport.css';
+
+import lines from './website/images/lines.png';
 
 
 import { fire } from '../fire';
@@ -136,6 +138,7 @@ export default class monthlySamples extends Component {
           turnedOffKeys: [],
 
           currentData: [],
+          reportData: [],
           colorDisplay: 'none',
 
           childrenDrawer: false,
@@ -152,6 +155,7 @@ export default class monthlySamples extends Component {
 
 
           tableKeys: [],
+          tableKeysSmall: [],
           searchText: '',
           selectedRowKeys: [], // Check here to configure the default column
           loading: false,
@@ -186,6 +190,9 @@ export default class monthlySamples extends Component {
           startDate: '',
           endDate: '',
 
+          sampleFormWidth: '',
+          childSampleFormWidth: '',
+          visible5Width: '',
 
 
 
@@ -344,6 +351,30 @@ export default class monthlySamples extends Component {
                 }
                 )})
 
+                let tableKeysSmall = table1Keys.map((txt) => {
+
+
+                  const item3 = txt.replace(/^"(.*)"$/, '$1');
+                  const item4 = "a"+"."+item3;
+
+
+                  console.log(item3);
+                  console.log(item4);
+
+                  return (
+
+                  {
+                  title:txt,
+                  dataIndex: txt,
+                  key: txt,
+                  ...this.getColumnSearchProps(txt),
+                  sorter: (a, b) => { return a[item3] - b[item3]},
+                  sortDirections: ['descend', 'ascend'],
+
+
+                }
+                )})
+
 
 
                 tableKeys.unshift({
@@ -428,7 +459,59 @@ export default class monthlySamples extends Component {
                 let reverseData1 = data.reverse();
                 console.log(reverseData1);
 
+                tableKeysSmall.unshift({
+                title: 'Date',
+                dataIndex: 'date',
+                key: 'date',
+                ...this.getColumnSearchProps('date'),
+                sorter: (a, b) => { return a.date.localeCompare(b.date)},
+                sortDirections: ['descend', 'ascend'],
 
+
+                })
+
+                tableKeysSmall.unshift({
+                title: 'ID',
+                dataIndex: 'ID',
+                key: 'ID',
+                ...this.getColumnSearchProps('ID'),
+                sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+
+                tableKeysSmall.unshift({
+                  title: 'Edit',
+                  dataIndex: '',
+                  key: 'x',
+
+                  render: this.editRowSmall.bind(this),
+                  width: 50,
+
+
+                })
+
+                tableKeysSmall.unshift({
+
+                  title: 'Delete',
+                  dataIndex: '',
+
+                  key: 'y',
+                  render: this.deleteRow.bind(this),
+                  width: 50,
+
+
+                })
+                tableKeysSmall.push({
+
+                  title: 'Preview',
+                  dataIndex: '',
+
+                  key: 'z',
+                  render: this.previewReport.bind(this),
+                  width: 60,
+                })
 
 
                 this.setState({
@@ -438,7 +521,9 @@ export default class monthlySamples extends Component {
                   sixData: sixData,
                   twelveData: twelveData,
                   graphData: data,
+                  currentData: data,
                   tableKeys: tableKeys,
+                  tableKeysSmall: tableKeysSmall,
                 })
 
 
@@ -523,9 +608,6 @@ closeSampleForm = () => {
 }
 
 showDrawer = () => {
-
-
-
   const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
@@ -545,16 +627,39 @@ showDrawer = () => {
       sampleTitle: '',
       sampleMisc: '',
 
+      sampleFormWidth: 600,
+      childSampleFormWidth: 500,
       visibleSampleForm: true,
-
-
 
     })
 
+};
+
+showDrawerMobile = () => {
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList`);
+  sampleList2Ref.on('value', (snapshot) => {
+    let maintenanceArray = this.snapshotToArray(snapshot);
+    console.log(maintenanceArray)
+    this.setState({
+      snapArray1: maintenanceArray,
+
+    })
+  })
 
 
+    this.setState({
+      arrayKeys1: [],
+      arrayValues1: [],
+      sampleDate: '',
+      sampleID: '',
+      sampleTitle: '',
+      sampleMisc: '',
 
+      sampleFormWidth: 300,
+      childSampleFormWidth: 250,
+      visibleSampleForm: true,
 
+    })
 
 };
 
@@ -596,6 +701,7 @@ onClose = () => {
     visible1: false,
     visible2: false,
     visible3: false,
+    visible5: false,
 
 
   });
@@ -783,6 +889,8 @@ removesample2(itemId) {
 }
 previewReport = (row, isSelected, e, id, key) =>
 {
+
+
   return (
     <div style={{textAlign: 'center'}}>
     <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}
@@ -795,86 +903,56 @@ previewReport = (row, isSelected, e, id, key) =>
 
 fillPreview(itemId) {
 
-  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+console.log(itemId)
+
+const previewInfoRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
+
+previewInfoRef.on('value', (snapshot) => {
+
+  let maintenanceList = snapshot.val();
+  console.log(maintenanceList)
+
+  let dataList = snapshot.val();
+  delete dataList.date;
+  delete dataList.ID;
+  delete dataList.Title;
+  delete dataList.Miscellaneous;
 
 
+  let dataKeys = Object.keys(dataList);
+  let dataValues = Object.values(dataList);
+  console.log(dataKeys);
+  console.log(dataValues);
 
-  const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`);
-  let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`).key;
-  sample1Ref.on('value', (snapshot) => {
+  let reportData = [];
+  for (let i=0; i < dataKeys.length; i++) {
+  //push send this data to the back of the chartData variable above.
+  reportData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
 
-    let maintenanceList = snapshot.val();
+  }
 
-
-    this.setState({
-      sampleDate: snapshot.child('date').val(),
-      sampleID: snapshot.child('ID').val(),
-      sampleTitle: snapshot.child('Title').val(),
-      sampleMisc: snapshot.child('Miscellaneous').val(),
-      id: id,
-    });
+  console.log(reportData);
 
 
+  this.setState({
+  key: "4",
+  sampleDate: maintenanceList.date,
+  sampleTitle: maintenanceList.Title,
+  sampleID: maintenanceList.ID,
+  sampleMisc: maintenanceList.Miscellaneous,
+  reportData: reportData,
 
-    let arr = snapshot.val();
-
-    if (arr.length === 0 ) {
-      console.log("Arghhhh")
-    }
-
-    if (arr.length > 0 ) {
-      delete arr.date;
-      delete arr.ID;
-      delete arr.Title;
-      delete arr.Miscellaneous;
-
-      let arrayKeys = Object.keys(arr);
-      let arrayValues = Object.values(arr);
-      this.setState({
-        arrayKeys1: arrayKeys,
-        arrayValues1: arrayValues,
-
-      })
-
-    }
-
-
-
-
-
+  })
 
 });
 
-const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
-sample2Ref.on('value', (snapshot) => {
-let maintenanceList = this.snapshotToArray(snapshot);
 
-
-let keys = [maintenanceList.map((parameter) => {
-return (
-parameter.key
-)
-})]
 
 this.setState({
-arrayData1: keys,
-})
-})
+key: "4",
 
-let arrayData = [];
-for (let i=0; i < this.state.arrayKeys1.length; i++) {
-//push send this data to the back of the chartData variable above.
-arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
 
-}
-console.log(arrayData);
-this.setState({
-key: "3",
-snapArray1: arrayData,
-arrayData2: arrayData,
 })
-
-});
 
 
 
@@ -886,6 +964,18 @@ arrayData2: arrayData,
       <div style={{textAlign: 'center'}}>
       <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
       onClick={() => this.fillStates(isSelected.key)}>
+        Click me
+      </Icon>
+      </div>
+    )
+  }
+
+  editRowSmall = (row, isSelected, e, id, key) =>
+  {
+    return (
+      <div style={{textAlign: 'center'}}>
+      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+      onClick={() => this.fillStatesSmall(isSelected.key)}>
         Click me
       </Icon>
       </div>
@@ -1149,32 +1239,20 @@ if (arr.length > 0){
 
       fillStates(itemId) {
 
-        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
 
           this.setState({
             visible5: true,
-
-
-
+            visible5Width: 600,
 
           })
 
-        const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`);
-        let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`).key;
+        const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
         sample1Ref.on('value', (snapshot) => {
 
           let maintenanceList = snapshot.val();
 
 
-
-
-          this.setState({
-            sampleDate: snapshot.child('date').val(),
-            sampleID: snapshot.child('ID').val(),
-            sampleTitle: snapshot.child('Title').val(),
-            sampleMisc: snapshot.child('Miscellaneous').val(),
-            id: id,
-          });
 
           let arr = snapshot.val();
           delete arr.date;
@@ -1186,44 +1264,88 @@ if (arr.length > 0){
           let arrayValues = Object.values(arr);
 
 
+          let arrayData = [];
+          for (let i=0; i < arrayKeys.length; i++) {
+          //push send this data to the back of the chartData variable above.
+          arrayData.push({Sample_Item: arrayKeys[i], Sample_Input: arrayValues[i]});
+
+          }
+
           this.setState({
-            arrayKeys1: arrayKeys,
-            arrayValues1: arrayValues,
+          sampleDate: maintenanceList.date,
+          sampleTitle: maintenanceList.Title,
+          sampleID: maintenanceList.ID,
+          sampleMisc: maintenanceList.Miscellaneous,
+          snapArray1: arrayData,
+          arrayData2: arrayData,
 
           })
 
+
+
+
   });
 
-const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
-sample2Ref.on('value', (snapshot) => {
-let maintenanceList = this.snapshotToArray(snapshot);
 
 
-let keys = [maintenanceList.map((parameter) => {
-  return (
-parameter.key
-  )
-})]
 
-this.setState({
-  arrayData1: keys,
-})
-})
 
-let arrayData = [];
-for (let i=0; i < this.state.arrayKeys1.length; i++) {
-//push send this data to the back of the chartData variable above.
-arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
 
-}
-console.log(arrayData);
-this.setState({
-  snapArray1: arrayData,
-  arrayData2: arrayData,
-})
 
-      });
     }
+
+    fillStatesSmall(itemId) {
+
+
+
+        this.setState({
+          visible5: true,
+          visible5Width: 300,
+
+        })
+
+        const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
+        sample1Ref.on('value', (snapshot) => {
+
+          let maintenanceList = snapshot.val();
+
+
+
+          let arr = snapshot.val();
+          delete arr.date;
+          delete arr.ID;
+          delete arr.Title;
+          delete arr.Miscellaneous;
+
+          let arrayKeys = Object.keys(arr);
+          let arrayValues = Object.values(arr);
+
+
+          let arrayData = [];
+          for (let i=0; i < arrayKeys.length; i++) {
+          //push send this data to the back of the chartData variable above.
+          arrayData.push({Sample_Item: arrayKeys[i], Sample_Input: arrayValues[i]});
+
+          }
+
+          this.setState({
+          sampleDate: maintenanceList.date,
+          sampleTitle: maintenanceList.Title,
+          sampleID: maintenanceList.ID,
+          sampleMisc: maintenanceList.Miscellaneous,
+          snapArray1: arrayData,
+          arrayData2: arrayData,
+
+          })
+
+});
+
+
+
+
+
+
+  }
 
 
     sampleOverwrite = (e) => {
@@ -1358,6 +1480,12 @@ handleSizeChange1 = (e) => {
 this.setState({ dataType: e.target.value,
 parameterAdd: null});
 
+const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+this.setState({ dataType: e.target.value });
+
+var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: e.target.value, Sample_Input: '', id: this.state.id};
+
+sampleListRef.set(object);
 
 
 }
@@ -1496,6 +1624,8 @@ clearDates = () => {
 
         const dateFormat = 'YYYY-MM-DD';
 
+        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
+
 
         let { file } = this.state
         let url = file && URL.createObjectURL(file)
@@ -1507,21 +1637,81 @@ clearDates = () => {
         const MyDoc = (
           <Document>
             <Page size="A4" style={styles.body}>
+              <View style={{textAlign: 'center'}}>
 
 
-                    <Text style={styles.header} fixed>
-                      {this.state.lakeName} Sampling Report
+                    <Text  style={{position: 'absolute', left: '20px', top: '20px'}}>
+                      AquaSource
                     </Text>
-                    <Text style={styles.title}>{this.state.sampleTitle}</Text>
-                    <Text style={styles.author}>{this.state.sampleDate}</Text>
-                    <Text style={styles.author}>Report #{this.state.sampleID}</Text>
-
-                    <Text style={styles.subtitle}>
-                      Monthly Sampling Data:
+                    <Text  style={{position: 'absolute', left: '20px', top: '40px', fontSize: 13}}>
+                      Huntington Beach
                     </Text>
 
-                    <View>
-                      {this.state.arrayData2.map((parameter, idx) => {
+                    <Text  style={{position: 'absolute', left: '400px', top: '20px'}}>
+                      # {this.state.sampleID}
+                    </Text>
+                    <Text style={{position: 'absolute', left: '400px', top: '40px', fontSize: 13}} >
+                      {this.state.lakeName}
+                    </Text>
+                    <Text style={{position: 'absolute', left: '400px', top: '60px', fontSize: 13}} >
+                      {this.state.locationCity}, {this.state.locationState}
+                    </Text>
+
+
+
+                    <Text style={{position: 'absolute', left: '20px', top: '130px', fontSize: 13}} >
+                      Date: {this.state.sampleDate}
+                    </Text>
+                    <Text style={{position: 'absolute', left: '20px', top: '150px', fontSize: 13}} >
+                      Miscellaneous Notes: {this.state.sampleMisc}
+                    </Text>
+
+
+          <Text style={{position: 'absolute',
+             left: '20px',
+              top: '95px',
+               fontSize: .5,
+                color: 'black',
+                backgroundColor: 'black',}} >
+                {line}
+                </Text>
+                <Text style={{position: 'absolute', left: '200px', top: '100px', zIndex: 1}} >
+                  {this.state.sampleTitle}
+                </Text>
+                <Text style={{position: 'absolute',
+                   left: '20px',
+                    top: '118px',
+                     fontSize: .5,
+                      color: 'black',
+                      backgroundColor: 'black',}} >
+                      {line}
+                      </Text>
+
+
+                      <Text style={{position: 'absolute',
+                         left: '20px',
+                          top: '215px',
+                           fontSize: .5,
+                            color: 'black',
+                            backgroundColor: 'black',}} >
+                            {line}
+                            </Text>
+                            <Text style={{position: 'absolute', left: '20px', top: '220px'}} >
+                              Sampling Results:
+                            </Text>
+                            <Text style={{position: 'absolute',
+                               left: '20px',
+                                top: '240px',
+                                 fontSize: .5,
+                                  color: 'black',
+                                  backgroundColor: 'black',}} >
+                                  {line}
+                                  </Text>
+
+
+
+                    <View style={{position: 'absolute', left: '20px', top: '260px'}}>
+                      {this.state.reportData.map((parameter, idx) => {
 
                         return (
                           <View>
@@ -1539,15 +1729,13 @@ clearDates = () => {
 
 
 
-                    <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-                      `${pageNumber} / ${totalPages}`
-                    )} fixed />
 
 
 
 
 
 
+                    </View>
             </Page>
           </Document>
         )
@@ -1587,7 +1775,7 @@ clearDates = () => {
     render: (text, record, isSelected, color) => {
     if (record.dataType == 'Bar') {
       return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+      <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
         <Icon type="bar-chart" style={{fontSize: '32px', color: record.color}}
         onClick={() => this.changeData(record.key)}>
           Click me
@@ -1597,7 +1785,7 @@ clearDates = () => {
     }
     if (record.dataType == 'Area') {
       return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+      <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
         <Icon type="area-chart" style={{fontSize: '32px', color: record.color}}
         onClick={() => this.changeData(record.key)}>
           Click me
@@ -1607,7 +1795,7 @@ clearDates = () => {
     }
     if (record.dataType == 'Line') {
       return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+      <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
         <Icon type="line-chart" style={{fontSize: '32px', color: record.color}}
         onClick={() => this.changeData(record.key)}>
           Click me
@@ -1617,7 +1805,7 @@ clearDates = () => {
     }
     if (record.dataType == 'Off') {
       return <div style={{textAlign: 'left'}}>
-      <Popover style={{textAlign: 'center'}} content={content} title="Select Type and Save" trigger="click">
+      <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
         <Icon type="close" style={{fontSize: '32px', color: record.color}}
         onClick={() => this.changeData(record.key)}>
           Click me
@@ -1678,14 +1866,11 @@ render: (text, record, isSelected) =>
 </Radio.Group>
   </Row>
 
-
-  <Row style={{paddingTop: '10px', textAlign: 'center'}}>
-  <Button type="primary"onClick={this.parameterOverwrite}>Save</Button>
-  </Row>
 </div>
 );
 
         const columns = this.state.tableKeys;
+        const columnsSmall = this.state.tableKeysSmall;
 
 const data = this.state.snapArray;
 const dataReverse = this.state.graphData;
@@ -1712,11 +1897,11 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.closeSampleForm}
               visible={this.state.visibleSampleForm}
-              width={600}
+              width={this.state.sampleFormWidth}
             >
             <Drawer
             title="Add Parameter"
-            width={500}
+            width={this.state.childSampleFormWidth}
             closable={false}
             onClose={this.onChildrenDrawerClose}
             visible={this.state.childrenDrawer}
@@ -1865,11 +2050,11 @@ const csvData1 = this.state.currentData;
                                 <Row style={{paddingTop: '10px'}}>
                           <FormGroup>
                             <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Sample_Item}  ({parameter.units})</b></Col>
-                            <Col xs={24} sm={13} md={13} lg={13} xl={13}>
+                            <Col xs={18} sm={13} md={13} lg={13} xl={13}>
                             <FormControl name={parameter.Sample_Item} type="text"
                               onChange={this.handleSampleChange(idx)}  placeholder="Value" value={parameter.Sample_Input} />
                             </Col>
-                            <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                            <Col xs={6} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
 
                               <Icon type="delete" style={{fontSize: '24px'}}
                               onClick={() => this.removesample1(parameter.key)}>
@@ -1912,9 +2097,9 @@ const csvData1 = this.state.currentData;
               title= "Edit Sample Form"
               placement={this.state.placement}
               closable={false}
-
+              onClose={this.onClose}
               visible={this.state.visible5}
-              width={600}
+              width={this.state.visible5Width}
             >
 
 
@@ -1959,11 +2144,11 @@ const csvData1 = this.state.currentData;
                               <Row style={{paddingTop: '10px'}}>
                         <FormGroup>
                           <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Sample_Item}  ({parameter.units})</b></Col>
-                          <Col xs={24} sm={13} md={13} lg={13} xl={13}>
+                          <Col xs={18} sm={13} md={13} lg={13} xl={13}>
                           <FormControl name={parameter.Sample_Item} type="text"
                             onChange={this.handleSampleChange(idx)}  placeholder="Value" value={parameter.Sample_Input} />
                           </Col>
-                          <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                          <Col xs={6} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
 
                             <Icon type="delete" style={{fontSize: '24px'}}
                             onClick={() => this.removesample1(parameter.key)}>
@@ -2047,19 +2232,26 @@ const csvData1 = this.state.currentData;
 
 
                           <Row>
-                        <Col xs={24} sm={24} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
+                        <Col xs={0} sm={0} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
                           <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
                         </Col>
 
-                        <Col xs={24} sm={24} md={3} lg={3} xl={3} >
+                        <Col xs={0} sm={0} md={3} lg={3} xl={3} >
                         <Button onClick={this.clearDates}>Clear Dates</Button>
+                        </Col>
+                        <Col xs={10} sm={10} md={0} lg={0} xl={0} >
+                        <Button onClick={this.clearDates}>Clear Dates</Button>
+                        </Col>
+
+                        <Col xs={10} sm={10} md={0} lg={0} xl={0} style={{textAlign: 'right'}}>
+                        <Button  type="primary" onClick={() => this.showDrawerMobile()}>+ Add Sample</Button>
                         </Col>
 
                         <Col xs={24} sm={24} md={7} lg={7} xl={7} >
                         <RangePicker  allowClear={true} onChange={this.onChangeDate}  />
                         </Col>
 
-                        <Col xs={24} sm={24} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
+                        <Col xs={0} sm={0} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
                         <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Sample</Button>
                         </Col>
 
@@ -2069,8 +2261,12 @@ const csvData1 = this.state.currentData;
                       <Row style={{paddingTop: '10px'}} type="flex" justify="center">
 
                         <Card style={{ width: '100%' }}>
-                          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                          <Col xs={0} sm={0} md={24} lg={24} xl={24}>
                             <Table columns={columns} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
+
+                          </Col>
+                          <Col xs={24} sm={24} md={0} lg={0} xl={0}>
+                            <Table columns={columnsSmall} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
 
                           </Col>
                         </Card>
@@ -2306,19 +2502,129 @@ const csvData1 = this.state.currentData;
 
 </TabPane>
 
-<TabPane  key="3">
+<TabPane tab="GRAPH" key="3">
+
+  <Row type="flex" justify="center" style={{paddingTop: '20px'}}>
+    <Col xs={24} sm={24} md={24} lg={24} xl={24} style={{textAlign: 'center'}}>
+      <Card style={{ width: '100%' }}>
+        <Row>
+          <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+
+
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+
+
+          </Col>
+          <Col xs={8} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
+
+
+          </Col>
+
+
+
+        </Row>
+
+
+
+<ResponsiveContainer width="100%" aspect={9/3.0} minHeight={300}>
+          <ComposedChart data={this.state.currentData}
+    syncId="anyId">
+
+
+    <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+    <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+    <Tooltip />
+
+
+    <defs>
+      {data1.map(parameter => {
+        return (
+
+            <linearGradient id={parameter.Sample_Item} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={parameter.color} stopOpacity={0.3}/>
+              <stop offset="95%" stopColor={parameter.color} stopOpacity={0.1}/>
+            </linearGradient>
+
+
+        )
+      })}
+</defs>
+
+
+
+
+      {data1.map(parameter => {
+
+        if (parameter.dataType == 'Bar') {
+          console.log('something 1')
+          const CustomTag = Bar;
+          return(
+            <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+          )
+        }
+        if (parameter.dataType == 'Line') {
+          console.log('something 2')
+          const CustomTag = Line;
+          return(
+            <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+          )
+        }
+        if (parameter.dataType == 'Area') {
+          console.log('something 3')
+          const CustomTag = Area;
+          return(
+            <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+          )
+        }
+
+        if (parameter.dataType == 'Off') {
+          console.log('No graph')
+
+
+        }
+
+
+      })}
+
+
+
+
+
+
+
+    <Legend />
+
+  </ComposedChart>
+   </ResponsiveContainer>
+      </Card>
+    </Col>
+
+
+  </Row>
+
+</TabPane>
+
+<TabPane  key="4">
 
   <Row type="flex" justify="center">
     <Col span={24} style={{textAlign: 'center'}}>
 
       <Row>
-      <PDFDownloadLink document={MyDoc} fileName="somename.pdf">
-  {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Click Here & Download now!')}
+      <PDFDownloadLink document={MyDoc} fileName={this.state.sampleDate}><Button type="primary" size="large">Export PDF</Button>
+
 </PDFDownloadLink>
 </Row>
 
   <Row style={{paddingTop: '20px'}}>
-      {MyDoc}
+    <Col span={24}>
+
+<PDFViewer style={{width: '100%', height: 800}}>
+  {MyDoc}
+</PDFViewer>
+
+</Col>
 
       </Row>
 
@@ -2327,6 +2633,8 @@ const csvData1 = this.state.currentData;
 
 
 </TabPane>
+
+
 
 
 

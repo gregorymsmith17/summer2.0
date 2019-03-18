@@ -13,6 +13,8 @@ import kayak from './images/kayak.jpg';
 import lakeSign from './images/lakeSign.jpg';
 import floatingScreen from './images/floatingScreen.png';
 import macbook from './images/macbook.png';
+import ipadDash from './images/ipadDash.png';
+import ipadSample from './images/ipadSample.png';
 
 
 
@@ -27,27 +29,7 @@ export default class landingPage extends Component {
 
       render() {
 
-        const cardTitles = [{cardTitle: "Project Management", bullet1: "bullet1", bullet2: "Test2", bullet3: "test3"}, {cardTitle: "Document Control", bullet1: "bullet1", bullet2: "Test2", bullet3: "test3"}, {cardTitle: "Quality Control", bullet1: "bullet1", bullet2: "Test2", bullet3: "test3"}, {cardTitle: "Productivity", bullet1: "bullet1", bullet2: "Test2", bullet3: "test3"} ]
 
-        const card = (
-          <div>
-          <Card >
-            <Col offset={1} span={11}>
-              <Row style={{textAlign: 'left'}}>
-                <h2>Section Title</h2>
-              </Row>
-              <p>Card content</p>
-              <p>Card content</p>
-              <p>Card content</p>
-            </Col>
-
-          </Card>
-          </div>
-        )
-
-        function onChange(a, b, c) {
-          console.log(a, b, c);
-        }
 
         return (
           <Layout style={{backgroundColor: 'white'}}>
@@ -57,9 +39,10 @@ export default class landingPage extends Component {
             <Carousel >
 
               <div class="image">
-              <img src={paddleboard} width="100%" height="100%" style={{filter: 'brightness(50%)'}}/>
+              <img class="image1" src={paddleboard} width="100%" height="100%" objectPosition="100% 100%" style={{filter: 'brightness(50%)'}}/>
               <h1>Building the software <br />that manages the world's water.<br /></h1>
               <h3>AquaSource's universal platform connects your team, applications, and devices in one centralized hub.<br /> From bidding to closeout, collaborate in real time with all your teams, on any device.</h3>
+              <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/demo">
               <Button style={{position: 'absolute',
               top: '330px',
               left: '50px',
@@ -70,26 +53,64 @@ export default class landingPage extends Component {
               width: '200px',
               height: '45px',
 
-            }} size="large" type="primary">Learn More</Button>
+            }} size="large" type="primary">Try a Demo</Button></Link>
               </div>
+
+
 
 
               <div class="image">
               <img src={kayak} width="100%" height="100%" style={{filter: 'brightness(50%)'}}/>
               <h1>Building the software <br />that manages the world's water.</h1>
               <h3>AquaSource's universal platform connects your team, applications, and devices in one centralized hub.<br /> From bidding to closeout, collaborate in real time with all your teams, on any device.</h3>
+                <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/demo">
+                <Button style={{position: 'absolute',
+                top: '330px',
+                left: '50px',
+                fontSize: '18px',
+                color: 'black',
+                backgroundColor: 'white',
+                borderColor: '#333',
+                width: '200px',
+                height: '45px',
+
+              }} size="large" type="primary">Try a Demo</Button></Link>
               </div>
 
               <div class="image">
               <img src={faucet} width="100%" height="100%" style={{filter: 'brightness(50%)'}}/>
               <h1>Building the software <br />that manages the world's water.</h1>
               <h3>Procore's universal platform connects your team, applications, and devices in one centralized hub.<br /> From bidding to closeout, collaborate in real time with all your teams, on any device.</h3>
+                <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/demo">
+                <Button style={{position: 'absolute',
+                top: '330px',
+                left: '50px',
+                fontSize: '18px',
+                color: 'black',
+                backgroundColor: 'white',
+                borderColor: '#333',
+                width: '200px',
+                height: '45px',
+
+              }} size="large" type="primary">Try a Demo</Button></Link>
               </div>
 
               <div class="image">
               <img src={lakeSign} width="100%" height="100%" style={{filter: 'brightness(40%)'}}/>
               <h1>Building the software <br />that manages the world's water.</h1>
               <h3>Procore's universal platform connects your team, applications, and devices in one centralized hub.<br /> From bidding to closeout, collaborate in real time with all your teams, on any device.</h3>
+                <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/demo">
+                <Button style={{position: 'absolute',
+                top: '330px',
+                left: '50px',
+                fontSize: '18px',
+                color: 'black',
+                backgroundColor: 'white',
+                borderColor: '#333',
+                width: '200px',
+                height: '45px',
+
+              }} size="large" type="primary">Try a Demo</Button></Link>
               </div>
 
             </Carousel>
@@ -99,85 +120,115 @@ export default class landingPage extends Component {
               <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left', paddingTop: 6, paddingRight: 3}}>
                 <div>
                 <Card  style={{backgroundColor: '#f6f6f6', height: '250px'}} >
-                  <Col offset={1} span={16}>
+                  <Row>
+                  <Col xs={24} sm={24} md={{span: 16, offset: 1}} lg={{span: 16, offset: 1}} xl={{span: 16, offset: 1}}>
                     <Row style={{textAlign: 'left'}}>
                       <h2>Project Management</h2>
                     </Row>
-                    <p style={{fontSize: '15px'}}>Manage multiple water projects, in one place, with ultimate project visibility.</p>
+                    <p style={{fontSize: '15px'}}>Simple solution to manage and track your assets, sampling results, and project documentation, allowing you to properly manage your water infrastructure.</p>
+                    </Col>
 
-                    <Button type="primary" style={{position: 'absolute',
-                    top: '150px', }}>Learn More</Button>
+                    </Row>
+
+                    <Row>
+
+                    <Col xs={24} sm={24} md={{span: 6, offset: 1}} lg={{span: 6, offset: 1}} xl={{span: 6, offset: 1}} style={{textAlign: 'left'}}>
+                    <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/projectManagement"><Button type="primary" >Learn More</Button></Link>
                   </Col>
+                  </Row>
                 </Card>
                 </div>
 
         </Col>
-        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left', paddingTop: 6, paddingLeft: 3}}>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left', paddingTop: 6, paddingRight: 3}}>
           <div>
-          <Card style={{backgroundColor: '#f6f6f6', height: '250px'}} >
-            <Col offset={1} span={14}>
+          <Card  style={{backgroundColor: '#f6f6f6', height: '250px'}} >
+            <Row>
+            <Col xs={24} sm={24} md={{span: 16, offset: 1}} lg={{span: 16, offset: 1}} xl={{span: 16, offset: 1}}>
               <Row style={{textAlign: 'left'}}>
                 <h2>Document Control</h2>
               </Row>
-              <p style={{fontSize: '15px'}}>Provides automation of documentation tasks within the organization</p>
+              <p style={{fontSize: '15px'}}>Increase efficiency of tracking down all relative docuements for your water system.</p>
+              </Col>
 
-                <Button type="primary" style={{position: 'absolute',
-                top: '150px', }}>Learn More</Button>
+              </Row>
+
+              <Row>
+
+              <Col xs={24} sm={24} md={{span: 6, offset: 1}} lg={{span: 6, offset: 1}} xl={{span: 6, offset: 1}} style={{textAlign: 'left'}}>
+              <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/documentControl"><Button type="primary" >Learn More</Button></Link>
             </Col>
+            </Row>
           </Card>
           </div>
 
   </Col>
   <Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left', paddingTop: 6, paddingRight: 3}}>
     <div>
-    <Card style={{backgroundColor: '#f6f6f6', height: '250px'}} >
-      <Col offset={1} span={14}>
+    <Card  style={{backgroundColor: '#f6f6f6', height: '250px'}} >
+      <Row>
+      <Col xs={24} sm={24} md={{span: 16, offset: 1}} lg={{span: 16, offset: 1}} xl={{span: 16, offset: 1}}>
         <Row style={{textAlign: 'left'}}>
-          <h2>Productivity</h2>
+          <h2>Maintenance Log</h2>
         </Row>
-        <p style={{fontSize: '15px'}}>Better resource management offers a great opportunity to reduce costs and increase productivity.</p>
+        <p style={{fontSize: '15px'}}>Allowing you to keep all your maintenance logs in one central easy to access location</p>
+  </Col>
 
-          <Button type="primary" style={{position: 'absolute',
-          top: '150px', }}>Learn More</Button>
+        </Row>
+
+        <Row>
+
+        <Col xs={24} sm={24} md={{span: 6, offset: 1}} lg={{span: 6, offset: 1}} xl={{span: 6, offset: 1}} style={{textAlign: 'left'}}>
+        <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/maintenanceLog"><Button type="primary" >Learn More</Button></Link>
       </Col>
+      </Row>
     </Card>
     </div>
 
 </Col>
-<Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left', paddingTop: 6, paddingLeft: 3}}>
+<Col xs={24} sm={24} md={12} lg={12} xl={12} style={{textAlign: 'left', paddingTop: 6, paddingRight: 3}}>
   <div>
-  <Card style={{backgroundColor: '#f6f6f6', height: '250px'}} >
-    <Col offset={1} span={14}>
+  <Card  style={{backgroundColor: '#f6f6f6', height: '250px'}} >
+    <Row>
+    <Col xs={24} sm={24} md={{span: 16, offset: 1}} lg={{span: 16, offset: 1}} xl={{span: 16, offset: 1}}>
       <Row style={{textAlign: 'left'}}>
-        <h2>Asset Management</h2>
+          <h2>Asset Management</h2>
       </Row>
-      <p style={{fontSize: '15px'}}>Allows you to monitor and manage your assets using a systemised approach</p>
+      <p style={{fontSize: '15px'}}>Develop, operate, and maintain your current assets with an organized and cost-effective approach.</p></Col>
 
-        <Button type="primary" style={{position: 'absolute',
-        top: '150px', }}>Learn More</Button>
+      </Row>
+
+      <Row>
+
+      <Col xs={24} sm={24} md={{span: 6, offset: 1}} lg={{span: 6, offset: 1}} xl={{span: 6, offset: 1}} style={{textAlign: 'left'}}>
+      <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/assetManagement"><Button type="primary" >Learn More</Button></Link>
     </Col>
+    </Row>
   </Card>
   </div>
 
 </Col>
 
+
+
+
                 </Row>
 
                 <Row type="flex" justify="center" style={{paddingTop: 6}}>
-                  <Col span={12} style={{paddingLeft: 30}}>
-                    <img src={floatingScreen} width="90%" height="100%" />
+                  <Col xs={0} sm={0} md={11} lg={11} xl={11} style={{paddingLeft: 30}}>
+                    <img src={ipadDash} width="90%" height="100%" />
 
                   </Col>
-                  <Col span={12} style={{paddingRight: 50, paddingTop: 20}}>
+                  <Col xs={{span:22, offset: 2}} sm={{span:22, offset: 2}} md={11} lg={11} xl={11} style={{paddingRight: 50, paddingTop: 20}}>
 
-                    <p style={{color: 'black', fontSize: '22px', margin: '0 0 5px'}}><b>User-Centric</b></p>
-                    <p >Procore is built for construction, by construction. We work collaboratively with clients and users to build products that solve real problems with practical solutions.</p>
+                    <p style={{color: 'black', fontSize: '22px', margin: '0 0 5px'}}><b>Water Industry Tool</b></p>
+                    <p >AquaSource is a tool built for any facet of the project management in the water industry.  Managing your sampling result and maintenance logs all in one place. </p>
 
-                    <p style={{color: 'black', fontSize: '22px', paddingTop: 15, margin: '0 0 5px'}}><b>East to Use</b></p>
-                    <p >Procore is built for construction, by construction. We work collaboratively with clients and users to build products that solve real problems with practical solutions.</p>
+                    <p style={{color: 'black', fontSize: '22px', paddingTop: 15, margin: '0 0 5px'}}><b>Store Documents</b></p>
+                    <p>AquaSource will host and manage all of the applicable documents you have for each of your projects.  Documents will be stored in a cloud-based storage system allowing you to access them from anywhere.</p>
 
-                      <p style={{color: 'black', fontSize: '22px', paddingTop: 15, margin: '0 0 5px'}}><b>Improve Accountability</b></p>
-                      <p>Procore is built for construction, by construction. We work collaboratively with clients and users to build products that solve real problems with practical solutions.</p>
+                      <p style={{color: 'black', fontSize: '22px', paddingTop: 15, margin: '0 0 5px'}}><b>Improve Productivity</b></p>
+                      <p>Improve your operator and manager productivity by having all of your project's information stored in a central location for everyone to access.</p>
 
 
 </Col>
@@ -185,18 +236,38 @@ export default class landingPage extends Component {
 
                 <Row type="flex" justify="center" style={{paddingTop: 6, backgroundColor: '#f6f6f6' }}>
 
-                  <Col span={10} style={{paddingTop: 60, paddingLeft: 100}}>
+                  <Col xs={0} sm={0} md={10} lg={10} xl={10} style={{paddingTop: 60, paddingLeft: 100}}>
 
-                    <p style={{color: 'black', fontSize: '22px', margin: '0 0 5px'}}><b>User-Centric</b></p>
+                    <Row>
+                    <p style={{color: 'black', fontSize: '22px', margin: '0 0 5px'}}><b>User-Friendly</b></p>
                     <p >Procore is built for construction, by construction. We work collaboratively with clients and users to build products that solve real problems with practical solutions.</p>
+                    </Row>
 
-                  <Button type="primary" size="large">Take a Tour</Button>
+                    <Row>
 
+                  <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/demo"><Button type="primary" >Take a Tour</Button></Link>
+
+
+                  </Row>
 
 </Col>
 
-<Col span={14} style={{paddingLeft: 50}}>
-  <img src={macbook} width="100%" height="100%" />
+<Col xs={{span:22, offset: 2}} sm={{span:22, offset: 2}} md={0} lg={0} xl={0} style={{paddingTop: 20, paddingBottom: 30}}>
+
+  <Row>
+  <p style={{color: 'black', fontSize: '22px', margin: '0 0 5px'}}><b>User-Centric</b></p>
+  <p>Built for the water industry, by the water industry.  Check out one of the many demos to see how you can leverage the power of AuqaSource to help your organization be more productive and efficient.</p>
+  </Row>
+
+  <Row>
+
+<Button type="primary" size="large">Take a Tour</Button>
+</Row>
+
+</Col>
+
+<Col xs={0} sm={0} md={14} lg={14} xl={14}  style={{paddingLeft: 50}}>
+  <img src={ipadSample} width="100%" height="100%" />
 
 </Col>
                 </Row>

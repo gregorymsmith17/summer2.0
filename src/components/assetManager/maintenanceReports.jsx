@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Navbar, Nav, NavItem, ResponsiveEmbed, ButtonToolbar, Form, Grid, FormGroup, ControlLabel, MenuItem, DropdownButton, FormControl, Checkbox } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
-import { Page, Text, View, Document, StyleSheet, Image,  PDFDownloadLink, Font,  } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image,  PDFDownloadLink, Font, PDFViewer  } from '@react-pdf/renderer';
 import styled from '@react-pdf/styled-components';
 
 import './maintenanceReport.css';
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginBottom: 10,
+    paddingTop: 15,
   },
   subtitle: {
     fontSize: 18,
@@ -107,6 +108,7 @@ export default class maintenanceReports extends Component {
           save1: '',
 
           chartArray: [],
+          reportData: [],
 
           snapArray1: [],
           arrayData1: [],
@@ -140,10 +142,16 @@ export default class maintenanceReports extends Component {
 
           childrenDrawerComment: false,
 
+          itemDrawerWidth: '',
+          childItemDrawerWidth: '',
+          childCommentMaintenanceWidth: '',
+          editMaintenanceWidth: '',
+
 
 
 
           tableKeys: [],
+          tableKeysSmall: [],
           searchText: '',
           selectedRowKeys: [], // Check here to configure the default column
           loading: false,
@@ -305,16 +313,22 @@ export default class maintenanceReports extends Component {
                   const item3 = txt.replace(/^"(.*)"$/, '$1');
                   const item4 = "a"+"."+item3;
 
-
-                  console.log(item3);
-                  console.log(item4);
-
                   return (
 
                   {
 
 
 
+
+                }
+                )})
+
+                let tableKeysSmall = table1Keys.map((txt) => {
+                  const item3 = txt.replace(/^"(.*)"$/, '$1');
+                  const item4 = "a"+"."+item3;
+                  return (
+
+                  {
 
                 }
                 )})
@@ -410,10 +424,79 @@ export default class maintenanceReports extends Component {
                 let reverseData1 = data.reverse();
 
 
+
+
+
+                tableKeysSmall.unshift({
+                title: 'Date',
+                dataIndex: 'date',
+                key: 'date',
+                ...this.getColumnSearchProps('date'),
+                sorter: (a, b) => { return a.date.localeCompare(b.date)},
+                sortDirections: ['descend', 'ascend'],
+
+
+                })
+                tableKeysSmall.unshift({
+                title: 'Title',
+                dataIndex: 'Title',
+                key: 'Title',
+                ...this.getColumnSearchProps('Title'),
+                sorter: (a, b) => { return a.Title.localeCompare(b.Title)},
+                sortDirections: ['descend', 'ascend'],
+
+
+                })
+
+                tableKeysSmall.unshift({
+                title: 'ID #',
+                dataIndex: 'ID',
+                key: 'ID',
+                ...this.getColumnSearchProps('ID'),
+                sorter: (a, b) => { return a.ID.localeCompare(b.ID)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+
+                tableKeysSmall.unshift({
+                  title: 'Edit',
+                  dataIndex: '',
+                  key: 'x',
+
+                  render: this.editRowSmall.bind(this),
+                  width: 50,
+
+
+                })
+
+                tableKeysSmall.unshift({
+
+                  title: 'Delete',
+                  dataIndex: '',
+
+                  key: 'y',
+                  render: this.deleteRow.bind(this),
+                  width: 50,
+
+
+                })
+                tableKeysSmall.push({
+
+                  title: 'Preview',
+                  dataIndex: '',
+
+                  key: 'z',
+                  render: this.previewReport.bind(this),
+                  width: 50,
+                })
+
+
                 this.setState({
                   snapArray: data.reverse(),
 
                   tableKeys: tableKeys,
+                  tableKeysSmall: tableKeysSmall,
                 })
 
 
@@ -503,12 +586,43 @@ showDrawer = () => {
 
       childrenDrawer: false,
       visible4: false,
+      itemDrawerWidth: 600,
+      childItemDrawerWidth: 400,
+    })
+  })
+};
+
+showDrawerMobile = () => {
+
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
+  sampleList2Ref.on('value', (snapshot) => {
+    let maintenanceArray = this.snapshotToArray(snapshot);
+
+    this.setState({
+      arrayKeys1: [],
+      arrayValues1: [],
+      sampleDate: '',
+      sampleID: '',
+      sampleTitle: '',
+      sampleMisc: '',
+      Status: '',
+      court: '',
+      snapArray1: maintenanceArray,
+      visible: true,
+      Maintenance_Item: '',
+
+      childrenDrawer: false,
+      visible4: false,
+      itemDrawerWidth: 300,
+      childItemDrawerWidth: 250,
     })
   })
 
 
 
 };
+
+
 showDrawer4 = () => {
   this.setState({
     visible4: true,
@@ -691,73 +805,61 @@ previewReport = (row, isSelected, e, id, key) =>
 
 fillPreview(itemId) {
 
-  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+  const previewInfoRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
 
-
-
-  const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${itemId}`);
-  let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceReport/${itemId}`).key;
-  sample1Ref.on('value', (snapshot) => {
+  previewInfoRef.on('value', (snapshot) => {
 
     let maintenanceList = snapshot.val();
+    console.log(maintenanceList)
+
+    let dataList = snapshot.val();
+    delete dataList.date;
+    delete dataList.ID;
+    delete dataList.Title;
+    delete dataList.Miscellaneous;
+    delete dataList.court;
+    delete dataList.Status;
 
 
+    let dataKeys = Object.keys(dataList);
+    let dataValues = Object.values(dataList);
+    console.log(dataKeys);
+    console.log(dataValues);
+
+    let reportData = [];
+    for (let i=0; i < dataKeys.length; i++) {
+    //push send this data to the back of the chartData variable above.
+    reportData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
+
+    }
+
+    console.log(reportData);
 
 
     this.setState({
-      sampleDate: snapshot.child('date').val(),
-      sampleID: snapshot.child('ID').val(),
-      sampleTitle: snapshot.child('Title').val(),
-      sampleMisc: snapshot.child('Miscellaneous').val(),
-      id: id,
-    });
-
-    let arr = snapshot.val();
-    delete arr.date;
-    delete arr.ID;
-    delete arr.Title;
-    delete arr.Miscellaneous;
-
-    let arrayKeys = Object.keys(arr);
-    let arrayValues = Object.values(arr);
-    this.setState({
-      arrayKeys1: arrayKeys,
-      arrayValues1: arrayValues,
+    key: "4",
+    sampleDate: maintenanceList.date,
+    sampleTitle: maintenanceList.Title,
+    sampleID: maintenanceList.ID,
+    sampleMisc: maintenanceList.Miscellaneous,
+    Status: maintenanceList.Status,
+    court: maintenanceList.court,
+    reportData: reportData,
 
     })
 
-});
-
-const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
-sample2Ref.on('value', (snapshot) => {
-let maintenanceList = this.snapshotToArray(snapshot);
+  });
 
 
-let keys = [maintenanceList.map((parameter) => {
-return (
-parameter.key
-)
-})]
 
-this.setState({
-arrayData1: keys,
-})
-})
+  this.setState({
+  key: "3",
 
-let arrayData = [];
-for (let i=0; i < this.state.arrayKeys1.length; i++) {
-//push send this data to the back of the chartData variable above.
-arrayData.push({Maintenance_Input: this.state.arrayValues1[i], Maintenance_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
 
-}
-console.log(arrayData);
-this.setState({
-key: "3",
-snapArray1: arrayData,
-arrayData2: arrayData,
-})
+  })
 
-});
+
+
 
 
 
@@ -769,6 +871,18 @@ arrayData2: arrayData,
       <div style={{textAlign: 'center'}}>
       <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
       onClick={() => this.fillStates(isSelected.key)}>
+        Click me
+      </Icon>
+      </div>
+    )
+  }
+
+  editRowSmall = (row, isSelected, e, id, key) =>
+  {
+    return (
+      <div style={{textAlign: 'center'}}>
+      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+      onClick={() => this.fillStatesSmall(isSelected.key)}>
         Click me
       </Icon>
       </div>
@@ -876,39 +990,39 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = this.state.arrayData2
-    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
-
-    if (this.state.Maintenance_Item.length == 0) {
-      console.log("do nothing")
-      this.setState({
-        error: null,
-      })
-    }
-
-    if (this.state.Maintenance_Item.length != 0) {
-
-      const sampleInfo = {
-        Maintenance_Item: this.state.Maintenance_Item,
-        Maintenance_Input: this.state.Maintenance_Input,
+    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
 
 
-
-      }
-
-
-
-      sampleListRef.push(sampleInfo);
-      //this.setState is used to clear the text boxes after the form has been submitted.
-      this.setState({
-        Maintenance_Item: '',
-        Maintenance_Input: '',
+var arr = this.state.arrayData2;
+console.log(arr);
 
 
-      });
+if (arr.length == 0){
+  var object = {date: this.state.sampleDate, ID: this.state.sampleID,  Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc}
+  console.log(object);
+  sampleListRef.set(object);
 
-    }
+}
+else
 
+
+  var object = arr.reduce(
+      (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input, [this.state.Sample_Item]: this.state.Sample_Input}) ,{});
+      console.log(object);
+      sampleListRef.set(object);
+
+
+
+    //this.setState is used to clear the text boxes after the form has been submitted.
+
+    this.setState({
+
+
+
+      childrenDrawerComment: false,
+
+
+    });
 
   });
 
@@ -920,7 +1034,7 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
   handleSampleChange = idx => evt => {
     const newParameters = this.state.snapArray1.map((parameter, sidx) => {
       if (idx !== sidx) return parameter;
-      return { ...parameter, Maintenance_Input: evt.target.value };
+      return { ...parameter, Sample_Input: evt.target.value };
     });
     this.setState({ snapArray1: newParameters,
                     save: 'none',
@@ -933,7 +1047,7 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     handleSampleChange1 = idx => evt => {
       const newParameters = this.state.arrayData2.map((parameter, sidx) => {
         if (idx !== sidx) return parameter;
-        return { ...parameter, Maintenance_Input: evt.target.value };
+        return { ...parameter, Sample_Input: evt.target.value };
       });
       this.setState({ arrayData2: newParameters, save: 'none', save1: null });
 
@@ -1013,7 +1127,7 @@ if (arr.length > 0){
 
       fillStates(itemId) {
 
-        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
 
           this.setState({
             overwriteReport: null,
@@ -1023,78 +1137,136 @@ if (arr.length > 0){
             visibleEditMaintenance: true,
             save: 'none',
             save1: null,
+            editMaintenanceWidth: 600,
+            childCommentMaintenanceWidth: 500,
 
           })
 
-        const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${itemId}`);
-        let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
-        sample1Ref.on('value', (snapshot) => {
+          const previewInfoRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
+          let id = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`).key;
+
+          previewInfoRef.on('value', (snapshot) => {
+
+            let maintenanceList = snapshot.val();
+            console.log(maintenanceList)
+
+
+
+
+            let dataList = snapshot.val();
+            delete dataList.date;
+            delete dataList.ID;
+            delete dataList.Title;
+            delete dataList.Miscellaneous;
+            delete dataList.court;
+            delete dataList.Status;
+
+
+            let dataKeys = Object.keys(dataList);
+            let dataValues = Object.values(dataList);
+            console.log(dataKeys);
+            console.log(dataValues);
+
+            let arrayData = [];
+            for (let i=0; i < dataKeys.length; i++) {
+            //push send this data to the back of the chartData variable above.
+            arrayData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
+
+            }
+
+
+            this.setState({
+
+            sampleDate: maintenanceList.date,
+            sampleTitle: maintenanceList.Title,
+            sampleID: maintenanceList.ID,
+            sampleMisc: maintenanceList.Miscellaneous,
+            Status: maintenanceList.Status,
+            court: maintenanceList.court,
+            id: id,
+            snapArray1: arrayData,
+            arrayData2: arrayData,
+          })
+
+            })
+
+
+
+
+
+
+
+    }
+
+    fillStatesSmall(itemId) {
+
+
+
+        this.setState({
+          overwriteReport: null,
+          addReport: 'none',
+          inputOverwrite: null,
+          inputAdd: 'none',
+          visibleEditMaintenance: true,
+          editMaintenanceWidth: 300,
+          childCommentMaintenanceWidth: 250,
+          save: 'none',
+          save1: null,
+
+        })
+
+        const previewInfoRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
+        let id = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`).key;
+
+        previewInfoRef.on('value', (snapshot) => {
 
           let maintenanceList = snapshot.val();
+          console.log(maintenanceList)
 
 
+
+
+          let dataList = snapshot.val();
+          delete dataList.date;
+          delete dataList.ID;
+          delete dataList.Title;
+          delete dataList.Miscellaneous;
+          delete dataList.court;
+          delete dataList.Status;
+
+
+          let dataKeys = Object.keys(dataList);
+          let dataValues = Object.values(dataList);
+          console.log(dataKeys);
+          console.log(dataValues);
+
+          let arrayData = [];
+          for (let i=0; i < dataKeys.length; i++) {
+          //push send this data to the back of the chartData variable above.
+          arrayData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
+
+          }
 
 
           this.setState({
-            sampleDate: snapshot.child('date').val(),
-            sampleID: snapshot.child('ID').val(),
-            sampleTitle: snapshot.child('Title').val(),
-            sampleMisc: snapshot.child('Miscellaneous').val(),
-            Status: snapshot.child('Status').val(),
-            court: snapshot.child('court').val(),
-            id: id,
-          });
 
-          let arr = snapshot.val();
-          delete arr.date;
-          delete arr.ID;
-          delete arr.Title;
-          delete arr.Status;
-          delete arr.court;
-          delete arr.Miscellaneous;
-
-          let arrayKeys = Object.keys(arr);
-          let arrayValues = Object.values(arr);
-
-
-          this.setState({
-            arrayKeys1: arrayKeys,
-            arrayValues1: arrayValues,
+          sampleDate: maintenanceList.date,
+          sampleTitle: maintenanceList.Title,
+          sampleID: maintenanceList.ID,
+          sampleMisc: maintenanceList.Miscellaneous,
+          Status: maintenanceList.Status,
+          court: maintenanceList.court,
+          id: id,
+          snapArray1: arrayData,
+          arrayData2: arrayData,
+        })
 
           })
 
-  });
-
-const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
-sample2Ref.on('value', (snapshot) => {
-let maintenanceList = this.snapshotToArray(snapshot);
 
 
-let keys = [maintenanceList.map((parameter) => {
-  return (
-parameter.key
-  )
-})]
 
-this.setState({
-  arrayData1: keys,
-})
-})
-
-let arrayData = [];
-for (let i=0; i < this.state.arrayKeys1.length; i++) {
-//push send this data to the back of the chartData variable above.
-arrayData.push({Maintenance_Input: this.state.arrayValues1[i], Maintenance_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
-
-}
-console.log(arrayData);
-this.setState({
-  snapArray1: arrayData,
-  arrayData2: arrayData,
-})
-
-      });
-    }
+  }
 
 
     sampleOverwrite = (e) => {
@@ -1118,7 +1290,7 @@ this.setState({
 
 
     var object = arr.reduce(
-        (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+        (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
         console.log(object);
         sampleListRef.set(object);
 
@@ -1326,53 +1498,112 @@ this.setState({
         let url = file && URL.createObjectURL(file)
         let img = document.createElement("my-node");
 
-
+        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
 
 
         const MyDoc = (
           <Document>
             <Page size="A4" style={styles.body}>
+              <View style={{textAlign: 'center'}}>
 
 
-                    <Text style={styles.header} fixed>
-                      {this.state.lakeName} Sampling Report
+                    <Text  style={{position: 'absolute', left: '20px', top: '20px'}}>
+                      AquaSource
                     </Text>
-                    <Text style={styles.title}>{this.state.sampleTitle}</Text>
-                    <Text style={styles.author}>{this.state.sampleDate}</Text>
-                    <Text style={styles.author}>Report #{this.state.sampleID}</Text>
-
-                    <Text style={styles.subtitle}>
-                      Monthly Sampling Data:
+                    <Text  style={{position: 'absolute', left: '20px', top: '40px', fontSize: 13}}>
+                      Huntington Beach
                     </Text>
 
-                    <View>
-                      {this.state.arrayData2.map((parameter, idx) => {
+                    <Text  style={{position: 'absolute', left: '400px', top: '20px'}}>
+                      # {this.state.sampleID}
+                    </Text>
+                    <Text style={{position: 'absolute', left: '400px', top: '40px', fontSize: 13}} >
+                      {this.state.lakeName}
+                    </Text>
+                    <Text style={{position: 'absolute', left: '400px', top: '60px', fontSize: 13}} >
+                      {this.state.locationCity}, {this.state.locationState}
+                    </Text>
 
-                        return (
-                          <View>
-                          <Text style={styles.author}>{parameter.Maintenance_Item}:  {parameter.Maintenance_Input} mg/L</Text>
-                          </View>
-                        )
 
-                      })}
+                    <Text style={{position: 'absolute', left: '20px', top: '140px', fontSize: 13}} >
+                      Date: {this.state.sampleDate}
+                    </Text>
+                    <Text style={{position: 'absolute', left: '200px', top: '140px', fontSize: 13}} >
+                      Status: {this.state.Status}
+                    </Text>
+
+                    <Text style={{position: 'absolute', left: '360px', top: '140px', fontSize: 13}} >
+                      Ball in Court: {this.state.court}
+                    </Text>
+
+                    <Text style={{position: 'absolute', left: '20px', top: '170px', fontSize: 13}} >
+                      Maintenance Item: {this.state.sampleTitle}
+                    </Text>
+
+                    <Text style={{position: 'absolute', left: '20px', top: '195px', fontSize: 13}} >
+                      Miscellaneous Notes: {this.state.sampleMisc}
+                    </Text>
+
+
+
+                    <Text style={{position: 'absolute',
+                       left: '20px',
+                        top: '95px',
+                         fontSize: .5,
+                          color: 'black',
+                          backgroundColor: 'black',}} >
+                          {line}
+                          </Text>
+                          <Text style={{position: 'absolute', left: '160px', top: '100px', zIndex: 1}} >
+                            MAINTENANCE ITEM
+                          </Text>
+                          <Text style={{position: 'absolute',
+                             left: '20px',
+                              top: '118px',
+                               fontSize: .5,
+                                color: 'black',
+                                backgroundColor: 'black',}} >
+                                {line}
+                                </Text>
+
+                <Text style={{position: 'absolute',
+                   left: '20px',
+                    top: '235px',
+                     fontSize: .5,
+                      color: 'black',
+                      backgroundColor: 'black',}} >
+                      {line}
+                      </Text>
+                      <Text style={{position: 'absolute', left: '20px', top: '240px'}} >
+                        Maintenance Items:
+                      </Text>
+                      <Text style={{position: 'absolute',
+                         left: '20px',
+                          top: '260px',
+                           fontSize: .5,
+                            color: 'black',
+                            backgroundColor: 'black',}} >
+                            {line}
+                            </Text>
+
+                            <View style={{position: 'absolute', left: '20px', top: '280px'}}>
+                              {this.state.reportData.map((parameter, idx) => {
+
+                                return (
+                                  <View>
+                                  <Text style={styles.author}>{parameter.Sample_Item}:  {parameter.Sample_Input} </Text>
+                                  </View>
+                                )
+
+                              })}
+
+                            </View>
+
+
+
+
 
                     </View>
-
-
-
-
-
-
-
-                    <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
-                      `${pageNumber} / ${totalPages}`
-                    )} fixed />
-
-
-
-
-
-
             </Page>
           </Document>
         )
@@ -1405,6 +1636,7 @@ this.setState({
 
 
         const columns = this.state.tableKeys;
+        const columnsSmall = this.state.tableKeysSmall;
 
 const data = this.state.snapArray;
 const dataReverse = this.state.graphData;
@@ -1431,11 +1663,11 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.onClose}
               visible={this.state.visible}
-              width={600}
+              width={this.state.itemDrawerWidth}
             >
             <Drawer
             title="Add Maintenance Item"
-            width={420}
+            width={this.state.childItemDrawerWidth}
             closable={false}
             onClose={this.onChildrenDrawerClose}
             visible={this.state.childrenDrawer}
@@ -1551,9 +1783,9 @@ const csvData1 = this.state.currentData;
 
                       <Row style={{paddingTop: '20px'}}>
                       <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
-                      <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                      <FormControl  required  name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60, width: 400}}
-                        onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
+                      <Col xs={24} sm={18} md={18} lg={18} xl={18}>
+                      <FormControl  required  name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
+                        onChange={this.handleChange}  placeholder="Notes" value={this.state.sampleMisc} />
                       </Col>
                       </Row>
                     </FormGroup>
@@ -1563,14 +1795,14 @@ const csvData1 = this.state.currentData;
                 {this.state.snapArray1.map((parameter, idx) => {
 
                               return (
-                                <Row style={{paddingTop: '10px'}}>
+                                <Row style={{paddingTop: '20px'}}>
                           <FormGroup>
-                            <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Maintenance_Item}</b></Col>
-                            <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                            <Col xs={20} sm={16} md={16} lg={16} xl={16}>
                             <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 70, width: '100%'}}
                               onChange={this.handleSampleChange(idx)}   value={parameter.Maintenance_Input} />
                             </Col>
-                            <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                            <Col xs={4} sm={2} md={2} lg={2} xl={2} style={{textAlign: 'center'}}>
                               <Icon type="delete" style={{fontSize: '24px'}}
                               onClick={() => this.removesample1(parameter.key)}>
                                 Click me
@@ -1611,12 +1843,12 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.onClose}
               visible={this.state.visibleEditMaintenance}
-              width={600}
+              width={this.state.editMaintenanceWidth}
             >
 
             <Drawer
             title="Add Comment"
-            width={500}
+            width={this.state.childCommentMaintenanceWidth}
             closable={false}
             onClose={this.onChildrenDrawerCloseComment}
             visible={this.state.childrenDrawerComment}
@@ -1631,14 +1863,14 @@ const csvData1 = this.state.currentData;
 
           <Row style={{paddingTop: '10px', textAlign: 'left'}}>
             <Col xs={24} sm={8} md={7} lg={8} xl={8}>
-            <FormControl required name="Maintenance_Item" onChange={this.handleChange} type="text" placeholder="Comment Title"  value={this.state.Maintenance_Item} />
+            <FormControl required name="Sample_Item" onChange={this.handleChange} type="text" placeholder="Comment Title"  value={this.state.Sample_Item} />
             </Col>
 
           </Row>
 
           <Row style={{paddingTop: '30px', textAlign: 'left'}}>
             <Col xs={24} sm={22} md={22} lg={22} xl={22}>
-            <FormControl required name="Maintenance_Input" onChange={this.handleChange} type="textarea" componentClass="textarea" placeholder="Comment" style={{ height: 60, width: 400}} value={this.state.Maintenance_Input} />
+            <FormControl required name="Sample_Input" onChange={this.handleChange} type="textarea" componentClass="textarea" placeholder="Comment" style={{ height: 60, width: 400}} value={this.state.Sample_Input} />
             </Col>
 
 
@@ -1734,7 +1966,7 @@ const csvData1 = this.state.currentData;
                           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
                           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                           <FormControl  required  name='sampleMisc' type="textarea" componentClass="textarea" style={{ height: 60}}
-                            onChange={this.handleChange}  placeholder="Report" value={this.state.sampleMisc} />
+                            onChange={this.handleChange}  placeholder="Notes" value={this.state.sampleMisc} />
                           </Col>
                           </Row>
                         </FormGroup>
@@ -1744,16 +1976,16 @@ const csvData1 = this.state.currentData;
       {this.state.arrayData2.map((parameter, idx) => {
 
                     return (
-                      <Row style={{paddingTop: '10px'}}>
+                      <Row style={{paddingTop: '20px'}}>
                 <FormGroup>
-                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
-                  <Col xs={24} sm={15} md={15} lg={15} xl={15}>
-                  <FormControl name={parameter.Maintenance_Item} type="text" componentClass="textarea" style={{ height: 80}}
-                    onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Maintenance_Input} />
+                  <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Sample_Item}</b></Col>
+                  <Col xs={24} sm={16} md={16} lg={16} xl={16}>
+                  <FormControl name={parameter.Sample_Item} type="text" componentClass="textarea" style={{ height: 80}}
+                    onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Sample_Input} />
                   </Col>
-                  <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                  <Col xs={24} sm={2} md={2} lg={2} xl={2} style={{textAlign: 'center'}}>
                     <Icon type="delete" style={{fontSize: '24px'}}
-                    onClick={() => this.removesample2(parameter.Maintenance_Item)}>
+                    onClick={() => this.removesample2(parameter.Sample_Item)}>
                       Click me
                     </Icon>
                     </Col>
@@ -1829,21 +2061,33 @@ const csvData1 = this.state.currentData;
 
 
                       <Row>
-                    <Col xs={24} sm={24} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
+                    <Col xs={0} sm={0} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
                       <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
                     </Col>
 
-                    <Col xs={24} sm={24} md={3} lg={3} xl={3} >
+                    <Col xs={0} sm={0} md={3} lg={3} xl={3} >
                     <Button onClick={this.clearDates}>Clear Dates</Button>
                     </Col>
+                    <Col xs={10} sm={10} md={0} lg={0} xl={0} >
+                    <Button onClick={this.clearDates}>Clear Dates</Button>
+                    </Col>
+                    <Col xs={10} sm={10} md={0} lg={0} xl={0} style={{textAlign: 'right'}}>
+                    <Button size="large" type="primary" onClick={() => this.showDrawerMobile()}>+ Add Item</Button>
+                    </Col>
 
-                    <Col xs={24} sm={24} md={7} lg={7} xl={7} >
+                    <Col xs={0} sm={0} md={7} lg={7} xl={7} >
+                    <RangePicker  allowClear={true} onChange={this.onChangeDate}  />
+                    </Col>
+                    <Col xs={24} sm={24} md={0} lg={0} xl={0} >
                     <RangePicker  allowClear={true} onChange={this.onChangeDate}  />
                     </Col>
 
-                    <Col xs={24} sm={24} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
+
+
+                    <Col xs={0} sm={0} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
                     <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Item</Button>
                     </Col>
+
 
 
                   </Row>
@@ -1851,8 +2095,12 @@ const csvData1 = this.state.currentData;
                       <Row style={{paddingTop: '10px'}} type="flex" justify="center">
 
                         <Card style={{ width: '100%' }}>
-                          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                          <Col xs={0} sm={0} md={24} lg={24} xl={24}>
                             <Table columns={columns} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
+
+                          </Col>
+                          <Col xs={24} sm={24} md={0} lg={0} xl={0}>
+                            <Table columns={columnsSmall} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
 
                           </Col>
                         </Card>
@@ -2010,13 +2258,19 @@ const csvData1 = this.state.currentData;
     <Col span={24} style={{textAlign: 'center'}}>
 
       <Row>
-      <PDFDownloadLink document={MyDoc} fileName="somename.pdf">
-  {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Click Here & Download now!')}
+      <PDFDownloadLink document={MyDoc} fileName={this.state.sampleDate}><Button type="primary" size="large">Export PDF</Button>
+
 </PDFDownloadLink>
 </Row>
 
   <Row style={{paddingTop: '20px'}}>
-      {MyDoc}
+    <Col span={24}>
+
+<PDFViewer style={{width: '100%', height: 800}}>
+  {MyDoc}
+</PDFViewer>
+
+</Col>
 
       </Row>
 

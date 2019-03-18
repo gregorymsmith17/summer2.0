@@ -155,6 +155,7 @@ export default class vendorContacts extends Component {
 
 
           tableKeys: [],
+          tableSmall: [],
           searchText: '',
           selectedRowKeys: [], // Check here to configure the default column
           loading: false,
@@ -185,6 +186,11 @@ export default class vendorContacts extends Component {
           hoaContactNumber: '',
 
           currentProject: '',
+
+          vendorDrawerWidth: '',
+          childVendorDrawerWidth: '',
+          editDrawerWidth: '',
+          childEditDrawerWidth: '',
 
 
         }
@@ -310,21 +316,21 @@ export default class vendorContacts extends Component {
 
 
                 let tableKeys = table1Keys.map((txt) => {
-
-
                   const item3 = txt.replace(/^"(.*)"$/, '$1');
                   const item4 = "a"+"."+item3;
 
-
-                  console.log(item3);
-                  console.log(item4);
-
                   return (
-
                   {
 
+                }
+                )})
 
+                let tableKeysSmall = table1Keys.map((txt) => {
+                  const item3 = txt.replace(/^"(.*)"$/, '$1');
+                  const item4 = "a"+"."+item3;
 
+                  return (
+                  {
 
                 }
                 )})
@@ -381,16 +387,7 @@ export default class vendorContacts extends Component {
 
                 })
 
-                tableKeys.unshift({
-                title: 'Date',
-                dataIndex: 'date',
-                key: 'date',
-                ...this.getColumnSearchProps('date'),
-                sorter: (a, b) => { return a.date.localeCompare(b.date)},
-                sortDirections: ['descend', 'ascend'],
 
-
-                })
 
 
 
@@ -430,11 +427,91 @@ export default class vendorContacts extends Component {
 
                 let reverseData1 = data.reverse();
 
+                tableKeysSmall.unshift({
+                title: 'Vendor Notes',
+                dataIndex: 'Miscellaneous',
+                key: 'Miscellaneous',
+                ...this.getColumnSearchProps('Miscellaneous'),
+                sorter: (a, b) => { return a.Miscellaneous.localeCompare(b.Miscellaneous)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+                tableKeysSmall.unshift({
+                title: 'Phone',
+                dataIndex: 'phone',
+                key: 'phone',
+                ...this.getColumnSearchProps('phone'),
+                sorter: (a, b) => { return a.phone.localeCompare(b.phone)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+
+
+                tableKeysSmall.unshift({
+                title: 'Email',
+                dataIndex: 'email',
+                key: 'email',
+                ...this.getColumnSearchProps('email'),
+                sorter: (a, b) => { return a.email.localeCompare(b.email)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+                tableKeysSmall.unshift({
+                title: 'Company',
+                dataIndex: 'company',
+                key: 'company',
+                ...this.getColumnSearchProps('company'),
+                sorter: (a, b) => { return a.company.localeCompare(b.company)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+                tableKeysSmall.unshift({
+                title: 'Name',
+                dataIndex: 'name',
+                key: 'name',
+                ...this.getColumnSearchProps('name'),
+                sorter: (a, b) => { return a.name.localeCompare(b.name)},
+                sortDirections: ['descend', 'ascend'],
+
+                })
+
+
+
+
+
+                tableKeysSmall.unshift({
+                  title: 'Edit',
+                  dataIndex: '',
+                  key: 'x',
+
+                  render: this.editRowSmall.bind(this),
+                  width: 50,
+
+
+                })
+
+                tableKeysSmall.push({
+
+                  title: 'Delete',
+                  dataIndex: '',
+
+
+                  render: this.deleteRow.bind(this),
+                  width: 50,
+
+
+                })
+  
 
                 this.setState({
                   snapArray: data.reverse(),
 
                   tableKeys: tableKeys,
+                  tableKeysSmall: tableKeysSmall,
                 })
 
 
@@ -519,6 +596,8 @@ showDrawer = () => {
       chemicalnotes: '',
       snapArray1: maintenanceArray,
       visible: true,
+      vendorDrawerWidth: 600,
+      childVendorDrawerWidth: 500,
       Maintenance_Item: '',
 
       vendorName: '',
@@ -535,6 +614,41 @@ showDrawer = () => {
 
 
 };
+showDrawerSmall = () => {
+
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/vendorList`);
+  sampleList2Ref.on('value', (snapshot) => {
+    let maintenanceArray = this.snapshotToArray(snapshot);
+
+    this.setState({
+      arrayKeys1: [],
+      arrayValues1: [],
+      chemicalName: '',
+      chemicalSupplier: '',
+      chemicalAmount: '',
+      chemicalDate: '',
+      chemicalnotes: '',
+      snapArray1: maintenanceArray,
+      visible: true,
+      vendorDrawerWidth: 300,
+      childVendorDrawerWidth: 250,
+      Maintenance_Item: '',
+
+      vendorName: '',
+      vendorCompany: '',
+      vendorEmail: '',
+      vendorPhone: '',
+      vendorNotes: '',
+
+      childrenDrawer: false,
+      visible4: false,
+    })
+  })
+
+
+
+};
+
 showDrawer4 = () => {
   this.setState({
     visible4: true,
@@ -804,6 +918,18 @@ arrayData2: arrayData,
     )
   }
 
+  editRowSmall = (row, isSelected, e, id, key) =>
+  {
+    return (
+      <div style={{textAlign: 'center'}}>
+      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+      onClick={() => this.fillStatesSmall(isSelected.key)}>
+        Click me
+      </Icon>
+      </div>
+    )
+  }
+
   editRow1 = (row, isSelected, e, id, key) =>
   {
     return (
@@ -1058,6 +1184,8 @@ if (arr.length > 0){
             visibleEditMaintenance: true,
             save: 'none',
             save1: null,
+            editDrawerWidth: 600,
+            childEditDrawerWidth: 500,
 
           })
 
@@ -1130,6 +1258,93 @@ this.setState({
 
       });
     }
+
+    fillStatesSmall(itemId) {
+
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+        this.setState({
+          overwriteReport: null,
+          addReport: 'none',
+          inputOverwrite: null,
+          inputAdd: 'none',
+          visibleEditMaintenance: true,
+          save: 'none',
+          save1: null,
+          editDrawerWidth: 300,
+          childEditDrawerWidth: 250,
+
+        })
+
+      const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/vendors/${itemId}`);
+      let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/vendorList/${itemId}`).key;
+      sample1Ref.on('value', (snapshot) => {
+
+        let maintenanceList = snapshot.val();
+        console.log(maintenanceList);
+
+
+
+        this.setState({
+          vendorName: snapshot.child('name').val(),
+          vendorCompany: snapshot.child('company').val(),
+          vendorEmail: snapshot.child('email').val(),
+          vendorPhone: snapshot.child('phone').val(),
+          vendorNotes: snapshot.child('Miscellaneous').val(),
+          id: id,
+        });
+
+        let arr = snapshot.val();
+
+        delete arr.Miscellaneous;
+        delete arr.name;
+        delete arr.company;
+        delete arr.email;
+        delete arr.phone;
+
+
+        let arrayKeys = Object.keys(arr);
+        let arrayValues = Object.values(arr);
+
+
+        this.setState({
+          arrayKeys1: arrayKeys,
+          arrayValues1: arrayValues,
+
+        })
+
+});
+
+const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/vendors`);
+sample2Ref.on('value', (snapshot) => {
+let maintenanceList = this.snapshotToArray(snapshot);
+
+
+let keys = [maintenanceList.map((parameter) => {
+return (
+parameter.key
+)
+})]
+
+this.setState({
+arrayData1: keys,
+})
+})
+
+let arrayData = [];
+for (let i=0; i < this.state.arrayKeys1.length; i++) {
+//push send this data to the back of the chartData variable above.
+arrayData.push({Maintenance_Input: this.state.arrayValues1[i], Maintenance_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
+
+}
+console.log(arrayData);
+this.setState({
+snapArray1: arrayData,
+arrayData2: arrayData,
+})
+
+    });
+  }
 
 
     sampleOverwrite = (e) => {
@@ -1440,6 +1655,7 @@ this.setState({
 
 
         const columns = this.state.tableKeys;
+        const columnsSmall = this.state.tableKeysSmall;
 
 const data = this.state.snapArray;
 const dataReverse = this.state.graphData;
@@ -1466,11 +1682,11 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.onClose}
               visible={this.state.visible}
-              width={600}
+              width={this.state.vendorDrawerWidth}
             >
             <Drawer
             title="Add Contact Item"
-            width={420}
+            width={this.state.childVendorDrawerWidth}
             closable={false}
             onClose={this.onChildrenDrawerClose}
             visible={this.state.childrenDrawer}
@@ -1537,28 +1753,28 @@ const csvData1 = this.state.currentData;
                       <Row style={{paddingTop: '20px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Name</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl  required name='vendorName' type='text' placeholder="Title" value={this.state.vendorName}
+                          <FormControl  required name='vendorName' type='text' placeholder="Name" value={this.state.vendorName}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '20px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Company</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl  required name='vendorCompany' type='text' placeholder="Title" value={this.state.vendorCompany}
+                          <FormControl  required name='vendorCompany' type='text' placeholder="Company" value={this.state.vendorCompany}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '20px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Email</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl  required name='vendorEmail' type='text' placeholder="Title" value={this.state.vendorEmail}
+                          <FormControl  required name='vendorEmail' type='text' placeholder="Email" value={this.state.vendorEmail}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
                       <Row style={{paddingTop: '20px'}}>
                         <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Phone</b></Col>
                         <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                          <FormControl  required name='vendorPhone' type='text' placeholder="Title" value={this.state.vendorPhone}
+                          <FormControl  required name='vendorPhone' type='text' placeholder="Phone" value={this.state.vendorPhone}
                               onChange={this.handleChange} />
                         </Col>
                       </Row>
@@ -1573,7 +1789,7 @@ const csvData1 = this.state.currentData;
                       <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
                       <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                       <FormControl  required  name='vendorNotes' type="textarea" componentClass="textarea" style={{ height: 80 }}
-                        onChange={this.handleChange}  placeholder="Report" value={this.state.vendorNotes} />
+                        onChange={this.handleChange}  placeholder="Notes" value={this.state.vendorNotes} />
                       </Col>
                       </Row>
                     </FormGroup>
@@ -1583,14 +1799,14 @@ const csvData1 = this.state.currentData;
                 {this.state.snapArray1.map((parameter, idx) => {
 
                               return (
-                                <Row style={{paddingTop: '10px'}}>
+                                <Row style={{paddingTop: '20px'}}>
                           <FormGroup>
-                            <Col xs={24} sm={7} md={7} lg={7} xl={7}><b>{parameter.Maintenance_Item}</b></Col>
-                            <Col xs={24} sm={14} md={14} lg={14} xl={14}>
+                            <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
+                            <Col xs={24} sm={16} md={16} lg={16} xl={16}>
                             <FormControl name={parameter.Maintenance_Item} type="textarea" componentClass="textarea" style={{ height: 70, width: '100%'}}
                               onChange={this.handleSampleChange(idx)}   value={parameter.Maintenance_Input} />
                             </Col>
-                            <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                            <Col xs={24} sm={2} md={2} lg={2} xl={2} style={{textAlign: 'center'}}>
                               <Icon type="delete" style={{fontSize: '24px'}}
                               onClick={() => this.removesample1(parameter.key)}>
                                 Click me
@@ -1631,12 +1847,12 @@ const csvData1 = this.state.currentData;
               closable={false}
               onClose={this.onClose}
               visible={this.state.visibleEditMaintenance}
-              width={600}
+              width={this.state.editDrawerWidth}
             >
 
             <Drawer
             title="Add Comment"
-            width={500}
+            width={this.state.childEditDrawerWidth}
             closable={false}
             onClose={this.onChildrenDrawerCloseComment}
             visible={this.state.childrenDrawerComment}
@@ -1710,28 +1926,28 @@ const csvData1 = this.state.currentData;
                           <Row style={{paddingTop: '20px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Name</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl  required name='vendorName' type='text' placeholder="Title" value={this.state.vendorName}
+                              <FormControl  required name='vendorName' type='text' placeholder="Name" value={this.state.vendorName}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '20px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Company</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl  required name='vendorCompany' type='text' placeholder="Title" value={this.state.vendorCompany}
+                              <FormControl  required name='vendorCompany' type='text' placeholder="Company" value={this.state.vendorCompany}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '20px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Email</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl  required name='vendorEmail' type='text' placeholder="Title" value={this.state.vendorEmail}
+                              <FormControl  required name='vendorEmail' type='text' placeholder="Email" value={this.state.vendorEmail}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
                           <Row style={{paddingTop: '20px'}}>
                             <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Phone</b></Col>
                             <Col xs={24} sm={18} md={18} lg={18} xl={18}>
-                              <FormControl  required name='vendorPhone' type='text' placeholder="Title" value={this.state.vendorPhone}
+                              <FormControl  required name='vendorPhone' type='text' placeholder="Phone" value={this.state.vendorPhone}
                                   onChange={this.handleChange} />
                             </Col>
                           </Row>
@@ -1746,7 +1962,7 @@ const csvData1 = this.state.currentData;
                           <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>Notes</b></Col>
                           <Col xs={24} sm={18} md={18} lg={18} xl={18}>
                           <FormControl  required  name='vendorNotes' type="textarea" componentClass="textarea" style={{ height: 80 }}
-                            onChange={this.handleChange}  placeholder="Report" value={this.state.vendorNotes} />
+                            onChange={this.handleChange}  placeholder="Notes" value={this.state.vendorNotes} />
                           </Col>
                           </Row>
                         </FormGroup>
@@ -1756,14 +1972,14 @@ const csvData1 = this.state.currentData;
       {this.state.arrayData2.map((parameter, idx) => {
 
                     return (
-                      <Row style={{paddingTop: '10px'}}>
+                      <Row style={{paddingTop: '20px'}}>
                 <FormGroup>
                   <Col xs={24} sm={6} md={6} lg={6} xl={6}><b>{parameter.Maintenance_Item}</b></Col>
-                  <Col xs={24} sm={15} md={15} lg={15} xl={15}>
+                  <Col xs={24} sm={16} md={16} lg={16} xl={16}>
                   <FormControl name={parameter.Maintenance_Item} type="text" componentClass="textarea" style={{ height: 80}}
                     onChange={this.handleSampleChange1(idx)}  placeholder="Report" value={parameter.Maintenance_Input} />
                   </Col>
-                  <Col xs={24} sm={3} md={3} lg={3} xl={3} style={{textAlign: 'center'}}>
+                  <Col xs={24} sm={2} md={2} lg={2} xl={2} style={{textAlign: 'center'}}>
                     <Icon type="delete" style={{fontSize: '24px'}}
                     onClick={() => this.removesample2(parameter.Maintenance_Item)}>
                       Click me
@@ -1841,7 +2057,7 @@ const csvData1 = this.state.currentData;
 
 
                       <Row>
-                    <Col xs={24} sm={24} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
+                    <Col xs={0} sm={0} md={9} lg={9} xl={9} style={{textAlign: 'left'}}>
                       <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>
                     </Col>
 
@@ -1850,11 +2066,14 @@ const csvData1 = this.state.currentData;
                     </Col>
 
                     <Col xs={24} sm={24} md={7} lg={7} xl={7} >
-                    
+
                     </Col>
 
-                    <Col xs={24} sm={24} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
+                    <Col xs={0} sm={0} md={5} lg={5} xl={5} style={{textAlign: 'right'}}>
                     <Button size="large" type="primary" onClick={() => this.showDrawer()}>+ Add Vendor</Button>
+                    </Col>
+                    <Col xs={12} sm={12} md={0} lg={0} xl={0} style={{textAlign: 'right'}}>
+                    <Button type="primary" onClick={() => this.showDrawerSmall()}>+ Add Vendor</Button>
                     </Col>
 
 
@@ -1863,8 +2082,13 @@ const csvData1 = this.state.currentData;
                       <Row style={{paddingTop: '10px'}} type="flex" justify="center">
 
                         <Card style={{ width: '100%' }}>
-                          <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                          <Col xs={0} sm={0} md={24} lg={24} xl={24}>
                             <Table columns={columns} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
+
+                          </Col>
+
+                          <Col xs={24} sm={24} md={0} lg={0} xl={0}>
+                            <Table columns={columnsSmall} dataSource={data} onChange={this.onChange} scroll={{ x: '100%'}} />
 
                           </Col>
                         </Card>

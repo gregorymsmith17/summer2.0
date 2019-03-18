@@ -294,16 +294,11 @@ export default class Dashboard extends Component {
             table1Keys = table1Keys.filter(e => e !== 'key');
             table1Keys = table1Keys.filter(e => e !== 'key');
 
-            if (this.state.turnedOffKeys.length == 0) {
-              console.log("do nothing again")
-            }
 
-            if (this.state.turnedOffKeys.lenth > 0) {
-              this.state.turnedOffKeys.map((item) => {
 
-                table1Keys = table1Keys.filter(e => e !== item);
-              })
-            }
+
+
+
 
             console.log(table1Keys)
 
@@ -1537,7 +1532,7 @@ syncId="anyId">
 
             <Row>
 
-							<Col  xs={0} sm={24} md={24} lg={24} xl={24}>
+							<Col  xs={24} sm={24} md={24} lg={24} xl={24}>
               <ResponsiveContainer width="100%" aspect={6/3.0} minHeight={100}>
 
                 <ComposedChart data={data}
@@ -1574,7 +1569,8 @@ syncId="anyId">
 						<p style={{paddingTop: '25px', paddingLeft: '20px', fontSize: '24px'}}>Water Quality</p>
 						</Col>
 
-						<Col xs={24} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
+						<Col xs={0
+							} sm={8} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
 						<p style={{paddingTop: '50px', paddingRight: '50px', fontSize: '12px'}}>(Click and Drag to ReOrder)</p>
 						</Col>
 
