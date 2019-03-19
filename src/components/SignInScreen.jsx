@@ -26,6 +26,7 @@ import vendorContacts from './assetManager/vendorContacts';
 import equipmentList from './assetManager/equipmentList';
 import chemicalApplications from './assetManager/chemicalApplications';
 import fishStocking from './assetManager/fishStocking';
+import testing from './assetManager/testing';
 
 import drawings from './documents/drawings';
 import reports from './documents/reports';
@@ -1496,6 +1497,7 @@ height={700}
           <Route path="/permits" component={permits} />
           <Route path="/dashForecast" component={dashForecast} />
           <Route path="/index" component={Drop} />
+          <Route path="/testing" component={testing} />
 
 
 
