@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   },
   author: {
     fontSize: 12,
-    textAlign: 'center',
+
     marginBottom: 10,
     paddingTop: 15,
   },
@@ -108,6 +108,7 @@ class AddReportForm extends React.Component {
     maintenanceItems: [],
     dataKeys: [],
     dataValues: [],
+    reportAdded: 'none',
   };
 
   snapshotToArray(snapshot) {
@@ -172,6 +173,7 @@ class AddReportForm extends React.Component {
           maintenanceDate: this.state.maintenanceDate,
           formDisplay: null,
           formDisplay1: 'none',
+          reportAdded: null,
         })
 
 
@@ -230,6 +232,13 @@ class AddReportForm extends React.Component {
   console.log(moment(date).format('YYYY[-]MM[-]DD'));
     this.setState({
       maintenanceDate: moment(date).format('YYYY[-]MM[-]DD'),
+      reportAdded: 'none'
+    })
+  }
+
+  updateChange = () => {
+    this.setState({
+      reportAdded: 'none'
     })
   }
 
@@ -287,16 +296,16 @@ class AddReportForm extends React.Component {
       <div>
       <Form {...formItemLayout} onSubmit={this.handleSubmit} >
         <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Maintenance Report</b></p>
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="Report Title"
         >
           {getFieldDecorator('maintenanceTitle', {
             rules: [{ required: true, message: 'Please input your Report Title!', whitespace: true }],
           })(
-            <Input />
+            <Input  onChange={this.updateChange}/>
           )}
         </Form.Item>
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="ID"
         >
           {getFieldDecorator('maintenanceID', {
@@ -305,32 +314,32 @@ class AddReportForm extends React.Component {
             <Input />
           )}
         </Form.Item>
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="Date"
         >
           {getFieldDecorator('maintenanceDate', {
             rules: [{
-              required: true, message: 'Please input your E-mail!',
+              required: true, message: 'Please input date',
             }],
           })(
             <DatePicker format="YYYY-MM-DD" onChange={this.onDateChange} />
           )}
         </Form.Item>
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="Ball in Court"
         >
           {getFieldDecorator('maintenanceCourt', {
-            rules: [{ required: true, message: 'Please input your court!', whitespace: true }],
+            rules: [{ required: true, message: 'Who has the ball!', whitespace: true }],
           })(
-            <Input />
+            <Input onChange={this.updateChange}/>
           )}
         </Form.Item>
 
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="Status"
         >
           {getFieldDecorator('maintenanceStatus', {
-            rules: [{ required: true, message: 'Please input your status!' }],
+            rules: [{ required: true, message: 'What is the status!' }],
           })(
             <Radio.Group size="default" >
                     <Radio.Button value="Not Started">Not Started</Radio.Button>
@@ -341,12 +350,12 @@ class AddReportForm extends React.Component {
         </Form.Item>
         {this.state.dataKeys.map((parameter) => {
           return (
-            <Form.Item
+            <Form.Item {...formItemLayout}
               label={<span>{parameter.Maintenance_Item}<Popover content={<div style={{textAlign: 'center'}}>
                 <p>Are you sure you want <br /> to delete this Maintenance Log?</p>
                 <Button type="primary" onClick={() => this.removesample(parameter.key)}>Delete</Button>
               </div>} trigger="click">
-            <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
+                  <Icon type="delete" style={{fontSize: '18px', color: '#101441'}}
             >
               Click me
             </Icon>
@@ -355,13 +364,15 @@ class AddReportForm extends React.Component {
               {getFieldDecorator(`${parameter.Maintenance_Item}`, {
                 rules: [{ required: true, message: 'Please enter an input!', whitespace: true }],
               })(
-                <Input />
+                <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
               )}
             </Form.Item>
           )
         })}
-        <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
-          <Button type="primary" htmlType="submit">Create Report</Button>
+
+        <Form.Item {...tailFormItemLayout} style={{textAlign: 'right', paddingTop: 15}}>
+          <p style={{display: this.state.reportAdded}}>Report has been Added</p>
+          <Button type="primary" htmlType="submit"><b>Create Report</b></Button>
         </Form.Item>
 
       </Form>
@@ -382,6 +393,7 @@ class ItemForm extends React.Component {
     formDisplay1: null,
     currentProject: '',
     userID: '',
+    itemAdded: 'none',
   };
 
 
@@ -424,6 +436,10 @@ class ItemForm extends React.Component {
       console.log(sampleInfo)
 
       sampleListRef.push(sampleInfo);
+
+      this.setState({
+        itemAdded: null,
+      })
       }
 
     });
@@ -445,7 +461,11 @@ class ItemForm extends React.Component {
     callback();
   }
 
-
+  updateChange = () => {
+    this.setState({
+      itemAdded: 'none'
+    })
+  }
 
 
 
@@ -489,20 +509,21 @@ class ItemForm extends React.Component {
       <div>
 
       <Form {...formItemLayout} onSubmit={this.submitItem} >
-      <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Maintenance Item</b></p>
+      <p style={{paddingLeft: 30, fontSize: 14}}><b>Add an Additional Item for Your Report</b></p>
 
-      <Form.Item
+      <Form.Item {...formItemLayout}
         label="Maintenance Item"
       >
         {getFieldDecorator('maintenanceItem', {
           rules: [{ required: true, message: 'Please input your Maintenance Item!', whitespace: true }],
         })(
-          <Input />
+          <Input onChange={this.updateChange}/>
         )}
       </Form.Item>
 
       <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
-        <Button type="primary" htmlType="submit">Submit parameter</Button>
+        <p style={{display: this.state.itemAdded}}>Item Added</p>
+        <Button type="primary" htmlType="submit"><b>Add Maintenance Report Item</b></Button>
       </Form.Item>
 
       </Form>
@@ -537,6 +558,8 @@ class FillReportForm extends React.Component {
     commentDrawerVisible: false,
     commentTitle: '',
     commentInput: '',
+    reportUpdated: 'none',
+    commentAdded: 'none',
   };
 
   snapshotToArray(snapshot) {
@@ -611,7 +634,7 @@ class FillReportForm extends React.Component {
                           console.log(maintenanceData)
 
                           this.setState({
-                            otherItems: otherItems,
+
                             maintenanceData: maintenanceData
 
                           })
@@ -629,21 +652,16 @@ test = () => {
 
 handleSubmit = (e) => {
   e.preventDefault();
-  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
   this.props.form.validateFieldsAndScroll((err, values) => {
     if (!err) {
-      const reportRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
+      const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
 
       console.log('Received values of form: ', values);
+
       this.setState({
-        maintenanceTitle: values.maintenanceTitle,
-        maintenanceID: values.maintenanceID,
-        maintenanceStatus: values.maintenanceStatus,
-        maintenanceCourt: values.maintenanceCourt,
-        maintenanceDate: this.state.maintenanceDate,
-
+        reportUpdated: null,
       })
-
 
       delete values.maintenanceDate;
       delete values.commentInput;
@@ -671,7 +689,7 @@ handleSubmit = (e) => {
     }
 
   });
-    });
+
 }
 
 
@@ -706,22 +724,24 @@ handleSubmit = (e) => {
 
   addComment = (e) => {
     e.preventDefault();
-    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const reportRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
+        const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
 
-        console.log('Received values of form: ', values);
         this.setState({
-          commentTitle: values.commentTitle,
-          commentInput: values.commentInput,
-
+          commentAdded: null,
         })
 
+        console.log('Received values of form: ', values);
+
         let dateValue = values.maintenanceDate._i;
-        delete values.commentInput;
-        delete values.commentTitle;
         delete values.maintenanceDate;
+
+        let comment = values.commentTitle;
+        let input = values.commentInput;
+        delete values.commentTitle;
+        delete values.commentInput;
 
         let dataKeys = Object.keys(values);
         let dataValues = Object.values(values);
@@ -737,7 +757,7 @@ handleSubmit = (e) => {
         console.log(maintenanceData)
 
         var object = maintenanceData.reduce(
-            (obj, item) => Object.assign(obj, {[this.state.commentTitle]: this.state.commentInput, date: dateValue, [item.Sample_Item]: item.Sample_Input}) ,{});
+            (obj, item) => Object.assign(obj, {[comment]: input, date: dateValue, [item.Sample_Item]: item.Sample_Input}) ,{});
             console.log(object);
             reportRef.set(object);
 
@@ -745,7 +765,7 @@ handleSubmit = (e) => {
       }
 
     });
-      });
+
 
   }
 
@@ -753,6 +773,13 @@ handleSubmit = (e) => {
 
    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}/${itemId}`);
    sampleRef.remove();
+ }
+
+ updateChange = () => {
+   this.setState({
+     reportUpdated: 'none',
+     commentAdded: 'none',
+   })
  }
 
 
@@ -798,26 +825,26 @@ handleSubmit = (e) => {
         <Row>
 
       <Form {...formItemLayout} onSubmit={this.handleSubmit} >
-        <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Maintenance Report</b></p>
-        <Form.Item
+
+        <Form.Item {...formItemLayout}
           label="Report Title"
         >
           {getFieldDecorator('maintenanceTitle', {
             rules: [{ required: true, message: 'Please input your Report Title!', whitespace: true }], initialValue: this.state.maintenanceTitle,
           })(
-            <Input />
+            <Input onChange={this.updateChange}/>
           )}
         </Form.Item>
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="ID"
         >
           {getFieldDecorator('maintenanceID', {
             rules: [{ required: true, message: 'Please input your Report ID!', whitespace: true }],initialValue: this.state.maintenanceID,
           })(
-            <Input />
+            <Input onChange={this.updateChange}/>
           )}
         </Form.Item>
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="Date"
         >
           {getFieldDecorator('maintenanceDate', {
@@ -828,17 +855,17 @@ handleSubmit = (e) => {
             <DatePicker  onChange={this.onDateChange} />
           )}
         </Form.Item>
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="Ball in Court"
         >
           {getFieldDecorator('maintenanceCourt', {
             rules: [{ required: true, message: 'Please input your court!', whitespace: true }],initialValue: this.state.maintenanceCourt,
           })(
-            <Input />
+            <Input onChange={this.updateChange}/>
           )}
         </Form.Item>
 
-        <Form.Item
+        <Form.Item {...formItemLayout}
           label="Status"
         >
           {getFieldDecorator('maintenanceStatus', {
@@ -853,7 +880,7 @@ handleSubmit = (e) => {
         </Form.Item>
         {this.state.maintenanceData.map((parameter) => {
           return (
-            <Form.Item
+            <Form.Item {...formItemLayout}
               label={<span>{parameter.Maintenance_Item}<Popover content={<div style={{textAlign: 'center'}}>
                 <p>Are you sure you want <br /> to delete this Maintenance Log?</p>
                 <Button type="primary" onClick={() => this.removeMaintenanceItem(parameter.Maintenance_Item)}>Delete</Button>
@@ -867,7 +894,7 @@ handleSubmit = (e) => {
               {getFieldDecorator(`${parameter.Maintenance_Item}`, {
                 rules: [{ required: true, message: 'Please enter an input!', whitespace: true }], initialValue: parameter.Maintenance_Input,
               })(
-                <Input />
+                <Input onChange={this.updateChange}/>
               )}
             </Form.Item>
           )
@@ -878,6 +905,7 @@ handleSubmit = (e) => {
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
+          <p style={{display: this.state.reportUpdated}}>Report has been Updated!</p>
           <Button type="primary" htmlType="submit">Overwrite Report</Button>
         </Form.Item>
 
@@ -903,7 +931,7 @@ handleSubmit = (e) => {
       {getFieldDecorator('commentTitle', {
         rules: [{ required: false, message: 'Please input your maintenance comment!', whitespace: true }],
       })(
-        <Input />
+        <Input onChange={this.updateChange}/>
       )}
     </Form.Item>
 
@@ -913,12 +941,13 @@ handleSubmit = (e) => {
       {getFieldDecorator('commentInput', {
         rules: [{ required: false, message: 'Please input your maintenance comment!', whitespace: true }],
       })(
-        <TextArea autosize style={{height: '80px'}}/>
+        <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
 
       )}
     </Form.Item>
 
     <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
+      <p style={{display: this.state.commentAdded}}>Report comment has been added!</p>
       <Button type="primary" htmlType="submit">Add Comment</Button>
     </Form.Item>
 
@@ -1271,7 +1300,7 @@ export default class testing extends Component {
                   dataIndex: '',
                   fixed: 'right',
                   key: 'z',
-                  render: this.previewReport.bind(this),
+                  render: this.previewReport,
                   width: 50,
                 })
                 console.log(data);
@@ -1343,7 +1372,7 @@ export default class testing extends Component {
                   dataIndex: '',
 
                   key: 'z',
-                  render: this.previewReport.bind(this),
+                  render: this.previewReport,
                   width: 50,
                 })
 
@@ -1636,77 +1665,72 @@ removesample2(itemId) {
 
 
 }
+
+
+
 previewReport = (row, isSelected, e, id, key) =>
 {
+
+
+
+
   return (
     <div style={{textAlign: 'center'}}>
-    <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}
-    onClick={() => this.fillPreview(isSelected.key)}>
+
+        <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}onClick={() => this.fillPreview(isSelected.key)}>
       Click me
     </Icon>
+
     </div>
   )
 }
 
 fillPreview(itemId) {
 
-  const previewInfoRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
 
-  previewInfoRef.on('value', (snapshot) => {
+  const previewRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
 
+  previewRef.on('value', (snapshot) => {
+    let previewData = snapshot.val();
     let maintenanceList = snapshot.val();
-    console.log(maintenanceList)
+        let dataList = snapshot.val();
+        delete dataList.date;
+        delete dataList.maintenanceTitle;
+        delete dataList.maintenanceID;
+        delete dataList.maintenanceCourt;
+        delete dataList.maintenanceStatus;
 
-    let dataList = snapshot.val();
-    delete dataList.date;
-    delete dataList.maintenanceTitle;
-    delete dataList.maintenanceID;
-    delete dataList.maintenanceCourt;
-    delete dataList.maintenanceStatus;
+        let dataKeys = Object.keys(dataList);
+        let dataValues = Object.values(dataList);
+        console.log(dataKeys);
+        console.log(dataValues);
 
+        let reportData = [];
+        for (let i=0; i < dataKeys.length; i++) {
+        //push send this data to the back of the chartData variable above.
+        reportData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
 
-    let dataKeys = Object.keys(dataList);
-    let dataValues = Object.values(dataList);
-    console.log(dataKeys);
-    console.log(dataValues);
-
-    let reportData = [];
-    for (let i=0; i < dataKeys.length; i++) {
-    //push send this data to the back of the chartData variable above.
-    reportData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
-
-    }
-
-    console.log(reportData);
-
+        }
 
     this.setState({
-    key: "4",
-    maintenanceDate: maintenanceList.date,
-    maintenanceTitle: maintenanceList.maintenanceTitle,
-    maintenanceID: maintenanceList.maintenanceID,
-    maintenanceStatus: maintenanceList.maintenanceStatus,
-    maintenanceCourt: maintenanceList.maintenanceCourt,
-    reportData: reportData,
+        maintenanceTitle: previewData.maintenanceTitle,
+        maintenanceID: previewData.maintenanceID,
+        maintenanceStatus: previewData.maintenanceStatus,
+        maintenanceCourt: previewData.maintenanceCourt,
+        maintenanceDate: previewData.date,
+        reportData: reportData,
+        key: "3",
+
 
     })
 
-  });
-
-
-
-  this.setState({
-  key: "3",
-
-
-  })
-
-
-
-
+});
 
 
 }
+
+
+
 
   editRow = (row, isSelected, e, id, key) =>
   {
@@ -2228,7 +2252,7 @@ if (arr.length > 0){
         const MyDoc = (
           <Document>
             <Page size="A4" style={styles.body}>
-              <View style={{textAlign: 'center'}}>
+              <View >
 
 
                     <Text  style={{position: 'absolute', left: '20px', top: '20px'}}>
@@ -2264,7 +2288,7 @@ if (arr.length > 0){
                       Maintenance Item: {this.state.maintenanceTitle}
                     </Text>
 
-                    
+
 
 
 
@@ -2390,19 +2414,19 @@ const csvData1 = this.state.currentData;
 
 
 
-            <Row style={{paddingTop: '10px'}} type="flex" justify="center">
-              <Button size="large"  style={{backgroundColor: 'orange', color: 'white'}} onClick={this.showChildrenDrawer}>
-            <b>Add Maintenance Item</b>
-          </Button>
 
-
-
-              </Row>
 
               <Row style={{paddingTop: '10px'}} justify="center">
 
-              <WrappedItemForm />
-              <WrappedAddReportForm />
+                <div style={{paddingTop: 10}}>
+                  <WrappedItemForm />
+                  </div>
+
+                  <div style={{paddingTop: 25}}>
+                    <WrappedAddReportForm />
+                    </div>
+
+
               </Row>
 
             </Drawer>
@@ -2661,7 +2685,7 @@ const csvData1 = this.state.currentData;
     <Col span={24} style={{textAlign: 'center'}}>
 
       <Row>
-      <PDFDownloadLink document={MyDoc} fileName={this.state.sampleDate}><Button type="primary" size="large">Export PDF</Button>
+      <PDFDownloadLink document={MyDoc} fileName={this.state.maintenanceDate}><Button type="primary" size="large">Export PDF</Button>
 
 </PDFDownloadLink>
 </Row>
