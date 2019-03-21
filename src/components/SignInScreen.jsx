@@ -11,6 +11,7 @@ import './firebaseui-styling.global.css';
 
 import Dashboard from './dashboard';
 import monthlySamples from './monthlySamples';
+import sampling from './sampling';
 
 import testingPage from './testingPage';
 import testingPage2 from './testingPage2';
@@ -1477,7 +1478,7 @@ height={700}
           <Route exact path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/monthlySamples" component={monthlySamples} />
-          <Route path="/sampling" component={monthlySamples} />
+          
           <Route path="/maintenanceReports" component={maintenanceReports} />
           <Route path="/vendorContacts" component={vendorContacts} />
           <Route path="/uploadDocument" component={uploadDocument} />
@@ -1498,6 +1499,7 @@ height={700}
           <Route path="/dashForecast" component={dashForecast} />
           <Route path="/index" component={Drop} />
           <Route path="/testing" component={testing} />
+          <Route path="/sampling" component={sampling} />
 
 
 
