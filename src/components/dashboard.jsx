@@ -2859,8 +2859,8 @@ syncId="anyId">
                 return (
 
                     <linearGradient id={parameter.Sample_Item} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={parameter.color} stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor={parameter.color} stopOpacity={0.1}/>
+                      <stop offset="5%" stopColor={parameter.Sample_Color} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={parameter.Sample_Color} stopOpacity={0.1}/>
                     </linearGradient>
 
 
