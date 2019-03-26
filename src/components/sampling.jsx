@@ -13,9 +13,11 @@ import { fire } from '../fire';
 import { SketchPicker } from 'react-color';
 
 
-import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, AutoComplete, Radio, Alert, Calendar, DatePicker, Form, Select } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Collapse, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, AutoComplete, Radio, Alert, Calendar, DatePicker, Form, Select } from 'antd';
 
 import { CSVLink, CSVDownload } from "react-csv";
+
+const Panel = Collapse.Panel;
 
 
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     marginBottom: 10,
-    paddingTop: 15,
+    paddingTop: 8,
   },
   subtitle: {
     fontSize: 18,
@@ -146,7 +148,7 @@ class AddSample extends React.Component {
         this.setState({
           currentProject: project
         })
-        const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleItems`);
+        const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
                        sampleList2Ref.on('value', (snapshot) => {
                          let sampleDataArray = this.snapshotToArray(snapshot);
 
@@ -255,7 +257,7 @@ class AddSample extends React.Component {
 
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleItems/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
    sampleRef.remove();
  }
 
@@ -420,7 +422,7 @@ class ItemForm extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
 
       if (!err) {
-        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleItems`);
+        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
 
       const sampleInfo = {
         Sample_Item: values.sampleItem,
@@ -520,63 +522,70 @@ class ItemForm extends React.Component {
 
     return (
       <div>
+      <Collapse bordered={false} >
+    <Panel header={<p style={{paddingTop: 10, fontSize: 14, color: '#000000a6'}}><b>Add an Additional Constituent </b></p>}key="1">
+    <Form {...formItemLayout} onSubmit={this.submitItem} >
 
-      <Form {...formItemLayout} onSubmit={this.submitItem} >
-      <p style={{paddingLeft: 30, fontSize: 14}}><b>Add an Additional Constituent for Your Sampling Report</b></p>
 
-      <Form.Item {...formItemLayout}
-        label="Sample Report Constituent"
-      >
-        {getFieldDecorator('sampleItem', {
-          rules: [{ required: true, message: 'Please input your Report Item!', whitespace: true }],
-        })(
-          <Input onChange={this.updateChange}/>
-        )}
-      </Form.Item>
+    <Form.Item {...formItemLayout}
+      label="Constituent"
+    >
+      {getFieldDecorator('sampleItem', {
+        rules: [{ required: true, message: 'Please input your Report Item!', whitespace: true }],
+      })(
+        <Input onChange={this.updateChange}/>
+      )}
+    </Form.Item>
 
-      <Form.Item {...formItemLayout}
-        label="Units"
-      >
-        {getFieldDecorator('sampleUnits', {
-          rules: [{ required: true, message: 'Please input your Units!', whitespace: true }],
-        })(
-          <Input onChange={this.updateChange}/>
-        )}
-      </Form.Item>
-      <Form.Item {...formItemLayout}
-        label="Graph Type"
-      >
-        {getFieldDecorator('sampleGraphType', {
-          rules: [{ required: true, message: 'What is the graph type!' }],
-        })(
-          <Radio.Group size="default" >
-                  <Radio.Button value="Bar">Bar</Radio.Button>
-                  <Radio.Button value="Line">Line</Radio.Button>
-                  <Radio.Button value="Area">Area</Radio.Button>
-                </Radio.Group>
-        )}
-      </Form.Item>
-      <Form.Item {...formItemLayout}
-        label="Color"
-      >
-        {getFieldDecorator('sampleColor', {
+    <Form.Item {...formItemLayout}
+      label="Units"
+    >
+      {getFieldDecorator('sampleUnits', {
+        rules: [{ required: true, message: 'Please input your Units!', whitespace: true }],
+      })(
+        <Input onChange={this.updateChange}/>
+      )}
+    </Form.Item>
+    <Form.Item {...formItemLayout}
+      label="Graph Type"
+    >
+      {getFieldDecorator('sampleGraphType', {
+        rules: [{ required: true, message: 'What is the graph type!' }],
+      })(
+        <Radio.Group size="default" >
+                <Radio.Button value="Bar">Bar</Radio.Button>
+                <Radio.Button value="Line">Line</Radio.Button>
+                <Radio.Button value="Area">Area</Radio.Button>
+              </Radio.Group>
+      )}
+    </Form.Item>
+    <Form.Item {...formItemLayout}
+      label="Color"
+    >
+      {getFieldDecorator('sampleColor', {
 
-        })(
-          <Popover content={content} title="Title" trigger="click">
-            <Icon type="bg-colors" style={{fontSize: '24px', color: this.state.sampleColor}}
-            >
-              Click me
-            </Icon>
-      </Popover>
-        )}
-      </Form.Item>
+      })(
+        <div>
+        <Popover content={content} title="Title" trigger="click">
+          <Icon type="bg-colors" style={{fontSize: '24px', color: this.state.sampleColor}}
+          >
+            Click me
+          </Icon>
+    </Popover><p>Be sure to pick a color</p></div>
+      )}
+    </Form.Item>
 
-      <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
-        <p style={{display: this.state.itemAdded}}>Constituent Added</p>
-        <Button type="primary" htmlType="submit"><b>Add Sampling Report Item</b></Button>
-      </Form.Item>
+    <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
+      <p style={{display: this.state.itemAdded}}>Constituent Added</p>
+      <Button type="primary" htmlType="submit"><b>Add Sampling Report Item</b></Button>
+    </Form.Item>
 
-      </Form>
+    </Form>
+    </Panel>
+
+  </Collapse>
+
+
 
       </div>
     );
@@ -782,7 +791,8 @@ handleSubmit = (e) => {
    onDateChange = (date, dateString) => {
   console.log(moment(date).format('YYYY[-]MM[-]DD'));
     this.setState({
-      maintenanceDate: moment(date).format('YYYY[-]MM[-]DD'),
+      sampleDate: moment(date).format('YYYY[-]MM[-]DD'),
+      sampleAdded: 'none'
     })
   }
 
@@ -1454,37 +1464,46 @@ export default class sampling extends Component {
 
                })
 
-               const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleItems`);
+               const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
                sampleList2Ref.on('value', (snapshot) => {
                  let maintenanceArray = this.snapshotToArray(snapshot);
                  console.log(maintenanceArray)
 
+                 if (maintenanceArray.length == 0) {
+                   console.log("do nothing")
+                 }
+
+                 if (maintenanceArray.length > 0) {
+                   let dataList = snapshot.val();
+
+                   let dataKeys = Object.keys(dataList);
+                   let dataValues = Object.values(dataList);
+
+                   console.log(dataKeys);
+                   console.log(dataValues);
 
 
-                 let dataList = snapshot.val();
-
-                 let dataKeys = Object.keys(dataList);
-                 let dataValues = Object.values(dataList);
-
-                 console.log(dataKeys);
-                 console.log(dataValues);
 
 
 
+                   this.setState({
+                     snapArray1: maintenanceArray,
 
 
-                 this.setState({
-                   snapArray1: maintenanceArray,
+                   })
+
+                 }
 
 
-                 })
+
+
                })
 
 
 
             const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
             profileRef.on('value', (snapshot) => {
-              var that = this;
+
 
 
             this.setState({
@@ -1527,7 +1546,7 @@ export default class sampling extends Component {
 
   console.log(this.state.Sample_GraphType);
 
-  const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleItems/${this.state.id}`);
+  const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
   this.setState({ Sample_GraphType: e.target.value });
 
   var object = {Sample_Item: this.state.Sample_Item, Sample_Units: this.state.Sample_Units, Sample_Color: this.state.Sample_Color, Sample_GraphType: e.target.value, Sample_Input: '', id: this.state.id};
@@ -1548,20 +1567,17 @@ export default class sampling extends Component {
 
 showDrawer = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
-  sampleList2Ref.on('value', (snapshot) => {
-    let maintenanceArray = this.snapshotToArray(snapshot);
+
 
     this.setState({
-      arrayKeys1: [],
-      arrayValues1: [],
+
       sampleDate: '',
       sampleID: '',
       sampleTitle: '',
       sampleMisc: '',
       Status: '',
       court: '',
-      snapArray1: maintenanceArray,
+
       visible: true,
       Maintenance_Item: '',
 
@@ -1570,7 +1586,7 @@ showDrawer = () => {
       itemDrawerWidth: 600,
       childItemDrawerWidth: 400,
     })
-  })
+
 };
 
 showDrawerMobile = () => {
@@ -1735,12 +1751,23 @@ getColumnSearchProps = (dataIndex) => ({
 
  deleteRow1 = (row, isSelected, e, id, key) =>
  {
+
+   const content = (
+ <div style={{textAlign: 'center'}}>
+   <p>Are you sure you want <br /> to delete this Constituent?</p>
+   <Button type="primary" onClick={() => this.removesample1(isSelected.key)}>Delete</Button>
+ </div>
+ );
+
+
    return (
      <div style={{textAlign: 'center'}}>
+       <Popover content={content} trigger="click">
      <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
-     onClick={() => this.removesample1(isSelected.key)}>
+     >
        Click me
      </Icon>
+   </Popover>
      </div>
    )
  }
@@ -1749,7 +1776,7 @@ getColumnSearchProps = (dataIndex) => ({
 
  removesample1(itemId) {
 
-  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleItems/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
   sampleRef.remove();
 }
 
@@ -1857,14 +1884,7 @@ fillPreview(itemId) {
 
 
 
-    handleSubmit = (e) => {
-        e.preventDefault();
-        this.props.form.validateFieldsAndScroll((err, values) => {
-          if (!err) {
-            console.log('Received values of form: ', values);
-          }
-        });
-      }
+
 
 
 
@@ -2054,8 +2074,8 @@ fillPreview(itemId) {
   }
 
   changeData(itemId) {
-    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleItems/${itemId}`);
-    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleItems/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
       this.setState({
         Sample_Item: snapshot.child('Sample_Item').val(),
@@ -2074,8 +2094,8 @@ fillPreview(itemId) {
   changeColor(itemId) {
 
 
-    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleItems/${itemId}`);
-    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleItems/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
 
       this.setState({
@@ -2093,7 +2113,7 @@ fillPreview(itemId) {
 
   overwriteColor = (color) => {
 
-    const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleItems/${this.state.id}`);
+    const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
 
      this.setState({ Sample_Color: color.hex });
 
@@ -2145,7 +2165,7 @@ fillPreview(itemId) {
                     </Text>
 
                     <Text  style={{position: 'absolute', left: '400px', top: '20px'}}>
-                      # {this.state.maintenanceID}
+                      # {this.state.sampleID}
                     </Text>
                     <Text style={{position: 'absolute', left: '400px', top: '40px', fontSize: 13}} >
                       {this.state.lakeName}
@@ -2156,18 +2176,14 @@ fillPreview(itemId) {
 
 
                     <Text style={{position: 'absolute', left: '20px', top: '140px', fontSize: 13}} >
-                      Date: {this.state.maintenanceDate}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '200px', top: '140px', fontSize: 13}} >
-                      Status: {this.state.maintenanceStatus}
+                      Date: {this.state.sampleDate}
                     </Text>
 
-                    <Text style={{position: 'absolute', left: '360px', top: '140px', fontSize: 13}} >
-                      Ball in Court: {this.state.maintenanceCourt}
-                    </Text>
+
+
 
                     <Text style={{position: 'absolute', left: '20px', top: '170px', fontSize: 13}} >
-                      Maintenance Item: {this.state.maintenanceTitle}
+                      Sample ID: {this.state.sampleID}
                     </Text>
 
 
@@ -2182,8 +2198,8 @@ fillPreview(itemId) {
                           backgroundColor: 'black',}} >
                           {line}
                           </Text>
-                          <Text style={{position: 'absolute', left: '160px', top: '100px', zIndex: 1}} >
-                            MAINTENANCE ITEM
+                          <Text style={{position: 'absolute', left: '180px', top: '100px', zIndex: 1}} >
+                            SAMPLE REPORT
                           </Text>
                           <Text style={{position: 'absolute',
                              left: '20px',
@@ -2202,8 +2218,8 @@ fillPreview(itemId) {
                       backgroundColor: 'black',}} >
                       {line}
                       </Text>
-                      <Text style={{position: 'absolute', left: '20px', top: '240px'}} >
-                        Maintenance Items:
+                      <Text style={{position: 'absolute', left: '20px', top: '242px'}} >
+                        SAMPLE CONSTITUENTS:
                       </Text>
                       <Text style={{position: 'absolute',
                          left: '20px',
@@ -2530,7 +2546,7 @@ const csvData1 = this.state.currentData;
                 <Row type="flex" justify="center">
                   <Col span={24} style={{textAlign: 'center'}}>
 
-                    <Row type="flex" justify="center">
+                    <Row >
 
                         <Col xs={0} sm={0} md={12} lg={12} xl={12} style={{textAlign: 'left'}}>
                           <Button><CSVLink data={csvData1}>Download Spreadsheet</CSVLink></Button>

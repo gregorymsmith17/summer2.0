@@ -2,11 +2,10 @@ import React, { Component } from 'react'
 import { Navbar, Nav, FormGroup, Checkbox, Grid, PageHeader, Jumbotron, NavItem, Modal, Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ReactDOM from 'react-dom';
-import FileSaver from 'file-saver';
-import * as jsPDF from 'jspdf';
-import domtoimage from 'dom-to-image';
-import fileDownload from "js-file-download";
-import Request from 'superagent';
+
+
+
+
 
 import firebase from 'firebase';
 import { fire } from '../fire';
@@ -14,8 +13,8 @@ import { ChromePicker } from 'react-color';
 import GoogleMapReact from 'google-map-react';
 
 import { SketchPicker } from 'react-color';
-import {BootstrapTable, BootstrapButton, TableHeaderColumn} from 'react-bootstrap-table';
-import { TiArrowSortedDown, TiBrush, TiArrowSortedUp, TiPencil, TiTrash } from "react-icons/ti";
+
+
 
 import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, Tooltip, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 
@@ -31,7 +30,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import update from 'immutability-helper';
 
-import dashForecast from './dashForecast';
+
 import { WiDaySunny, WiNightFog, WiDayFog, WiDaySprinkle, WiNightAltSprinkle, WiNightSprinkle, WiNightClear, WiNightAltCloudy, WiNightAltCloud, WiDayCloudy, WiNightAltCloudyWindy, WiDayWindy, WiSnow, WiRain, WiThunderstorm, WiTornado, WiSmoke, WiFog, WiSnowWind, WiDayCloudyWindy, WiSleet, WiRainMix, WiDust, WiCloud, WiHot, WiSnowflakeCold, WiRaindrops, WiSprinkle } from 'weather-icons-react';
 
 
@@ -203,7 +202,13 @@ export default class Dashboard extends Component {
         graphType: Line,
         dataType1: '',
 
+        Sample_GraphType: Line,
+        Sample_Color: '#000000',
+        Sample_Units: '',
+        Sample_Item: '',
+        Sample_Input: '',
 
+        graphsType: Area,
 
 
 
@@ -244,6 +249,36 @@ export default class Dashboard extends Component {
 
       return returnArr;
   };
+
+  changeGraphs = (e) => {
+
+    if (e.target.value == "Bar") {
+
+      this.setState({ graphsType: Bar,
+      });
+
+    }
+
+    if (e.target.value == "Area") {
+
+      this.setState({ graphsType: Area,
+      });
+
+    }
+
+    if (e.target.value == "Line") {
+
+      this.setState({ graphsType: Line,
+      });
+
+    }
+
+
+
+
+
+
+   }
 
 
 
@@ -355,25 +390,8 @@ export default class Dashboard extends Component {
             })
 
 
-            tableKeys.unshift({
-              title: 'Edit',
-              dataIndex: '',
-              key: 'x',
-              fixed: 'left',
-              render: this.editRow.bind(this),
-              width: 60,
 
-            })
 
-            tableKeys.unshift({
-              title: 'Delete',
-              dataIndex: '',
-              fixed: 'left',
-              key: 'y',
-              render: this.deleteRow.bind(this),
-              width: 60,
-
-            })
             console.log(data);
             let reverseData = data.reverse();
             console.log(data);
@@ -453,13 +471,13 @@ export default class Dashboard extends Component {
              for (let i=0; i < maintenanceArray.length; i++) {
                const CustomTag = this.state.graphType;
              //push send this data to the back of the chartData variable above.
-             list.push({id: i, text: maintenanceArray[i].Sample_Item, color: maintenanceArray[i].color, dataType: maintenanceArray[i].dataType, graph: (
+             list.push({id: i, text: maintenanceArray[i].Sample_Item, color: maintenanceArray[i].Sample_Color, dataType: maintenanceArray[i].Sample_GraphType, graph: (
 
 
                  <div>
                    <Row>
                    <Col xs={4} sm={4} md={4} lg={4} xl={4}>
-                   <Icon type="up-circle"style={{fontSize: '32px',color: maintenanceArray[i].color}} />
+                   <Icon type="up-circle"style={{fontSize: '32px',color: maintenanceArray[i].Sample_Color}} />
                    </Col>
                    <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
                    <b style={{fontSize: '24px'}}>{maintenanceArray[i].Sample_Item}</b>
@@ -468,7 +486,7 @@ export default class Dashboard extends Component {
                    <Row>
 
                      <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
-                     <b style={{fontSize: '17px'}}>{maintenanceArray[i].units}</b>
+                     <b style={{fontSize: '17px'}}>{maintenanceArray[i].Sample_Units}</b>
                      </Col>
                      </Row>
                    <Row>
@@ -484,7 +502,7 @@ syncId="anyId">
 <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
 <Tooltip />
 
-      <CustomTag type="monotone" dataKey={maintenanceArray[i].Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={maintenanceArray[i].color} fill={"url(#" + maintenanceArray[i].Sample_Item + ")"}><LabelList dataKey={maintenanceArray[i].Sample_Item} position="top" /></CustomTag>
+      <CustomTag type="monotone" dataKey={maintenanceArray[i].Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={maintenanceArray[i].Sample_Color} fill={"url(#" + maintenanceArray[i].Sample_Item + ")"}><LabelList dataKey={maintenanceArray[i].Sample_Item} position="top" /></CustomTag>
 
 </ComposedChart>
 </ResponsiveContainer>
@@ -581,11 +599,27 @@ syncId="anyId">
   });
 
 
+  }
 
-
+  changeData(itemId) {
+    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
+    sample1Ref.on('value', (snapshot) => {
+      this.setState({
+        Sample_Item: snapshot.child('Sample_Item').val(),
+        Sample_Input: '',
+        Sample_GraphType: snapshot.child('Sample_GraphType').val(),
+        Sample_Color: snapshot.child('Sample_Color').val(),
+        Sample_Units: snapshot.child('Sample_Units').val(),
+        id: id,
+    });
+});
 
 
   }
+
+
+
 
 
 
@@ -653,106 +687,6 @@ syncId="anyId">
 
 
 
-    deleteRow = (row, isSelected, e, id, key) =>
-    {
-      return (
-        <div style={{textAlign: 'center'}}>
-        <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
-        onClick={() => this.removesample(isSelected.key)}>
-          Click me
-        </Icon>
-        </div>
-      )
-    }
-    removesample(itemId) {
-
-     const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
-     sampleRef.remove();
-    }
-
-
-
-    removesample1(itemId) {
-
-    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
-    sampleRef.remove();
-    }
-
-    removesample2(itemId) {
-
-    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
-    sampleRef.remove();
-    this.fillStates(this.state.id);
-
-
-    }
-
-    editRow = (row, isSelected, e, id, key) =>
-    {
-      return (
-        <div style={{textAlign: 'center'}}>
-        <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
-        onClick={() => this.fillStates(isSelected.key)}>
-          Click me
-        </Icon>
-        </div>
-      )
-    }
-
-    editRow1 = (row, isSelected, e, id, key) =>
-    {
-      return (
-        <div style={{textAlign: 'center'}}>
-        <Icon type="form" style={{fontSize: '24px', color: '#101441'}}
-        onClick={() => this.fillParameterStates(isSelected.key)}>
-          Click me
-        </Icon>
-        </div>
-      )
-    }
-
-    fillParameterStates(itemId) {
-
-      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-        this.setState({
-          visible3: true,
-
-        })
-
-        const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`);
-        let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/sampleReport/${itemId}`).key;
-      sample1Ref.on('value', (snapshot) => {
-
-        this.setState({
-          Sample_Item: snapshot.child('Sample_Item').val(),
-          dataType: snapshot.child('dataType').val(),
-          color: snapshot.child('color').val(),
-
-          id: id,
-        });
-
-    });
-
-    });
-    }
-
-    parameterOverwrite = (e) => {
-      e.preventDefault();
-      //fire.database().ref('samples') refers to the main title of the fire database.
-      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList/${this.state.id}`);
-
-
-    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id}
-        console.log(object);
-        sampleListRef.set(object);
-
-      //this.setState is used to clear the text boxes after the form has been submitted.
-
-
-    });
-    }
 
 
 
@@ -760,22 +694,17 @@ syncId="anyId">
 
 
 
-    changeData(itemId) {
-      const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
-      let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
-      sample1Ref.on('value', (snapshot) => {
-        this.setState({
-          Sample_Item: snapshot.child('Sample_Item').val(),
-          Sample_Input: '',
-          dataType: snapshot.child('dataType').val(),
-          color: snapshot.child('color').val(),
-          units: snapshot.child('units').val(),
-          id: id,
-      });
-  });
 
 
-    }
+
+
+
+
+
+
+
+
+
 
     editRowColor = (row, isSelected, e, id, key) =>
     {
@@ -811,12 +740,13 @@ syncId="anyId">
         this.setState({
           Sample_Item: snapshot.child('Sample_Item').val(),
           Sample_Input: '',
-          dataType: snapshot.child('dataType').val(),
-          color: snapshot.child('color').val(),
+          Sample_GraphType: snapshot.child('Sample_GraphType').val(),
+          Sample_Color: snapshot.child('Sample_Color').val(),
+          Sample_Units: snapshot.child('Sample_Units').val(),
           id: id,
         });
 
-    });
+  });
 
     }
 
@@ -824,14 +754,15 @@ syncId="anyId">
 
       const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
 
-       this.setState({ color: color.hex });
+       this.setState({ Sample_Color: color.hex });
 
-      var object = {Sample_Item: this.state.Sample_Item, color: this.state.color, dataType: this.state.dataType, Sample_Input: '', id: this.state.id};
+      var object = {Sample_Item: this.state.Sample_Item, Sample_Units: this.state.Sample_Units, Sample_Color: this.state.Sample_Color, Sample_GraphType: this.state.Sample_GraphType, Sample_Input: '', id: this.state.id};
 
       sampleListRef.set(object);
 
 
      };
+
 
 
 
@@ -988,29 +919,21 @@ syncId="anyId">
       })
     }
 
-    handleSizeChange = (e) => {
 
-    const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
-    this.setState({ dataType: e.target.value });
-
-    var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: e.target.value, Sample_Input: '', id: this.state.id};
-
-    sampleListRef.set(object);
-
-  }
 
   handleSizeChange1 = (e) => {
 
-  this.setState({ dataType: e.target.value,
-  overwrite: null, });
+  this.setState({ Sample_GraphType: e.target.value,
+  });
+
+  console.log(this.state.Sample_GraphType);
 
   const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
-  this.setState({ dataType: e.target.value });
+  this.setState({ Sample_GraphType: e.target.value });
 
-  var object = {Sample_Item: this.state.Sample_Item, units: this.state.units, color: this.state.color, dataType: e.target.value, Sample_Input: '', id: this.state.id};
+  var object = {Sample_Item: this.state.Sample_Item, Sample_Units: this.state.Sample_Units, Sample_Color: this.state.Sample_Color, Sample_GraphType: e.target.value, Sample_Input: '', id: this.state.id};
 
   sampleListRef.set(object);
-
 
 
   }
@@ -1147,26 +1070,7 @@ syncId="anyId">
 
    }
 
-   handleSizeChange2 = (e) => {
 
-   if ( e.target.value == 'Line') {
-     this.setState({
-       graphType: Line
-     })
-   }
-   if ( e.target.value == 'Bar') {
-     this.setState({
-       graphType: Bar
-     })
-   }
-   if ( e.target.value == 'Area') {
-     this.setState({
-       graphType: Area
-     })
-   }
-
-
-   }
 
 
 
@@ -1176,6 +1080,8 @@ syncId="anyId">
   render() {
 
     const columns = this.state.tableKeys;
+
+    const graphsType = this.state.graphsType;
 
     const data = this.state.snapArray;
     const dataReverse = this.state.graphData;
@@ -1469,30 +1375,13 @@ syncId="anyId">
        cardList: cardList,
 			 dataTable: data1,
 			 dataType1: '',
-			 graphType: 'Line'
+			 graphType: 'Line',
+       graphsType: graphsType,
 
      }
 
-     handleSizeChange2 = (e) => {
-
-     if ( e.target.value == 'Line') {
-       this.setState({
-         graphType: 'Line'
-       })
-     }
-     if ( e.target.value == 'Bar') {
-       this.setState({
-         graphType: 'Bar'
-       })
-     }
-     if ( e.target.value == 'Area') {
-       this.setState({
-         graphType: 'Area'
-       })
-     }
 
 
-     }
 
 
 
@@ -1504,6 +1393,8 @@ syncId="anyId">
 
       const list = [];
 
+      const CustomTag2 = this.state.graphsType;
+
 
 			console.log(this.state.graphType)
 
@@ -1511,18 +1402,18 @@ syncId="anyId">
       for (let i=0; i < data1.length; i++) {
 
       //push send this data to the back of the chartData variable above.
-      list.push({id: i, text: data1[i].Sample_Item, color: data1[i].color, dataType: data1[i].dataType, graph: (
+      list.push({id: i, text: data1[i].Sample_Item, color: data1[i].Sample_Color, dataType: data1[i].Sample_GraphType, graph: (
           <div>
             <Row>
-            <Col xs={4} sm={4} md={4} lg={4} xl={4}>
-            <Icon type="up-circle"style={{fontSize: '32px',color: data1[i].color}} />
+            <Col xs={0} sm={0} md={4} lg={4} xl={4}>
+            <Icon type="up-circle"style={{fontSize: '32px',color: data1[i].Sample_Color}} />
             </Col>
             <Col  xs={16} sm={16} md={16} lg={16} xl={16}>
             <b style={{fontSize: '24px'}}>{data1[i].Sample_Item}</b>
             </Col>
 
-						<Col  xs={4} sm={4} md={4} lg={4} xl={4}>
-            <p>{data1[i].units}</p>
+						<Col  xs={0} sm={0} md={4} lg={4} xl={4}>
+            <p>{data1[i].Sample_Units}</p>
             </Col>
 
 
@@ -1543,7 +1434,7 @@ syncId="anyId">
                   <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
                   <Tooltip />
 
-                  <Line type="monotone" dataKey={data1[i].Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={data1[i].color} fill={"url(#" + data1[i].Sample_Item + ")"}><LabelList dataKey={data1[i].Sample_Item} position="top" /></Line>
+                  <CustomTag2 type="monotone" dataKey={data1[i].Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={data1[i].Sample_Color} fill={"url(#" + data1[i].Sample_Item + ")"}><LabelList dataKey={data1[i].Sample_Item} position="top" /></CustomTag2>
 
                 </ComposedChart>
               </ResponsiveContainer>
@@ -1576,6 +1467,7 @@ syncId="anyId">
 
 
 					</Row>
+
          <Row>
 
           <ContainerGraph id={1} list={listOne} />
@@ -1649,90 +1541,120 @@ syncId="anyId">
     };
 
 
+    const contentColumns = (
+  <div>
+    <Row>
+    <Radio.Group size="default" value={this.state.Sample_GraphType} onChange={this.handleSizeChange1}>
+<Radio.Button value="Bar">Bar</Radio.Button>
+<Radio.Button value="Line">Line</Radio.Button>
+<Radio.Button value="Area">Area</Radio.Button>
+<Radio.Button value="Off">Off</Radio.Button>
+</Radio.Group>
+  </Row>
+
+</div>
+);
+
+const contentColor = (<div>
+  <SketchPicker
+color={ this.state.Sample_Color }
+onChangeComplete={ this.overwriteColor }
+  />
+</div>);
+
+
 
     const columns1 = [
-     {
-    title: 'Title',
-    dataIndex: 'Sample_Item',
-    key: 'Sample_Item',
-    width: 180,
-    },
-    {
-    title: 'Data Type',
-    dataIndex: 'dataType',
-    key: 'dataType',
-    render: (text, record, isSelected, color) => {
-    if (record.dataType == 'Bar') {
-    return <div style={{textAlign: 'left'}}>
-    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
-    <Icon type="bar-chart" style={{fontSize: '32px', color: record.color}}
-    onClick={() => this.changeData(record.key)}>
-      Click me
-    </Icon>
-    </Popover>
-    </div>
-    }
-    if (record.dataType == 'Area') {
-    return <div style={{textAlign: 'left'}}>
-    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
-    <Icon type="area-chart" style={{fontSize: '32px', color: record.color}}
-    onClick={() => this.changeData(record.key)}>
-      Click me
-    </Icon>
-    </Popover>
-    </div>
-    }
-    if (record.dataType == 'Line') {
-    return <div style={{textAlign: 'left'}}>
-    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
-    <Icon type="line-chart" style={{fontSize: '32px', color: record.color}}
-    onClick={() => this.changeData(record.key)}>
-      Click me
-    </Icon>
-    </Popover>
-    </div>
-    }
-    if (record.dataType == 'Off') {
-    return <div style={{textAlign: 'left'}}>
-    <Popover style={{textAlign: 'center'}} content={content} title="Select Type" trigger="click">
-    <Icon type="close" style={{fontSize: '32px', color: record.color}}
-    onClick={() => this.changeData(record.key)}>
-      Click me
-    </Icon>
-    </Popover>
-    </div>
-    }
 
-    },
-
-
-
-
+      {
+      title: 'Parameter',
+      dataIndex: 'Sample_Item',
+      key: 'Sample_Item',
+      ...this.getColumnSearchProps('Sample_Item'),
+      sorter: (a, b) => { return a.Sample_Item.localeCompare(b.Sample_Item)},
+      sortDirections: ['descend', 'ascend'],
 
     },
     {
-    title: 'Color',
-    dataIndex: 'color',
-    key: 'color',
-    render: (text, record, isSelected) =>
-    (
+    title: 'Units',
+    dataIndex: 'Sample_Units',
+    key: 'Sample_Units',
+    ...this.getColumnSearchProps('Sample_Units'),
+    sorter: (a, b) => { return a.Sample_Units.localeCompare(b.Sample_Units)},
+    sortDirections: ['descend', 'ascend'],
 
-    <div style={{textAlign: 'left'}}>
-    <Popover content={content1} title="Select Color" trigger="click">
-    <Icon type="bg-colors" style={{fontSize: '24px', color: record.color}}
-    onClick={() => this.changeColor(record.key)}>
-      Click me
-    </Icon>
-    </Popover>
-    </div>
+  },
+  {
+  title: 'Graph Type',
+  dataIndex: 'Sample_GraphType',
+  key: 'Sample_GraphType',
+  ...this.getColumnSearchProps('Sample_GraphType'),
+  render: (text, record, isSelected, color) => {
+  if (record.Sample_GraphType == 'Bar') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={contentColumns} title="Select Type" trigger="click">
+      <Icon type="bar-chart" style={{fontSize: '32px', color: record.Sample_Color}}
+      onClick={() => this.changeData(record.key)}>
+        Click me
+      </Icon>
+</Popover>
+</div>
+  }
+  if (record.Sample_GraphType == 'Area') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={contentColumns} title="Select Type" trigger="click">
+      <Icon type="area-chart" style={{fontSize: '32px', color: record.Sample_Color}}
+      onClick={() => this.changeData(record.key)}>
+        Click me
+      </Icon>
+</Popover>
+</div>
+  }
+  if (record.Sample_GraphType == 'Line') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={contentColumns} title="Select Type" trigger="click">
+      <Icon type="line-chart" style={{fontSize: '32px', color: record.Sample_Color}}
+      onClick={() => this.changeData(record.key)}>
+        Click me
+      </Icon>
+</Popover>
+</div>
+  }
+  if (record.Sample_GraphType == 'Off') {
+    return <div style={{textAlign: 'left'}}>
+    <Popover style={{textAlign: 'center'}} content={contentColumns} title="Select Type" trigger="click">
+      <Icon type="close" style={{fontSize: '32px', color: record.Sample_Color}}
+      onClick={() => this.changeData(record.key)}>
+        Click me
+      </Icon>
+</Popover>
+</div>
+  }
+  },
 
-    )
+},
 
-    ,
+{
+title: 'Color',
+dataIndex: 'Sample_Color',
+key: 'Sample_Color',
+render: (text, record, isSelected) =>
+(
 
-    },
+  <div style={{textAlign: 'left'}}>
+    <Popover content={contentColor} title="Select Color" trigger="click">
+      <Icon type="bg-colors" style={{fontSize: '24px', color: record.Sample_Color}}
+      onClick={() => this.changeColor(record.key)}>
+        Click me
+      </Icon>
+</Popover>
+  </div>
 
+)
 
+  ,
+
+},
 
     ]
 
@@ -1746,18 +1668,7 @@ syncId="anyId">
     />
     </div>);
 
-    const content = (
-  <div>
-    <Row>
-    <Radio.Group size="default" value={this.state.dataType} onChange={this.handleSizeChange1}>
-<Radio.Button value="Bar">Bar</Radio.Button>
-<Radio.Button value="Line">Line</Radio.Button>
-<Radio.Button value="Area">Area</Radio.Button>
-<Radio.Button value="Off">Off</Radio.Button>
-</Radio.Group>
-  </Row>
-</div>
-);
+
 
 
 
@@ -2873,29 +2784,29 @@ syncId="anyId">
 
               {data1.map(parameter => {
 
-                if (parameter.dataType == 'Bar') {
+                if (parameter.Sample_GraphType == 'Bar') {
                   console.log('something 1')
                   const CustomTag = Bar;
                   return(
-                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
                   )
                 }
-                if (parameter.dataType == 'Line') {
+                if (parameter.Sample_GraphType == 'Line') {
                   console.log('something 2')
                   const CustomTag = Line;
                   return(
-                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
                   )
                 }
-                if (parameter.dataType == 'Area') {
+                if (parameter.Sample_GraphType == 'Area') {
                   console.log('something 3')
                   const CustomTag = Area;
                   return(
-                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+                    <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
                   )
                 }
 
-                if (parameter.dataType == 'Off') {
+                if (parameter.Sample_GraphType == 'Off') {
                   console.log('No graph')
 
 
@@ -2926,6 +2837,14 @@ syncId="anyId">
 
             <Card style={{ width: '100%'}} bodyStyle={{padding: "0"}}>
 
+            <Row>
+            <Radio.Group size="default" value={this.state.graphsType} onChange={this.changeGraphs}>
+        <Radio.Button value="Bar">Bar</Radio.Button>
+        <Radio.Button value="Line">Line</Radio.Button>
+        <Radio.Button value="Area">Area</Radio.Button>
+
+        </Radio.Group>
+          </Row>
 
 
 

@@ -1324,7 +1324,7 @@ height={700}
               <Link style={{ textDecoration: 'none'}} to="/dashboard"><Icon type="appstore" style={{fontSize: '22px'}}/>Dashboard</Link>
             </Menu.Item>
             <Menu.Item style={{paddingleft: "5px", margin: "0"}} key="sampling">
-              <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/monthlySamples"><Icon type="search" style={{fontSize: '22px'}}/>Sampling</Link>
+              <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/sampling"><Icon type="search" style={{fontSize: '22px'}}/>Sampling</Link>
             </Menu.Item>
 
 
@@ -1383,7 +1383,7 @@ height={700}
                    <Link style={{ textDecoration: 'none'}} to="/dashboard"><Icon type="appstore" style={{fontSize: '22px'}}/>Dashboard</Link>
                  </Menu.Item>
                  <Menu.Item style={{paddingLeft: "22px", margin: "0"}} key="sampling">
-                   <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/monthlySamples"><Icon type="search" style={{fontSize: '22px'}}/>Sampling</Link>
+                   <Link style={{ textDecoration: 'none', cursor: 'pointer'}} to="/sampling"><Icon type="search" style={{fontSize: '22px'}}/>Sampling</Link>
                  </Menu.Item>
 
 
@@ -1478,7 +1478,7 @@ height={700}
           <Route exact path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/monthlySamples" component={monthlySamples} />
-          
+
           <Route path="/maintenanceReports" component={maintenanceReports} />
           <Route path="/vendorContacts" component={vendorContacts} />
           <Route path="/uploadDocument" component={uploadDocument} />
@@ -1568,7 +1568,7 @@ height={700}
       </Menu.Item>
 
         <Menu.Item style={{ margin: "0", backgroundColor: '#f0f2f5',marginBottom: 0}} key="samples">
-          <Link style={{ textDecoration: 'none', cursor: 'pointer', backgroundColor: '#f0f2f5'}} to="/monthlySamples">SAMPLING</Link>
+          <Link style={{ textDecoration: 'none', cursor: 'pointer', backgroundColor: '#f0f2f5'}} to="/sampling">SAMPLING</Link>
         </Menu.Item>
 
         <Menu.Item style={{ margin: "0", backgroundColor: '#f0f2f5',marginBottom: 0}} key="resources">
