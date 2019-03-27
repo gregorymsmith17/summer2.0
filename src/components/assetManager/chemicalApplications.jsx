@@ -13,9 +13,11 @@ import { fire } from '../../fire';
 
 
 
-import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, AutoComplete, Radio, Alert, Calendar, DatePicker, Form, Select } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, AutoComplete, Radio, Alert, Calendar, DatePicker, Form, Select, Collapse } from 'antd';
 
 import { CSVLink, CSVDownload } from "react-csv";
+
+const Panel = Collapse.Panel;
 
 
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
@@ -30,9 +32,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4E4E4'
   },
   body: {
-    paddingTop: 35,
+    paddingTop: 55,
     paddingBottom: 65,
-    paddingHorizontal: 35,
+    paddingHorizontal: 55,
   },
   title: {
     fontSize: 24,
@@ -43,6 +45,11 @@ const styles = StyleSheet.create({
 
     marginBottom: 10,
     paddingTop: 15,
+  },
+  author1: {
+    fontSize: 13,
+
+    paddingTop: 7,
   },
   subtitle: {
     fontSize: 18,
@@ -67,7 +74,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 12,
     bottom: 30,
-    left: 0,
+    left: 300,
     right: 0,
     textAlign: 'center',
     color: 'grey',
@@ -178,8 +185,6 @@ class ApplicationForm extends React.Component {
           applicationCompany: values.applicationCompany,
           applicationChemical: values.applicationChemical,
           applicationAmount: values.applicationAmount,
-
-
           formDisplay: null,
           formDisplay1: 'none',
           reportAdded: null,
@@ -188,23 +193,23 @@ class ApplicationForm extends React.Component {
 
         delete values.applicationDate;
 
-        let dataKeys = Object.keys(values);
-        let dataValues = Object.values(values);
-        console.log(dataKeys);
-        console.log(dataValues);
+                let dataKeys = Object.keys(values);
+                let dataValues = Object.values(values);
+                console.log(dataKeys);
+                console.log(dataValues);
 
-        let maintenanceData = [];
-        for (let i=0; i < dataKeys.length; i++) {
-        //push send this data to the back of the chartData variable above.
-        maintenanceData.push({Application_Item: dataKeys[i], Application_Input: dataValues[i]});
+                let maintenanceData = [];
+                for (let i=0; i < dataKeys.length; i++) {
+                //push send this data to the back of the chartData variable above.
+                maintenanceData.push({Application_Item: dataKeys[i], Application_Input: dataValues[i]});
 
-        }
-        console.log(maintenanceData)
+                }
+                console.log(maintenanceData)
 
-        var object = maintenanceData.reduce(
-            (obj, item) => Object.assign(obj, {date: this.state.applicationDate, [item.Application_Item]: item.Application_Input}) ,{});
-            console.log(object);
-            reportRef.push(object);
+                var object = maintenanceData.reduce(
+                    (obj, item) => Object.assign(obj, {date: this.state.applicationDate, [item.Application_Item]: item.Application_Input}) ,{});
+                    console.log(object);
+                    reportRef.push(object);
 
 
       }
@@ -237,13 +242,13 @@ class ApplicationForm extends React.Component {
     callback();
   }
 
-   onDateChange = (date, dateString) => {
-  console.log(moment(date).format('YYYY[-]MM[-]DD'));
-    this.setState({
-      applicationDate: moment(date).format('YYYY[-]MM[-]DD'),
-      reportAdded: 'none'
-    })
-  }
+  onDateChange = (date, dateString) => {
+ console.log(moment(date).format('YYYY[-]MM[-]DD'));
+   this.setState({
+     applicationDate: moment(date).format('YYYY[-]MM[-]DD'),
+     reportAdded: 'none'
+   })
+ }
 
   updateChange = () => {
     this.setState({
@@ -294,7 +299,7 @@ class ApplicationForm extends React.Component {
 
     const content = (
   <div style={{textAlign: 'center'}}>
-    <p>Are you sure you want <br /> to delete this Maintenance Log?</p>
+    <p>Are you sure you want <br /> to delete this Application Item?</p>
     <Button type="primary" >Delete</Button>
   </div>
   );
@@ -303,85 +308,85 @@ class ApplicationForm extends React.Component {
 
     return (
       <div>
-      <Form {...formItemLayout} onSubmit={this.handleSubmit} >
-        <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Chemical Application Report</b></p>
+        <Form {...formItemLayout} onSubmit={this.handleSubmit} >
+          <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Chemical Application Report</b></p>
 
-        <Form.Item {...formItemLayout}
-          label="ID"
-        >
-          {getFieldDecorator('applicationID', {
-            rules: [{ required: true, message: 'Please input your Application ID!', whitespace: true }],
-          })(
-            <Input nChange={this.updateChange}/>
-          )}
-        </Form.Item>
-        <Form.Item {...formItemLayout}
-          label="Date"
-        >
-          {getFieldDecorator('applicationDate', {
-            rules: [{
-              required: true, message: 'Please input date',
-            }],
-          })(
-            <DatePicker format="YYYY-MM-DD" onChange={this.onDateChange} />
-          )}
-        </Form.Item>
-        <Form.Item {...formItemLayout}
-          label="Chemical"
-        >
-          {getFieldDecorator('applicationChemical', {
-            rules: [{ required: true, message: 'Please input Chemical Name', whitespace: true }],
-          })(
-            <Input nChange={this.updateChange}/>
-          )}
-        </Form.Item>
-        <Form.Item {...formItemLayout}
-          label="Company"
-        >
-          {getFieldDecorator('applicationCompany', {
-            rules: [{ required: true, message: 'Please input Company Name', whitespace: true }],
-          })(
-            <Input nChange={this.updateChange}/>
-          )}
-        </Form.Item>
-        <Form.Item {...formItemLayout}
-          label="Amount"
-        >
-          {getFieldDecorator('applicationAmount', {
-            rules: [{ required: true, message: 'Please input Amount of chemical', whitespace: true }],
-          })(
-            <Input nChange={this.updateChange}/>
-          )}
-        </Form.Item>
+          <Form.Item {...formItemLayout}
+            label="ID"
+          >
+            {getFieldDecorator('applicationID', {
+              rules: [{ required: true, message: 'Please input your Application ID!', whitespace: true }],
+            })(
+              <Input onChange={this.updateChange}/>
+            )}
+          </Form.Item>
+          <Form.Item {...formItemLayout}
+            label="Date"
+          >
+            {getFieldDecorator('applicationDate', {
+              rules: [{
+                required: true, message: 'Please input date',
+              }],
+            })(
+              <DatePicker format="YYYY-MM-DD" onChange={this.onDateChange} />
+            )}
+          </Form.Item>
+          <Form.Item {...formItemLayout}
+            label="Chemical"
+          >
+            {getFieldDecorator('applicationChemical', {
+              rules: [{ required: true, message: 'Please input Chemical Name', whitespace: true }],
+            })(
+              <Input onChange={this.updateChange}/>
+            )}
+          </Form.Item>
+          <Form.Item {...formItemLayout}
+            label="Company"
+          >
+            {getFieldDecorator('applicationCompany', {
+              rules: [{ required: true, message: 'Please input Company Name', whitespace: true }],
+            })(
+              <Input onChange={this.updateChange}/>
+            )}
+          </Form.Item>
+          <Form.Item {...formItemLayout}
+            label="Amount"
+          >
+            {getFieldDecorator('applicationAmount', {
+              rules: [{ required: true, message: 'Please input Amount of chemical', whitespace: true }],
+            })(
+              <Input onChange={this.updateChange}/>
+            )}
+          </Form.Item>
 
-        {this.state.dataKeys.map((parameter) => {
-          return (
-            <Form.Item {...formItemLayout}
-              label={<span>{parameter.Application_Item}<Popover content={<div style={{textAlign: 'center'}}>
-                <p>Are you sure you want <br /> to delete this Application Item?</p>
-                <Button type="primary" onClick={() => this.removesample(parameter.key)}>Delete</Button>
-              </div>} trigger="click">
-                  <Icon type="delete" style={{fontSize: '18px', color: '#101441'}}
-            >
-              Click me
-            </Icon>
-          </Popover></span>}
-            >
-              {getFieldDecorator(`${parameter.Application_Item}`, {
-                rules: [{ required: true, message: 'Please enter an input!', whitespace: true }],
-              })(
-                <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
-              )}
-            </Form.Item>
-          )
-        })}
+          {this.state.dataKeys.map((parameter) => {
+            return (
+              <Form.Item {...formItemLayout}
+                label={<span>{parameter.Application_Item}<Popover content={<div style={{textAlign: 'center'}}>
+                  <p>Are you sure you want <br /> to delete this Application Item?</p>
+                  <Button type="primary" onClick={() => this.removesample(parameter.key)}>Delete</Button>
+                </div>} trigger="click">
+                    <Icon type="delete" style={{fontSize: '18px', color: '#101441'}}
+              >
+                Click me
+              </Icon>
+            </Popover></span>}
+              >
+                {getFieldDecorator(`${parameter.Application_Item}`, {
+                  rules: [{ required: true, message: 'Please enter an input!', whitespace: true }],
+                })(
+                  <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
+                )}
+              </Form.Item>
+            )
+          })}
 
-        <Form.Item {...tailFormItemLayout} style={{textAlign: 'right', paddingTop: 15}}>
-          <p style={{display: this.state.reportAdded}}>Application Report has been Added</p>
-          <Button type="primary" htmlType="submit"><b>Create Application Report</b></Button>
-        </Form.Item>
+          <Form.Item {...tailFormItemLayout} style={{textAlign: 'right', paddingTop: 15}}>
+            <p style={{display: this.state.reportAdded}}>Application Report has been Added</p>
+            <Button type="primary" htmlType="submit"><b>Create Application Report</b></Button>
+          </Form.Item>
 
-      </Form>
+        </Form>
       </div>
     );
   }
@@ -394,7 +399,7 @@ class ItemForm extends React.Component {
   state = {
     confirmDirty: false,
     autoCompleteResult: [],
-    applicationTitle: '',
+    maintenanceTitle: '',
     formDisplay: 'none',
     formDisplay1: null,
     currentProject: '',
@@ -513,6 +518,10 @@ class ItemForm extends React.Component {
     return (
       <div>
 
+
+
+      <Collapse bordered={false} >
+    <Panel header={<p style={{paddingTop: 10, fontSize: 14, color: '#000000a6'}}><b>Add an Additional Item for Your Report</b></p>}key="1">
       <Form {...formItemLayout} onSubmit={this.submitItem} >
       <p style={{paddingLeft: 30, fontSize: 14}}><b>Add an Additional Item for Your Application Report</b></p>
 
@@ -532,6 +541,10 @@ class ItemForm extends React.Component {
       </Form.Item>
 
       </Form>
+
+    </Panel>
+
+  </Collapse>
 
       </div>
     );
@@ -555,8 +568,6 @@ class FillReportForm extends React.Component {
     userID: '',
     activeMaintenanceID: '',
     activeMaintenanceReport: '',
-    activeApplicationID: '',
-    activeApplicationReport: '',
     otherItems: [],
     maintenanceItems: [],
     maintenanceData: [],
@@ -605,19 +616,24 @@ class FillReportForm extends React.Component {
           currentProject: project
         })
         const activeMaintenanceID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeApplicationID`);
-                       activeMaintenanceID.on('value', (snapshot) => {
-                         let activeApplicationID = snapshot.val();
-                         this.setState({
-                           activeApplicationID: activeApplicationID,
-                         })
-                       })
-         const activeApplicationReport = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
-                        activeApplicationReport.on('value', (snapshot) => {
-                          let activeApplicationReport = snapshot.val();
-                          let otherItems = snapshot.val();
+                            activeMaintenanceID.on('value', (snapshot) => {
+                              let activeApplicationID = snapshot.val();
+                              console.log(activeApplicationID);
+                              this.setState({
+                                activeApplicationID: activeApplicationID,
+                              })
+                            })
+            const activeApplicationReport = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
+                           activeApplicationReport.on('value', (snapshot) => {
+                             let activeApplicationReport = snapshot.val();
+                             let otherItems = snapshot.val();
 
+                          if (activeApplicationReport == null) {
+                            console.log("do nada")
+                          }
 
-                          this.setState({
+                          if (activeApplicationReport != null) {
+                            this.setState({
                             activeApplicationReport: activeApplicationReport,
 
                             applicationID: activeApplicationReport.applicationID,
@@ -654,6 +670,13 @@ class FillReportForm extends React.Component {
                             applicationData: applicationData
 
                           })
+
+                          }
+
+
+
+
+
                         })
       })
 
@@ -715,12 +738,12 @@ handleSubmit = (e) => {
 
 
 
-   onDateChange = (date, dateString) => {
-  console.log(moment(date).format('YYYY[-]MM[-]DD'));
-    this.setState({
-      applicationDate: moment(date).format('YYYY[-]MM[-]DD'),
-    })
-  }
+  onDateChange = (date, dateString) => {
+ console.log(moment(date).format('YYYY[-]MM[-]DD'));
+   this.setState({
+     applicationDate: moment(date).format('YYYY[-]MM[-]DD'),
+   })
+ }
 
   commentDrawer = () => {
     this.setState({
@@ -735,57 +758,57 @@ handleSubmit = (e) => {
   }
 
   addComment = (e) => {
-    e.preventDefault();
+      e.preventDefault();
 
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
+      this.props.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
 
-        this.setState({
-          commentAdded: null,
-        })
+          this.setState({
+            commentAdded: null,
+          })
 
-        console.log('Received values of form: ', values);
+          console.log('Received values of form: ', values);
 
-        let dateValue = values.applicationDate._i;
-        delete values.applicationDate;
+          let dateValue = values.applicationDate._i;
+          delete values.applicationDate;
 
-        let comment = values.commentTitle;
-        let input = values.commentInput;
-        delete values.commentTitle;
-        delete values.commentInput;
+          let comment = values.commentTitle;
+          let input = values.commentInput;
+          delete values.commentTitle;
+          delete values.commentInput;
 
-        let dataKeys = Object.keys(values);
-        let dataValues = Object.values(values);
-        console.log(dataKeys);
-        console.log(dataValues);
+          let dataKeys = Object.keys(values);
+          let dataValues = Object.values(values);
+          console.log(dataKeys);
+          console.log(dataValues);
 
-        let applicationData = [];
-        for (let i=0; i < dataKeys.length; i++) {
-        //push send this data to the back of the chartData variable above.
-        applicationData.push({Application_Item: dataKeys[i], Application_Input: dataValues[i]});
+          let applicationData = [];
+          for (let i=0; i < dataKeys.length; i++) {
+          //push send this data to the back of the chartData variable above.
+          applicationData.push({Application_Item: dataKeys[i], Application_Input: dataValues[i]});
+
+          }
+          console.log(applicationData)
+
+          var object = applicationData.reduce(
+              (obj, item) => Object.assign(obj, {[comment]: input, date: dateValue, [item.Application_Item]: item.Application_Input}) ,{});
+              console.log(object);
+              reportRef.set(object);
+
 
         }
-        console.log(applicationData)
 
-        var object = applicationData.reduce(
-            (obj, item) => Object.assign(obj, {[comment]: input, date: dateValue, [item.Application_Item]: item.Application_Input}) ,{});
-            console.log(object);
-            reportRef.set(object);
+      });
 
 
-      }
+    }
 
-    });
+    removeMaintenanceItem(itemId) {
 
-
-  }
-
-  removeMaintenanceItem(itemId) {
-
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}/${itemId}`);
-   sampleRef.remove();
- }
+     const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}/${itemId}`);
+     sampleRef.remove();
+   }
 
  updateChange = () => {
    this.setState({
@@ -837,88 +860,91 @@ handleSubmit = (e) => {
         <Row>
 
           <Form {...formItemLayout} onSubmit={this.handleSubmit} >
-            <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Chemical Application Report</b></p>
+                <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Chemical Application Report</b></p>
 
-            <Form.Item {...formItemLayout}
-              label="ID"
-            >
-              {getFieldDecorator('applicationID', {
-                rules: [{ required: true, message: 'Please input your Application ID!', whitespace: true }],initialValue: this.state.applicationID,
-              })(
-                <Input nChange={this.updateChange}/>
-              )}
-            </Form.Item>
-            <Form.Item {...formItemLayout}
-              label="Date"
-            >
-              {getFieldDecorator('applicationDate', {
-                rules: [{
-                  required: true, message: 'Please input date',
-                }], initialValue: moment(this.state.applicationDate, dateFormat)
-              })(
-                <DatePicker format="YYYY-MM-DD" onChange={this.onDateChange} />
-              )}
-            </Form.Item>
-            <Form.Item {...formItemLayout}
-              label="Chemical"
-            >
-              {getFieldDecorator('applicationChemical', {
-                rules: [{ required: true, message: 'Please input Chemical Name', whitespace: true }], initialValue: this.state.applicationChemical,
-              })(
-                <Input nChange={this.updateChange}/>
-              )}
-            </Form.Item>
-            <Form.Item {...formItemLayout}
-              label="Company"
-            >
-              {getFieldDecorator('applicationCompany', {
-                rules: [{ required: true, message: 'Please input Company Name', whitespace: true }], initialValue: this.state.applicationCompany,
-              })(
-                <Input nChange={this.updateChange}/>
-              )}
-            </Form.Item>
-            <Form.Item {...formItemLayout}
-              label="Amount"
-            >
-              {getFieldDecorator('applicationAmount', {
-                rules: [{ required: true, message: 'Please input Amount of chemical', whitespace: true }], initialValue: this.state.applicationAmount,
-              })(
-                <Input nChange={this.updateChange}/>
-              )}
-            </Form.Item>
-
-            {this.state.applicationData.map((parameter) => {
-              return (
                 <Form.Item {...formItemLayout}
-                  label={<span>{parameter.Application_Item}<Popover content={<div style={{textAlign: 'center'}}>
-                    <p>Are you sure you want <br /> to delete this Application Item?</p>
-                    <Button type="primary" onClick={() => this.removesample(parameter.key)}>Delete</Button>
-                  </div>} trigger="click">
-                      <Icon type="delete" style={{fontSize: '18px', color: '#101441'}}
+                  label="ID"
                 >
-                  Click me
-                </Icon>
-              </Popover></span>}
-                >
-                  {getFieldDecorator(`${parameter.Application_Item}`, {
-                    rules: [{ required: true, message: 'Please enter an input!', whitespace: true }], initialValue: parameter.Application_Input,
+                  {getFieldDecorator('applicationID', {
+                    rules: [{ required: true, message: 'Please input your Application ID!', whitespace: true }],initialValue: this.state.applicationID,
                   })(
-                    <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
+                    <Input nChange={this.updateChange}/>
                   )}
                 </Form.Item>
-              )
-            })}
+                <Form.Item {...formItemLayout}
+                  label="Date"
+                >
+                  {getFieldDecorator('applicationDate', {
+                    rules: [{
+                      required: true, message: 'Please input date',
+                    }], initialValue: moment(this.state.applicationDate, dateFormat)
+                  })(
+                    <DatePicker format="YYYY-MM-DD" onChange={this.onDateChange} />
+                  )}
+                </Form.Item>
+                <Form.Item {...formItemLayout}
+                  label="Chemical"
+                >
+                  {getFieldDecorator('applicationChemical', {
+                    rules: [{ required: true, message: 'Please input Chemical Name', whitespace: true }], initialValue: this.state.applicationChemical,
+                  })(
+                    <Input onChange={this.updateChange}/>
+                  )}
+                </Form.Item>
+                <Form.Item {...formItemLayout}
+                  label="Company"
+                >
+                  {getFieldDecorator('applicationCompany', {
+                    rules: [{ required: true, message: 'Please input Company Name', whitespace: true }], initialValue: this.state.applicationCompany,
+                  })(
+                    <Input onChange={this.updateChange}/>
+                  )}
+                </Form.Item>
+                <Form.Item {...formItemLayout}
+                  label="Amount"
+                >
+                  {getFieldDecorator('applicationAmount', {
+                    rules: [{ required: true, message: 'Please input Amount of chemical', whitespace: true }], initialValue: this.state.applicationAmount,
+                  })(
+                    <Input onChange={this.updateChange}/>
+                  )}
+                </Form.Item>
 
-            <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
-              <Button style={{background: 'orange', backgroundColor: 'orange'}} type="primary" onClick={this.commentDrawer}>Add Comment</Button>
-            </Form.Item>
+                {this.state.applicationData.map((parameter) => {
+                  return (
+                    <Form.Item {...formItemLayout}
+                      label={<span>{parameter.Application_Item}<Popover content={<div style={{textAlign: 'center'}}>
+                        <p>Are you sure you want <br /> to delete this Application Item?</p>
+                        <Button type="primary" onClick={() => this.removeMaintenanceItem(parameter.Application_Item)}>Delete</Button>
+                      </div>} trigger="click">
+                          <Icon type="delete" style={{fontSize: '18px', color: '#101441'}}
+                    >
+                      Click me
+                    </Icon>
+                  </Popover></span>}
+                    >
+                      {getFieldDecorator(`${parameter.Application_Item}`, {
+                        rules: [{ required: true, message: 'Please enter an input!', whitespace: true }], initialValue: parameter.Application_Input,
+                      })(
+                        <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
+                      )}
+                    </Form.Item>
+                  )
+                })}
 
-            <Form.Item {...tailFormItemLayout} style={{textAlign: 'right', paddingTop: 15}}>
-              <p style={{display: this.state.reportUpdated}}>Application Report has been Updated</p>
-              <Button type="primary" htmlType="submit"><b>Update Application Report</b></Button>
-            </Form.Item>
+                <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
+                  <Button style={{background: 'orange', backgroundColor: 'orange'}} type="primary" onClick={this.commentDrawer}>Add Comment</Button>
+                </Form.Item>
 
-          </Form>
+                <Form.Item {...tailFormItemLayout} style={{textAlign: 'right', paddingTop: 15}}>
+                  <p style={{display: this.state.reportUpdated}}>Application Report has been Updated</p>
+                  <Button type="primary" htmlType="submit"><b>Update Application Report</b></Button>
+                </Form.Item>
+
+              </Form>
+
+
+
       </Row>
       <Drawer
       title="Add Comment"
@@ -931,36 +957,36 @@ handleSubmit = (e) => {
 
     <div>
 
-    <Form {...formItemLayout} onSubmit={this.addComment} >
-    <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Comment</b></p>
+      <Form {...formItemLayout} onSubmit={this.addComment} >
+      <p style={{paddingLeft: 30, fontSize: 14}}><b>Add a Comment</b></p>
 
-    <Form.Item
-      label="Comment Title"
-    >
-      {getFieldDecorator('commentTitle', {
-        rules: [{ required: false, message: 'Please input your Application comment!', whitespace: true }],
-      })(
-        <Input onChange={this.updateChange}/>
-      )}
-    </Form.Item>
+      <Form.Item
+        label="Comment Title"
+      >
+        {getFieldDecorator('commentTitle', {
+          rules: [{ required: false, message: 'Please input your Application comment!', whitespace: true }],
+        })(
+          <Input onChange={this.updateChange}/>
+        )}
+      </Form.Item>
 
-    <Form.Item
-      label="Comment Input"
-    >
-      {getFieldDecorator('commentInput', {
-        rules: [{ required: false, message: 'Please input your Application comment!', whitespace: true }],
-      })(
-        <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
+      <Form.Item
+        label="Comment Input"
+      >
+        {getFieldDecorator('commentInput', {
+          rules: [{ required: false, message: 'Please input your Application comment!', whitespace: true }],
+        })(
+          <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
 
-      )}
-    </Form.Item>
+        )}
+      </Form.Item>
 
-    <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
-      <p style={{display: this.state.commentAdded}}>Report comment has been added!</p>
-      <Button type="primary" htmlType="submit">Add Comment</Button>
-    </Form.Item>
+      <Form.Item {...tailFormItemLayout} style={{textAlign: 'right'}}>
+        <p style={{display: this.state.commentAdded}}>Report comment has been added!</p>
+        <Button type="primary" htmlType="submit">Add Comment</Button>
+      </Form.Item>
 
-    </Form>
+      </Form>
 
     </div>
 
@@ -1126,339 +1152,355 @@ export default class chemicalApplications extends Component {
 
 
 
-      componentDidMount(itemId, source) {
+    componentDidMount(itemId, source) {
 
-        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
 
+        this.setState({
+          userID: user.uid,
+        })
+
+        const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+        currentProjectRef.on('value', (snapshot) => {
+          let project = snapshot.child('currentProject').val();
+          console.log(project);
           this.setState({
-            userID: user.uid,
+            currentProject: project
           })
 
-          const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
-          currentProjectRef.on('value', (snapshot) => {
-            let project = snapshot.child('currentProject').val();
-            console.log(project);
-            this.setState({
-              currentProject: project
-            })
+          const parameterList1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications`);
+          parameterList1Ref.on('value', (snapshot) => {
+            let snapArray = this.snapshotToArray(snapshot);
 
-            const parameterList1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications`);
-            parameterList1Ref.on('value', (snapshot) => {
-              let snapArray = this.snapshotToArray(snapshot);
+            if (snapArray.length == 0) {
+              console.log("do nothing")
+            }
 
-              if (snapArray.length == 0) {
-                console.log("do nothing")
+
+
+
+
+
+
+            if (snapArray.length > 0) {
+              let data = snapArray;
+
+
+
+
+
+              let tableData1 = [];
+              for (let i=0; i < snapArray.length; i++) {
+              //push send this data to the back of the chartData variable above.
+              tableData1.push(Object.keys(snapArray[i]));
               }
 
+              let tableData2 = tableData1.map(function(a){return a.length;});
+              tableData2.indexOf(Math.max.apply(Math, tableData2));
+
+
+
+              let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 
 
 
 
+              let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
+              table1Keys = table1Keys.filter(e => e !== 'ID');
+              table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
+              table1Keys = table1Keys.filter(e => e !== 'date');
+              table1Keys = table1Keys.filter(e => e !== 'Title');
+              table1Keys = table1Keys.filter(e => e !== 'Status');
+              table1Keys = table1Keys.filter(e => e !== 'court');
+              table1Keys = table1Keys.filter(e => e !== 'key');
+              table1Keys = table1Keys.filter(e => e !== 'key');
 
 
-              if (snapArray.length > 0) {
-                let data = snapArray;
+              if (this.state.turnedOffKeys.length == 0) {
+                console.log("do nothing again")
+              }
 
+              if (this.state.turnedOffKeys.lenth > 0) {
+                this.state.turnedOffKeys.map((item) => {
 
-
-
-
-                let tableData1 = [];
-                for (let i=0; i < snapArray.length; i++) {
-                //push send this data to the back of the chartData variable above.
-                tableData1.push(Object.keys(snapArray[i]));
-                }
-
-                let tableData2 = tableData1.map(function(a){return a.length;});
-                tableData2.indexOf(Math.max.apply(Math, tableData2));
-
-
-
-                let indexOfMaxValue = tableData2.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
-
-
-
-
-                let table1Keys = Object.keys(snapArray[indexOfMaxValue]);
-                table1Keys = table1Keys.filter(e => e !== 'ID');
-                table1Keys = table1Keys.filter(e => e !== 'Miscellaneous');
-                table1Keys = table1Keys.filter(e => e !== 'date');
-                table1Keys = table1Keys.filter(e => e !== 'Title');
-                table1Keys = table1Keys.filter(e => e !== 'Status');
-                table1Keys = table1Keys.filter(e => e !== 'court');
-                table1Keys = table1Keys.filter(e => e !== 'key');
-                table1Keys = table1Keys.filter(e => e !== 'key');
-
-
-                if (this.state.turnedOffKeys.length == 0) {
-                  console.log("do nothing again")
-                }
-
-                if (this.state.turnedOffKeys.lenth > 0) {
-                  this.state.turnedOffKeys.map((item) => {
-
-                    table1Keys = table1Keys.filter(e => e !== item);
-                  })
-                }
-
-                console.log(table1Keys)
-
-                this.setState({
-                  smallGraphKeys: table1Keys,
+                  table1Keys = table1Keys.filter(e => e !== item);
                 })
+              }
 
+              console.log(table1Keys)
 
+              this.setState({
+                smallGraphKeys: table1Keys,
+              })
 
-                let tableKeys = table1Keys.map((txt) => {
 
 
-                  const item3 = txt.replace(/^"(.*)"$/, '$1');
-                  const item4 = "a"+"."+item3;
+              let tableKeys = table1Keys.map((txt) => {
 
-                  return (
 
-                  {
+                const item3 = txt.replace(/^"(.*)"$/, '$1');
+                const item4 = "a"+"."+item3;
 
+                return (
 
+                {
 
-
-                }
-                )})
-
-                let tableKeysSmall = table1Keys.map((txt) => {
-                  const item3 = txt.replace(/^"(.*)"$/, '$1');
-                  const item4 = "a"+"."+item3;
-                  return (
-
-                  {
-
-                }
-                )})
-
-                tableKeys.unshift({
-                title: 'Chemical',
-                dataIndex: 'applicationAmount',
-                key: 'applicationAmount',
-                ...this.getColumnSearchProps('applicationAmount'),
-                sorter: (a, b) => { return a.applicationAmount.localeCompare(b.applicationAmount)},
-                sortDirections: ['descend', 'ascend'],
-
-                })
-
-                tableKeys.unshift({
-                title: 'Chemical',
-                dataIndex: 'applicationChemical',
-                key: 'applicationChemical',
-                ...this.getColumnSearchProps('applicationChemical'),
-                sorter: (a, b) => { return a.applicationChemical.localeCompare(b.applicationChemical)},
-                sortDirections: ['descend', 'ascend'],
-
-                })
-
-                tableKeys.unshift({
-                title: 'Company',
-                dataIndex: 'applicationCompany',
-                key: 'applicationCompany',
-                ...this.getColumnSearchProps('applicationCompany'),
-                sorter: (a, b) => { return a.applicationCompany.localeCompare(b.applicationCompany)},
-                sortDirections: ['descend', 'ascend'],
-
-                })
-
-
-
-                tableKeys.unshift({
-                title: 'Date',
-                dataIndex: 'date',
-                key: 'date',
-                ...this.getColumnSearchProps('date'),
-                sorter: (a, b) => { return a.date.localeCompare(b.date)},
-                sortDirections: ['descend', 'ascend'],
-                })
-
-
-                tableKeys.unshift({
-                title: 'ID #',
-                dataIndex: 'applicationID',
-                key: 'applicationID',
-                ...this.getColumnSearchProps('applicationID'),
-                sorter: (a, b) => { return a.applicationID - b.applicationID},
-                sortDirections: ['descend', 'ascend'],
-
-
-                })
-
-
-
-
-                tableKeys.unshift({
-                  title: 'Edit',
-                  dataIndex: '',
-                  key: 'x',
-                  fixed: 'left',
-                  render: this.editRow.bind(this),
-                  width: 50,
-
-
-                })
-
-                tableKeys.unshift({
-
-                  title: 'Delete',
-                  dataIndex: '',
-                  fixed: 'left',
-                  key: 'y',
-                  render: this.deleteRow.bind(this),
-                  width: 50,
-
-
-                })
-                tableKeys.push({
-
-                  title: 'Preview',
-                  dataIndex: '',
-                  fixed: 'right',
-                  key: 'z',
-                  render: this.previewReport,
-                  width: 50,
-                })
-                console.log(data);
-                let reverseData = data.reverse();
-
-                let reverseData1 = data.reverse();
-
-
-
-
-
-                tableKeysSmall.unshift({
-                title: 'Date',
-                dataIndex: 'date',
-                key: 'date',
-                ...this.getColumnSearchProps('date'),
-                sorter: (a, b) => { return a.date.localeCompare(b.date)},
-                sortDirections: ['descend', 'ascend'],
-
-
-                })
-                tableKeysSmall.unshift({
-                title: 'Title',
-                dataIndex: 'maintenanceTitle',
-                key: 'maintenanceTitle',
-                ...this.getColumnSearchProps('maintenanceTitle'),
-                sorter: (a, b) => { return a.maintenanceTitle.localeCompare(b.maintenanceTitle)},
-                sortDirections: ['descend', 'ascend'],
-
-
-                })
-
-                tableKeysSmall.unshift({
-                title: 'ID #',
-                dataIndex: 'maintenanceID',
-                key: 'maintenanceID',
-                ...this.getColumnSearchProps('maintenanceID'),
-                sorter: (a, b) => { return a.maintenanceID.localeCompare(b.maintenanceID)},
-                sortDirections: ['descend', 'ascend'],
-
-                })
-
-
-                tableKeysSmall.unshift({
-                  title: 'Edit',
-                  dataIndex: '',
-                  key: 'x',
-
-                  render: this.editRowSmall.bind(this),
-                  width: 50,
-
-
-                })
-
-                tableKeysSmall.unshift({
-
-                  title: 'Delete',
-                  dataIndex: '',
-
-                  key: 'y',
-                  render: this.deleteRow.bind(this),
-                  width: 50,
-
-
-                })
-                tableKeysSmall.push({
-
-                  title: 'Preview',
-                  dataIndex: '',
-
-                  key: 'z',
-                  render: this.previewReport,
-                  width: 50,
-                })
-
-
-                this.setState({
-                  snapArray: data.reverse(),
-
-                  tableKeys: tableKeys,
-                  tableKeysSmall: tableKeysSmall,
-                })
 
 
 
               }
+              )})
 
+              let tableKeysSmall = table1Keys.map((txt) => {
+                const item3 = txt.replace(/^"(.*)"$/, '$1');
+                const item4 = "a"+"."+item3;
+                return (
+
+                {
+
+              }
+              )})
+
+              tableKeys.unshift({
+              title: 'Chemical',
+              dataIndex: 'applicationAmount',
+              key: 'applicationAmount',
+              ...this.getColumnSearchProps('applicationAmount'),
+              sorter: (a, b) => { return a.applicationAmount.localeCompare(b.applicationAmount)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+              tableKeys.unshift({
+              title: 'Chemical',
+              dataIndex: 'applicationChemical',
+              key: 'applicationChemical',
+              ...this.getColumnSearchProps('applicationChemical'),
+              sorter: (a, b) => { return a.applicationChemical.localeCompare(b.applicationChemical)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+              tableKeys.unshift({
+              title: 'Company',
+              dataIndex: 'applicationCompany',
+              key: 'applicationCompany',
+              ...this.getColumnSearchProps('applicationCompany'),
+              sorter: (a, b) => { return a.applicationCompany.localeCompare(b.applicationCompany)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+
+
+              tableKeys.unshift({
+              title: 'Date',
+              dataIndex: 'date',
+              key: 'date',
+              ...this.getColumnSearchProps('date'),
+              sorter: (a, b) => { return a.date.localeCompare(b.date)},
+              sortDirections: ['descend', 'ascend'],
+              })
+
+
+              tableKeys.unshift({
+              title: 'ID #',
+              dataIndex: 'applicationID',
+              key: 'applicationID',
+              ...this.getColumnSearchProps('applicationID'),
+              sorter: (a, b) => { return a.applicationID - b.applicationID},
+              sortDirections: ['descend', 'ascend'],
+
+
+              })
+
+
+
+
+              tableKeys.unshift({
+                title: 'Edit',
+                dataIndex: '',
+                key: 'x',
+                fixed: 'left',
+                render: this.editRow.bind(this),
+                width: 50,
+
+
+              })
+
+              tableKeys.unshift({
+
+                title: 'Delete',
+                dataIndex: '',
+                fixed: 'left',
+                key: 'y',
+                render: this.deleteRow.bind(this),
+                width: 50,
+
+
+              })
+              tableKeys.push({
+
+                title: 'Preview',
+                dataIndex: '',
+                fixed: 'right',
+                key: 'z',
+                render: this.previewReport,
+                width: 50,
+              })
+              console.log(data);
+              let reverseData = data.reverse();
+
+              let reverseData1 = data.reverse();
+
+
+
+
+
+              tableKeysSmall.unshift({
+              title: 'Chemical',
+              dataIndex: 'applicationAmount',
+              key: 'applicationAmount',
+              ...this.getColumnSearchProps('applicationAmount'),
+              sorter: (a, b) => { return a.applicationAmount.localeCompare(b.applicationAmount)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+              tableKeysSmall.unshift({
+              title: 'Chemical',
+              dataIndex: 'applicationChemical',
+              key: 'applicationChemical',
+              ...this.getColumnSearchProps('applicationChemical'),
+              sorter: (a, b) => { return a.applicationChemical.localeCompare(b.applicationChemical)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+              tableKeysSmall.unshift({
+              title: 'Company',
+              dataIndex: 'applicationCompany',
+              key: 'applicationCompany',
+              ...this.getColumnSearchProps('applicationCompany'),
+              sorter: (a, b) => { return a.applicationCompany.localeCompare(b.applicationCompany)},
+              sortDirections: ['descend', 'ascend'],
+
+              })
+
+
+
+              tableKeysSmall.unshift({
+              title: 'Date',
+              dataIndex: 'date',
+              key: 'date',
+              ...this.getColumnSearchProps('date'),
+              sorter: (a, b) => { return a.date.localeCompare(b.date)},
+              sortDirections: ['descend', 'ascend'],
+              })
+
+
+              tableKeysSmall.unshift({
+              title: 'ID #',
+              dataIndex: 'applicationID',
+              key: 'applicationID',
+              ...this.getColumnSearchProps('applicationID'),
+              sorter: (a, b) => { return a.applicationID - b.applicationID},
+              sortDirections: ['descend', 'ascend'],
+
+
+              })
+
+
+
+
+              tableKeysSmall.unshift({
+                title: 'Edit',
+                dataIndex: '',
+                key: 'x',
+
+                render: this.editRow.bind(this),
+                width: 50,
+
+
+              })
+
+              tableKeysSmall.unshift({
+
+                title: 'Delete',
+                dataIndex: '',
+
+                key: 'y',
+                render: this.deleteRow.bind(this),
+                width: 50,
+
+
+              })
+
+
+
+              this.setState({
+                snapArray: data.reverse(),
+
+                tableKeys: tableKeys,
+                tableKeysSmall: tableKeysSmall,
+              })
+
+
+
+            }
+
+
+             })
+
+             const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems`);
+             sampleList2Ref.on('value', (snapshot) => {
+               let maintenanceArray = this.snapshotToArray(snapshot);
+               console.log(maintenanceArray)
+               this.setState({
+                 snapArray1: maintenanceArray,
 
                })
-
-               const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
-               sampleList2Ref.on('value', (snapshot) => {
-                 let maintenanceArray = this.snapshotToArray(snapshot);
-                 console.log(maintenanceArray)
-                 this.setState({
-                   snapArray1: maintenanceArray,
-
-                 })
-               })
+             })
 
 
 
-            const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
-            profileRef.on('value', (snapshot) => {
-              var that = this;
+          const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+          profileRef.on('value', (snapshot) => {
+            var that = this;
 
 
-            this.setState({
-              lakeName: snapshot.child('lakeName').val(),
-              locationCity: snapshot.child('locationCity').val(),
-              locationState: snapshot.child('locationState').val(),
-              managementContact: snapshot.child('managementContact').val(),
-              hoaContact: snapshot.child('hoaContact').val(),
-              managementContactNumber: snapshot.child('managementContactNumber').val(),
-              hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-              latitude: snapshot.child('latitude').val(),
-              longitude: snapshot.child('longitude').val(),
-              center: {
-                lat: snapshot.child('latitude').val(),
-                lng: snapshot.child('longitude').val()
-              },
-
-            });
-
+          this.setState({
+            lakeName: snapshot.child('lakeName').val(),
+            locationCity: snapshot.child('locationCity').val(),
+            locationState: snapshot.child('locationState').val(),
+            managementContact: snapshot.child('managementContact').val(),
+            hoaContact: snapshot.child('hoaContact').val(),
+            managementContactNumber: snapshot.child('managementContactNumber').val(),
+            hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+            latitude: snapshot.child('latitude').val(),
+            longitude: snapshot.child('longitude').val(),
+            center: {
+              lat: snapshot.child('latitude').val(),
+              lng: snapshot.child('longitude').val()
+            },
 
           });
 
 
-
-
-
-          })
+        });
 
 
 
 
 
-    })
-  }
+        })
+
+
+
+
+
+  })
+}
 
 
 
@@ -1471,7 +1513,7 @@ export default class chemicalApplications extends Component {
 
 showDrawer = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplicationItems`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1498,7 +1540,7 @@ showDrawer = () => {
 
 showDrawerMobile = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
+  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplicationItems`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1633,7 +1675,7 @@ getColumnSearchProps = (dataIndex) => ({
 
     const content = (
   <div style={{textAlign: 'center'}}>
-    <p>Are you sure you want <br /> to delete this Maintenance Log?</p>
+    <p>Are you sure you want <br /> to delete this Application Log?</p>
     <Button type="primary" onClick={() => this.removesample(isSelected.key)}>Delete</Button>
   </div>
   );
@@ -1689,19 +1731,25 @@ removesample2(itemId) {
 
 previewReport = (row, isSelected, e, id, key) =>
 {
+ if(isSelected.key.length == 0){
+   console.log("do nada")
+ }
+
+ if(isSelected.key.length > 0){
+   return (
+     <div style={{textAlign: 'center'}}>
+
+         <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}onClick={() => this.fillPreview(isSelected.key)}>
+       Click me
+     </Icon>
+
+     </div>
+   )
+ }
 
 
 
 
-  return (
-    <div style={{textAlign: 'center'}}>
-
-        <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}onClick={() => this.fillPreview(isSelected.key)}>
-      Click me
-    </Icon>
-
-    </div>
-  )
 }
 
 fillPreview(itemId) {
@@ -1712,7 +1760,13 @@ fillPreview(itemId) {
   previewRef.on('value', (snapshot) => {
     let previewData = snapshot.val();
     let applicationList = snapshot.val();
-        let dataList = snapshot.val();
+
+    if (previewData == null) {
+      console.log("do nada")
+    }
+
+    if (previewData != null) {
+      let dataList = snapshot.val();
         delete dataList.date;
         delete dataList.applicationID;
         delete dataList.applicationCompany;
@@ -1743,6 +1797,8 @@ fillPreview(itemId) {
 
 
     })
+    }
+
 
 });
 
@@ -1754,26 +1810,41 @@ fillPreview(itemId) {
 
   editRow = (row, isSelected, e, id, key) =>
   {
-    return (
-      <div style={{textAlign: 'center'}}>
-      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
-      onClick={() => this.fillStates(isSelected.key)}>
-        Click me
-      </Icon>
-      </div>
-    )
+    if(isSelected.key.length == 0){
+      console.log("do nada")
+    }
+
+    if(isSelected.key.length > 0){
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillStates(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
+
   }
 
   editRowSmall = (row, isSelected, e, id, key) =>
   {
-    return (
-      <div style={{textAlign: 'center'}}>
-      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
-      onClick={() => this.fillStatesSmall(isSelected.key)}>
-        Click me
-      </Icon>
-      </div>
-    )
+    if(isSelected.key.length == 0){
+      console.log("do nada")
+    }
+
+    if(isSelected.key.length > 0){
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillStatesSmall(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
   }
 
   editRow1 = (row, isSelected, e, id, key) =>
@@ -1788,18 +1859,158 @@ fillPreview(itemId) {
     )
   }
 
+  fillParameterStates(itemId) {
+
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+      this.setState({
+        visible3: true,
+
+      })
+
+    const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`);
+    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`).key;
+    sample1Ref.on('value', (snapshot) => {
+
+      this.setState({
+        Maintenance_Item: snapshot.child('Maintenance_Item').val(),
+        id: id,
+      });
+
+});
+
+  });
+}
+
+parameterOverwrite = (e) => {
+  e.preventDefault();
+  //fire.database().ref('samples') refers to the main title of the fire database.
+  this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+  const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems/${this.state.id}`);
+
+
+var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: '', id: this.state.id}
+    console.log(object);
+    sampleListRef.set(object);
+
+  //this.setState is used to clear the text boxes after the form has been submitted.
+  this.setState({
+    visible3: false,
+
+  });
+
+});
+}
+
+
+  fillParameterInfo = (e, itemId) => {
+    e.preventDefault();
+    //fire.database().ref('samples') refers to the main title of the fire database.
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
+    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
+
+    if (this.state.Maintenance_Item.length == 0) {
+      console.log("do nothing")
+      this.setState({
+        error: null,
+      })
+    }
+
+    if (this.state.Maintenance_Item.length != 0) {
+
+      const sampleInfo = {
+        Maintenance_Item: this.state.Maintenance_Item,
+        Maintenance_Input: '',
+        id: id,
+
+      }
+
+      sampleListRef.push(sampleInfo);
+      //this.setState is used to clear the text boxes after the form has been submitted.
+      this.setState({
+        Maintenance_Item: '',
+
+        childrenDrawer: false,
+        visible4: false,
+      });
+
+    }
+
+
+  });
+
+
+  }
+
+  fillParameterInfo1 = (e, itemId) => {
+    e.preventDefault();
+    //fire.database().ref('samples') refers to the main title of the fire database.
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
+
+
+var arr = this.state.arrayData2;
+console.log(arr);
+
+
+if (arr.length == 0){
+  var object = {date: this.state.sampleDate, ID: this.state.sampleID,  Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc}
+  console.log(object);
+  sampleListRef.set(object);
+
+}
+else
+
+
+  var object = arr.reduce(
+      (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input, [this.state.Sample_Item]: this.state.Sample_Input}) ,{});
+      console.log(object);
+      sampleListRef.set(object);
 
 
 
+    //this.setState is used to clear the text boxes after the form has been submitted.
+
+    this.setState({
 
 
 
+      childrenDrawerComment: false,
+
+
+    });
+
+  });
+
+
+  }
 
 
 
+  handleSampleChange = idx => evt => {
+    const newParameters = this.state.snapArray1.map((parameter, sidx) => {
+      if (idx !== sidx) return parameter;
+      return { ...parameter, Sample_Input: evt.target.value };
+    });
+    this.setState({ snapArray1: newParameters,
+                    save: 'none',
+                  save1: null});
 
 
 
+    };
+
+    handleSampleChange1 = idx => evt => {
+      const newParameters = this.state.arrayData2.map((parameter, sidx) => {
+        if (idx !== sidx) return parameter;
+        return { ...parameter, Sample_Input: evt.target.value };
+      });
+      this.setState({ arrayData2: newParameters, save: 'none', save1: null });
+
+
+
+      };
 
 
     handleSubmit = (e) => {
@@ -1811,7 +2022,65 @@ fillPreview(itemId) {
         });
       }
 
+      sampleSubmit = (e) => {
+        e.preventDefault();
+        //fire.database().ref('samples') refers to the main title of the fire database.
+        this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
 
+
+
+
+    var arr = this.state.snapArray1;
+    console.log(arr);
+
+
+    if (arr.length == 0){
+      var object = {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court,  Miscellaneous: this.state.sampleMisc}
+      console.log(object);
+      sampleListRef.push(object);
+    }
+
+if (arr.length > 0){
+
+      var object = arr.reduce(
+          (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Maintenance_Item]: item.Maintenance_Input}) ,{});
+          console.log(object);
+          sampleListRef.push(object);
+
+          const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
+          sampleList2Ref.on('value', (snapshot) => {
+            let maintenanceArray = this.snapshotToArray(snapshot);
+
+            this.setState({
+              snapArray1: maintenanceArray,
+
+            })
+          })
+
+        }
+
+
+
+
+
+        //this.setState is used to clear the text boxes after the form has been submitted.
+        this.setState({
+          sampleDate: '',
+          sampleID: '',
+          sampleTitle: '',
+          sampleMisc: '',
+          Status: '',
+          court: '',
+
+          visible: false,
+          visible1: false,
+          visible2: false,
+
+        });
+
+      });
+      }
 
       fillStates(itemId) {
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
@@ -1828,9 +2097,9 @@ fillPreview(itemId) {
             fillReportKey: "2",
           })
 
-        const activeApplicationID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeApplicationID`);
-        activeApplicationID.set(itemId);
-          });
+          const activeApplicationID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeApplicationID`);
+          activeApplicationID.set(itemId);
+            });
 
 
 
@@ -1862,7 +2131,48 @@ fillPreview(itemId) {
   }
 
 
+    sampleOverwrite = (e) => {
+      e.preventDefault();
+      //fire.database().ref('samples') refers to the main title of the fire database.
+      this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+      const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
 
+
+  var arr = this.state.arrayData2;
+  console.log(arr);
+
+
+  if (arr.length == 0){
+    var object = {date: this.state.sampleDate, ID: this.state.sampleID,  Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc}
+    console.log(object);
+    sampleListRef.set(object);
+
+  }
+  else
+
+
+    var object = arr.reduce(
+        (obj, item) => Object.assign(obj, {date: this.state.sampleDate, ID: this.state.sampleID, Title: this.state.sampleTitle, Status: this.state.Status, court: this.state.court, Miscellaneous: this.state.sampleMisc, [item.Sample_Item]: item.Sample_Input}) ,{});
+        console.log(object);
+        sampleListRef.set(object);
+
+
+
+      //this.setState is used to clear the text boxes after the form has been submitted.
+      this.setState({
+
+
+        visible: false,
+        visible1: false,
+        visible2: false,
+        save: null,
+        save1: 'none',
+        visibleEditMaintenance: false,
+
+      });
+
+    });
+    }
 
 
     displayButtons = () => {
@@ -1969,8 +2279,8 @@ fillPreview(itemId) {
   clearDates = () => {
 
 
-        const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications`);
-        parameterList1Ref.on('value', (snapshot) => {
+    const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications`);
+   parameterList1Ref.on('value', (snapshot) => {
           let snapArray = this.snapshotToArray(snapshot);
           console.log(snapArray)
           if (snapArray.length == 0) {
@@ -2027,93 +2337,68 @@ fillPreview(itemId) {
         let url = file && URL.createObjectURL(file)
         let img = document.createElement("my-node");
 
-        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
+        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
 
 
         const MyDoc = (
           <Document>
-            <Page size="A4" style={styles.body}>
+            <Page size="A4" style={styles.body} >
               <View >
 
-
-                    <Text  style={{position: 'absolute', left: '20px', top: '20px'}}>
+                <Text  >
                       AquaSource
                     </Text>
-                    <Text  style={{position: 'absolute', left: '20px', top: '40px', fontSize: 13}}>
+                    <Text  style={{ paddingBottom: 25}}>
                       Huntington Beach
                     </Text>
 
-                    <Text  style={{position: 'absolute', left: '400px', top: '20px'}}>
-                      # {this.state.applicationID}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '400px', top: '40px', fontSize: 13}} >
-                      {this.state.lakeName}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '400px', top: '60px', fontSize: 13}} >
-                      {this.state.locationCity}, {this.state.locationState}
-                    </Text>
-
-
-                    <Text style={{position: 'absolute', left: '20px', top: '140px', fontSize: 13}} >
-                      Application Date: {this.state.applicationDate}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '200px', top: '140px', fontSize: 13}} >
-                      Company: {this.state.applicationCompany}
-                    </Text>
-
-                    <Text style={{position: 'absolute', left: '360px', top: '140px', fontSize: 13}} >
-                      Chemical: {this.state.applicationChemical}
-                    </Text>
-
-                    <Text style={{position: 'absolute', left: '20px', top: '170px', fontSize: 13}} >
-                      Application Amount: {this.state.applicationAmount}
-                    </Text>
-
-
-
-
-
-                    <Text style={{position: 'absolute',
-                       left: '20px',
-                        top: '95px',
-                         fontSize: .5,
-                          color: 'black',
-                          backgroundColor: 'black',}} >
+                    <Text style={{fontSize: 6, }}>
                           {line}
                           </Text>
-                          <Text style={{position: 'absolute', left: '120px', top: '100px', zIndex: 1}} >
+                          <Text style={{textAlign: 'center', paddingTop: 10}} >
                             CHEMICAL APPLICATION REPORT
                           </Text>
-                          <Text style={{position: 'absolute',
-                             left: '20px',
-                              top: '118px',
-                               fontSize: .5,
-                                color: 'black',
-                                backgroundColor: 'black',}} >
+                          <Text style={{fontSize: 6,  }}>
                                 {line}
                                 </Text>
 
-                <Text style={{position: 'absolute',
-                   left: '20px',
-                    top: '235px',
-                     fontSize: .5,
-                      color: 'black',
-                      backgroundColor: 'black',}} >
-                      {line}
+
+                                <Text style={styles.author1}>
+                                  {this.state.lakeName}
+                                </Text>
+                                <Text  style={styles.author1}>
+                                  {this.state.locationCity}, {this.state.locationState}
+                                </Text>
+                              <Text  style={styles.author1}>
+                                   Application Date: {this.state.applicationDate}
+                                </Text>
+                                <Text  style={styles.author1}>
+                                    Company: {this.state.applicationCompany}
+                                  </Text>
+                                  <Text  style={styles.author1}>
+                                      Chemical: {this.state.applicationChemical}
+                                    </Text>
+
+                                <Text style={styles.author1}>
+                                  Application Amount: {this.state.applicationAmount}
+                                </Text>
+
+
+
+
+
+
+                                <Text style={{fontSize: 6, paddingTop: 20}}>
+                                      {line}
+                                      </Text>
+                      <Text style={{fontSize: 12, paddingTop: 8}}>
+                        APPLICATION NOTES:
                       </Text>
-                      <Text style={{position: 'absolute', left: '20px', top: '240px'}} >
-                        Application Items:
-                      </Text>
-                      <Text style={{position: 'absolute',
-                         left: '20px',
-                          top: '260px',
-                           fontSize: .5,
-                            color: 'black',
-                            backgroundColor: 'black',}} >
+                      <Text style={{fontSize: 6, }}>
                             {line}
                             </Text>
 
-                            <View style={{position: 'absolute', left: '20px', top: '280px'}}>
+                            <View >
                               {this.state.reportData.map((parameter, idx) => {
 
                                 return (
@@ -2126,14 +2411,16 @@ fillPreview(itemId) {
 
                             </View>
 
-
-
-
-
                     </View>
+                    <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+        `${pageNumber} / ${totalPages}`
+      )} fixed />
             </Page>
           </Document>
         )
+
+
+
 
         const columns1 = [
           {

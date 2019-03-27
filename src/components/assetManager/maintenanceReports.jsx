@@ -13,9 +13,11 @@ import { fire } from '../../fire';
 
 
 
-import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, AutoComplete, Radio, Alert, Calendar, DatePicker, Form, Select } from 'antd';
+import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, AutoComplete, Radio, Alert, Calendar, DatePicker, Form, Select, Collapse } from 'antd';
 
 import { CSVLink, CSVDownload } from "react-csv";
+
+const Panel = Collapse.Panel;
 
 
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
@@ -30,9 +32,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4E4E4'
   },
   body: {
-    paddingTop: 35,
+    paddingTop: 55,
     paddingBottom: 65,
-    paddingHorizontal: 35,
+    paddingHorizontal: 55,
   },
   title: {
     fontSize: 24,
@@ -43,6 +45,11 @@ const styles = StyleSheet.create({
 
     marginBottom: 10,
     paddingTop: 15,
+  },
+  author1: {
+    fontSize: 13,
+
+    paddingTop: 7,
   },
   subtitle: {
     fontSize: 18,
@@ -67,7 +74,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 12,
     bottom: 30,
-    left: 0,
+    left: 300,
     right: 0,
     textAlign: 'center',
     color: 'grey',
@@ -508,8 +515,12 @@ class ItemForm extends React.Component {
     return (
       <div>
 
+
+
+      <Collapse bordered={false} >
+    <Panel header={<p style={{paddingTop: 10, fontSize: 14, color: '#000000a6'}}><b>Add an Additional Item for Your Report</b></p>}key="1">
       <Form {...formItemLayout} onSubmit={this.submitItem} >
-      <p style={{paddingLeft: 30, fontSize: 14}}><b>Add an Additional Item for Your Report</b></p>
+
 
       <Form.Item {...formItemLayout}
         label="Maintenance Item"
@@ -527,6 +538,9 @@ class ItemForm extends React.Component {
       </Form.Item>
 
       </Form>
+    </Panel>
+
+  </Collapse>
 
       </div>
     );
@@ -602,42 +616,58 @@ class FillReportForm extends React.Component {
                           let activeMaintenanceReport = snapshot.val();
                           let otherItems = snapshot.val();
 
+                          if (activeMaintenanceReport == null) {
+                            console.log("do nada")
+                          }
 
-                          this.setState({
-                            activeMaintenanceReport: activeMaintenanceReport,
-                            maintenanceID: activeMaintenanceReport.maintenanceID,
-                            maintenanceStatus: activeMaintenanceReport.maintenanceStatus,
-                            maintenanceTitle: activeMaintenanceReport.maintenanceTitle,
-                            maintenanceDate: activeMaintenanceReport.date,
-                            maintenanceCourt: activeMaintenanceReport.maintenanceCourt,
-                          })
+                          if (activeMaintenanceReport != null) {
+                            this.setState({
+                              activeMaintenanceReport: activeMaintenanceReport,
+                              maintenanceID: activeMaintenanceReport.maintenanceID,
+                              maintenanceStatus: activeMaintenanceReport.maintenanceStatus,
+                              maintenanceTitle: activeMaintenanceReport.maintenanceTitle,
+                              maintenanceDate: activeMaintenanceReport.date,
+                              maintenanceCourt: activeMaintenanceReport.maintenanceCourt,
+                            })
 
-                          delete otherItems.maintenanceID;
-                          delete otherItems.maintenanceStatus;
-                          delete otherItems.maintenanceCourt;
-                          delete otherItems.maintenanceTitle;
-                          delete otherItems.date;
+                            delete otherItems.maintenanceID;
+                            delete otherItems.maintenanceStatus;
+                            delete otherItems.maintenanceCourt;
+                            delete otherItems.maintenanceTitle;
+                            delete otherItems.date;
 
 
 
-                          let dataKeys = Object.keys(otherItems);
-                          let dataValues = Object.values(otherItems);
-                          console.log(dataKeys);
-                          console.log(dataValues);
+                            let dataKeys = Object.keys(otherItems);
+                            let dataValues = Object.values(otherItems);
+                            console.log(dataKeys);
+                            console.log(dataValues);
 
-                          let maintenanceData = [];
-                          for (let i=0; i < dataKeys.length; i++) {
-                          //push send this data to the back of the chartData variable above.
-                          maintenanceData.push({Maintenance_Item: dataKeys[i], Maintenance_Input: dataValues[i]});
+                            let maintenanceData = [];
+
+                            if (dataKeys == null) {
+                              console.log("do nada")
+                            }
+
+                            if (dataKeys != null) {
+                              for (let i=0; i < dataKeys.length; i++) {
+                              //push send this data to the back of the chartData variable above.
+                              maintenanceData.push({Maintenance_Item: dataKeys[i], Maintenance_Input: dataValues[i]});
+
+                              }
+                              console.log(maintenanceData)
+
+                              this.setState({
+                                maintenanceData: maintenanceData
+                              })
+                            }
 
                           }
-                          console.log(maintenanceData)
 
-                          this.setState({
 
-                            maintenanceData: maintenanceData
 
-                          })
+
+
                         })
       })
 
@@ -894,7 +924,7 @@ handleSubmit = (e) => {
               {getFieldDecorator(`${parameter.Maintenance_Item}`, {
                 rules: [{ required: true, message: 'Please enter an input!', whitespace: true }], initialValue: parameter.Maintenance_Input,
               })(
-                <Input onChange={this.updateChange}/>
+                <TextArea autosize style={{height: '80px'}} onChange={this.updateChange}/>
               )}
             </Form.Item>
           )
@@ -1670,19 +1700,25 @@ removesample2(itemId) {
 
 previewReport = (row, isSelected, e, id, key) =>
 {
+ if(isSelected.key.length == 0){
+   console.log("do nada")
+ }
+
+ if(isSelected.key.length > 0){
+   return (
+     <div style={{textAlign: 'center'}}>
+
+         <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}onClick={() => this.fillPreview(isSelected.key)}>
+       Click me
+     </Icon>
+
+     </div>
+   )
+ }
 
 
 
 
-  return (
-    <div style={{textAlign: 'center'}}>
-
-        <Icon type="file-pdf" style={{fontSize: '24px', color: '#101441'}}onClick={() => this.fillPreview(isSelected.key)}>
-      Click me
-    </Icon>
-
-    </div>
-  )
 }
 
 fillPreview(itemId) {
@@ -1693,36 +1729,44 @@ fillPreview(itemId) {
   previewRef.on('value', (snapshot) => {
     let previewData = snapshot.val();
     let maintenanceList = snapshot.val();
-        let dataList = snapshot.val();
-        delete dataList.date;
-        delete dataList.maintenanceTitle;
-        delete dataList.maintenanceID;
-        delete dataList.maintenanceCourt;
-        delete dataList.maintenanceStatus;
 
-        let dataKeys = Object.keys(dataList);
-        let dataValues = Object.values(dataList);
-        console.log(dataKeys);
-        console.log(dataValues);
+    if (previewData == null) {
+      console.log("do nada")
+    }
 
-        let reportData = [];
-        for (let i=0; i < dataKeys.length; i++) {
-        //push send this data to the back of the chartData variable above.
-        reportData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
+    if (previewData != null) {
+      let dataList = snapshot.val();
+      delete dataList.date;
+      delete dataList.maintenanceTitle;
+      delete dataList.maintenanceID;
+      delete dataList.maintenanceCourt;
+      delete dataList.maintenanceStatus;
 
-        }
+      let dataKeys = Object.keys(dataList);
+      let dataValues = Object.values(dataList);
+      console.log(dataKeys);
+      console.log(dataValues);
 
-    this.setState({
-        maintenanceTitle: previewData.maintenanceTitle,
-        maintenanceID: previewData.maintenanceID,
-        maintenanceStatus: previewData.maintenanceStatus,
-        maintenanceCourt: previewData.maintenanceCourt,
-        maintenanceDate: previewData.date,
-        reportData: reportData,
-        key: "3",
+      let reportData = [];
+      for (let i=0; i < dataKeys.length; i++) {
+      //push send this data to the back of the chartData variable above.
+      reportData.push({Sample_Item: dataKeys[i], Sample_Input: dataValues[i]});
+
+      }
+
+  this.setState({
+      maintenanceTitle: previewData.maintenanceTitle,
+      maintenanceID: previewData.maintenanceID,
+      maintenanceStatus: previewData.maintenanceStatus,
+      maintenanceCourt: previewData.maintenanceCourt,
+      maintenanceDate: previewData.date,
+      reportData: reportData,
+      key: "3",
 
 
-    })
+  })
+    }
+
 
 });
 
@@ -1734,26 +1778,41 @@ fillPreview(itemId) {
 
   editRow = (row, isSelected, e, id, key) =>
   {
-    return (
-      <div style={{textAlign: 'center'}}>
-      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
-      onClick={() => this.fillStates(isSelected.key)}>
-        Click me
-      </Icon>
-      </div>
-    )
+    if(isSelected.key.length == 0){
+      console.log("do nada")
+    }
+
+    if(isSelected.key.length > 0){
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillStates(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
+
   }
 
   editRowSmall = (row, isSelected, e, id, key) =>
   {
-    return (
-      <div style={{textAlign: 'center'}}>
-      <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
-      onClick={() => this.fillStatesSmall(isSelected.key)}>
-        Click me
-      </Icon>
-      </div>
-    )
+    if(isSelected.key.length == 0){
+      console.log("do nada")
+    }
+
+    if(isSelected.key.length > 0){
+      return (
+        <div style={{textAlign: 'center'}}>
+        <Icon type="copy" style={{fontSize: '24px', color: '#101441'}}
+        onClick={() => this.fillStatesSmall(isSelected.key)}>
+          Click me
+        </Icon>
+        </div>
+      )
+    }
+
   }
 
   editRow1 = (row, isSelected, e, id, key) =>
@@ -2246,93 +2305,70 @@ if (arr.length > 0){
         let url = file && URL.createObjectURL(file)
         let img = document.createElement("my-node");
 
-        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
+        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
 
 
         const MyDoc = (
           <Document>
-            <Page size="A4" style={styles.body}>
+            <Page size="A4" style={styles.body} >
               <View >
 
-
-                    <Text  style={{position: 'absolute', left: '20px', top: '20px'}}>
+                <Text  >
                       AquaSource
                     </Text>
-                    <Text  style={{position: 'absolute', left: '20px', top: '40px', fontSize: 13}}>
+                    <Text  style={{ paddingBottom: 25}}>
                       Huntington Beach
                     </Text>
 
-                    <Text  style={{position: 'absolute', left: '400px', top: '20px'}}>
-                      # {this.state.maintenanceID}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '400px', top: '40px', fontSize: 13}} >
-                      {this.state.lakeName}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '400px', top: '60px', fontSize: 13}} >
-                      {this.state.locationCity}, {this.state.locationState}
-                    </Text>
-
-
-                    <Text style={{position: 'absolute', left: '20px', top: '140px', fontSize: 13}} >
-                      Date: {this.state.maintenanceDate}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '200px', top: '140px', fontSize: 13}} >
-                      Status: {this.state.maintenanceStatus}
-                    </Text>
-
-                    <Text style={{position: 'absolute', left: '360px', top: '140px', fontSize: 13}} >
-                      Ball in Court: {this.state.maintenanceCourt}
-                    </Text>
-
-                    <Text style={{position: 'absolute', left: '20px', top: '170px', fontSize: 13}} >
-                      Maintenance Item: {this.state.maintenanceTitle}
-                    </Text>
-
-
-
-
-
-                    <Text style={{position: 'absolute',
-                       left: '20px',
-                        top: '95px',
-                         fontSize: .5,
-                          color: 'black',
-                          backgroundColor: 'black',}} >
+                    <Text style={{fontSize: 6, }}>
                           {line}
                           </Text>
-                          <Text style={{position: 'absolute', left: '160px', top: '100px', zIndex: 1}} >
-                            MAINTENANCE ITEM
+                          <Text style={{textAlign: 'center', paddingTop: 10}} >
+                            MAINTENANCE REPORT
                           </Text>
-                          <Text style={{position: 'absolute',
-                             left: '20px',
-                              top: '118px',
-                               fontSize: .5,
-                                color: 'black',
-                                backgroundColor: 'black',}} >
+                          <Text style={{fontSize: 6,  }}>
                                 {line}
                                 </Text>
 
-                <Text style={{position: 'absolute',
-                   left: '20px',
-                    top: '235px',
-                     fontSize: .5,
-                      color: 'black',
-                      backgroundColor: 'black',}} >
-                      {line}
+                                <Text  style={{paddingTop: 10, fontSize: 13}}>
+                                  # {this.state.maintenanceID}
+                                </Text>
+                                <Text style={styles.author1}>
+                                  {this.state.lakeName}
+                                </Text>
+                                <Text  style={styles.author1}>
+                                  {this.state.locationCity}, {this.state.locationState}
+                                </Text>
+                              <Text  style={styles.author1}>
+                                  Date: {this.state.maintenanceDate}
+                                </Text>
+                                <Text  style={styles.author1}>
+                                    Status: {this.state.maintenanceStatus}
+                                  </Text>
+                                  <Text  style={styles.author1}>
+                                      Ball in Court: {this.state.maintenanceCourt}
+                                    </Text>
+
+                                <Text style={styles.author1}>
+                                  Maintenance Item: {this.state.maintenanceTitle}
+                                </Text>
+
+
+
+
+
+
+                                <Text style={{fontSize: 6, paddingTop: 20}}>
+                                      {line}
+                                      </Text>
+                      <Text style={{fontSize: 12, paddingTop: 8}}>
+                        MAINTENANCE ITEMS:
                       </Text>
-                      <Text style={{position: 'absolute', left: '20px', top: '240px'}} >
-                        Maintenance Items:
-                      </Text>
-                      <Text style={{position: 'absolute',
-                         left: '20px',
-                          top: '260px',
-                           fontSize: .5,
-                            color: 'black',
-                            backgroundColor: 'black',}} >
+                      <Text style={{fontSize: 6, }}>
                             {line}
                             </Text>
 
-                            <View style={{position: 'absolute', left: '20px', top: '280px'}}>
+                            <View >
                               {this.state.reportData.map((parameter, idx) => {
 
                                 return (
@@ -2345,14 +2381,16 @@ if (arr.length > 0){
 
                             </View>
 
-
-
-
-
                     </View>
+                    <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+        `${pageNumber} / ${totalPages}`
+      )} fixed />
             </Page>
           </Document>
         )
+
+
+
 
         const columns1 = [
           {

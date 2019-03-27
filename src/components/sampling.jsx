@@ -8,13 +8,15 @@ import styled from '@react-pdf/styled-components';
 
 import moment from 'moment';
 
+import domtoimage from 'dom-to-image';
+
 import { fire } from '../fire';
 
 import { SketchPicker } from 'react-color';
 
 
 import { Row, Col, Tabs, Table, Divider, Tag, message, Card, Collapse, Drawer, Menu, Dropdown, Button, Layout, Carousel, Input, Popover, Icon, Cascader, Switch, AutoComplete, Radio, Alert, Calendar, DatePicker, Form, Select } from 'antd';
-
+import { ComposedChart, LineChart, LabelList, ResponsiveContainer, ReferenceArea, AreaChart, Brush, Area, Line, Tooltip, XAxis, YAxis, BarChart, Bar, CartesianGrid, Legend, Label} from 'recharts';
 import { CSVLink, CSVDownload } from "react-csv";
 
 const Panel = Collapse.Panel;
@@ -32,19 +34,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4E4E4'
   },
   body: {
-    paddingTop: 35,
+    paddingTop: 55,
     paddingBottom: 65,
-    paddingHorizontal: 35,
+    paddingHorizontal: 55,
   },
   title: {
     fontSize: 24,
 
   },
   author: {
-    fontSize: 12,
+    fontSize: 10,
 
     marginBottom: 10,
     paddingTop: 8,
+  },
+
+  author1: {
+    fontSize: 13,
+
+    paddingTop: 4,
   },
   subtitle: {
     fontSize: 18,
@@ -1091,6 +1099,7 @@ export default class sampling extends Component {
           item: '',
 
           graphData: [],
+          graphData1: [],
           turnedOffKeys: [],
 
           currentData: [],
@@ -1166,6 +1175,14 @@ export default class sampling extends Component {
 
           parameterColumns: [],
 
+          graph: null,
+          currentGraph: 'none',
+          filter: "",
+          blob: null,
+          file:null,
+          blobUrl: null,
+          imageSource: '',
+
         }
         this.handleChange = this.handleChange.bind(this);
 
@@ -1225,6 +1242,7 @@ export default class sampling extends Component {
             const parameterList1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
             parameterList1Ref.on('value', (snapshot) => {
               let snapArray = this.snapshotToArray(snapshot);
+              let dataArray = this.snapshotToArray(snapshot);
 
               if (snapArray.length == 0) {
                 console.log("do nothing")
@@ -1452,9 +1470,11 @@ export default class sampling extends Component {
 
                 this.setState({
                   snapArray: data.reverse(),
-
+                  graphData: data,
                   tableKeys: tableKeys,
                   tableKeysSmall: tableKeysSmall,
+                  graphData: data,
+                  graphData1: dataArray,
                 })
 
 
@@ -1841,7 +1861,7 @@ fillPreview(itemId) {
 
 
 
-        key: "3",
+        key: "4",
 
 
     })
@@ -1879,7 +1899,26 @@ fillPreview(itemId) {
   }
 
 
+  filter = (url) => {
 
+    domtoimage.toBlob(document.getElementById('my-node'))
+        .then((blob) => {
+
+
+            console.log(blob);
+            const blobUrl = URL.createObjectURL(blob);
+
+            console.log(blobUrl);
+
+            this.setState({
+              blobUrl: blobUrl,
+              key: "5",
+            })
+
+        });
+
+
+  }
 
 
 
@@ -1959,6 +1998,8 @@ fillPreview(itemId) {
    console.log(extra.currentDataSource);
    this.setState({
      currentData: extra.currentDataSource,
+     graph: 'none',
+     currentGraph: null
    })
  }
 
@@ -2148,89 +2189,59 @@ fillPreview(itemId) {
         let url = file && URL.createObjectURL(file)
         let img = document.createElement("my-node");
 
-        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
+        const line = '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------';
 
 
         const MyDoc = (
           <Document>
-            <Page size="A4" style={styles.body}>
+            <Page size="A4" style={styles.body} >
               <View >
 
-
-                    <Text  style={{position: 'absolute', left: '20px', top: '20px'}}>
+                <Text  >
                       AquaSource
                     </Text>
-                    <Text  style={{position: 'absolute', left: '20px', top: '40px', fontSize: 13}}>
+                    <Text  style={{ paddingBottom: 25}}>
                       Huntington Beach
                     </Text>
 
-                    <Text  style={{position: 'absolute', left: '400px', top: '20px'}}>
-                      # {this.state.sampleID}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '400px', top: '40px', fontSize: 13}} >
-                      {this.state.lakeName}
-                    </Text>
-                    <Text style={{position: 'absolute', left: '400px', top: '60px', fontSize: 13}} >
-                      {this.state.locationCity}, {this.state.locationState}
-                    </Text>
-
-
-                    <Text style={{position: 'absolute', left: '20px', top: '140px', fontSize: 13}} >
-                      Date: {this.state.sampleDate}
-                    </Text>
-
-
-
-
-                    <Text style={{position: 'absolute', left: '20px', top: '170px', fontSize: 13}} >
-                      Sample ID: {this.state.sampleID}
-                    </Text>
-
-
-
-
-
-                    <Text style={{position: 'absolute',
-                       left: '20px',
-                        top: '95px',
-                         fontSize: .5,
-                          color: 'black',
-                          backgroundColor: 'black',}} >
+                    <Text style={{fontSize: 6, }}>
                           {line}
                           </Text>
-                          <Text style={{position: 'absolute', left: '180px', top: '100px', zIndex: 1}} >
+                          <Text style={{textAlign: 'center', paddingTop: 10}} >
                             SAMPLE REPORT
                           </Text>
-                          <Text style={{position: 'absolute',
-                             left: '20px',
-                              top: '118px',
-                               fontSize: .5,
-                                color: 'black',
-                                backgroundColor: 'black',}} >
+                          <Text style={{fontSize: 6,  }}>
                                 {line}
                                 </Text>
 
-                <Text style={{position: 'absolute',
-                   left: '20px',
-                    top: '235px',
-                     fontSize: .5,
-                      color: 'black',
-                      backgroundColor: 'black',}} >
-                      {line}
-                      </Text>
-                      <Text style={{position: 'absolute', left: '20px', top: '242px'}} >
+                                <Text  style={{paddingTop: 10, fontSize: 13}}>
+                                  # {this.state.sampleID}
+                                </Text>
+                                <Text style={styles.author1}>
+                                  {this.state.lakeName}
+                                </Text>
+                                <Text  style={styles.author1}>
+                                  {this.state.locationCity}, {this.state.locationState}
+                                </Text>
+                              <Text  style={styles.author1}>
+                                  Date: {this.state.sampleDate}
+                                </Text>
+
+                                <Text style={styles.author1}>
+                                  Sample ID: {this.state.sampleID}
+                                </Text>
+
+                                <Text style={{fontSize: 6, paddingTop: 20}}>
+                                      {line}
+                                      </Text>
+                      <Text style={{fontSize: 12, paddingTop: 8}}>
                         SAMPLE CONSTITUENTS:
                       </Text>
-                      <Text style={{position: 'absolute',
-                         left: '20px',
-                          top: '260px',
-                           fontSize: .5,
-                            color: 'black',
-                            backgroundColor: 'black',}} >
+                      <Text style={{fontSize: 6, }}>
                             {line}
                             </Text>
 
-                            <View style={{position: 'absolute', left: '20px', top: '280px'}}>
+                            <View >
                               {this.state.reportData.map((parameter, idx) => {
 
                                 return (
@@ -2243,14 +2254,36 @@ fillPreview(itemId) {
 
                             </View>
 
-
-
-
-
                     </View>
+                    <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+        `${pageNumber} / ${totalPages}`
+      )} fixed />
             </Page>
           </Document>
         )
+
+
+        const MyGraph = (
+          <Document>
+            <Page size="A4" orientation="landscape" style={styles.body} >
+              <View >
+              <Image src={this.state.blobUrl} />
+
+
+                    </View>
+                    <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+        `${pageNumber} / ${totalPages}`
+      )} fixed />
+            </Page>
+          </Document>
+        )
+
+
+
+
+
+
+
 
         const contentColumns = (
       <div>
@@ -2384,6 +2417,7 @@ fillPreview(itemId) {
 
 const data = this.state.snapArray;
 const dataReverse = this.state.graphData;
+const dataReverse1 = this.state.graphData1;
 const data1 = this.state.snapArray1;
 const csvData = this.state.snapArray;
 const csvData1 = this.state.currentData;
@@ -2574,14 +2608,204 @@ const csvData1 = this.state.currentData;
 
 
 </TabPane>
+<TabPane tab="CURRENT DATA GRAPH" key="3">
 
-<TabPane  key="3">
+
+
+  <Row type="flex" justify="center" style={{paddingTop: '20px'}}>
+    <Col xs={24} sm={24} md={0} lg={0} xl={0} style={{textAlign: 'center'}}>
+
+    <p>Feature not available on mobile.</p>
+
+    </Col>
+    <Col xs={0} sm={0} md={24} lg={24} xl={24} style={{textAlign: 'center'}}>
+      <Card style={{ width: '100%' }}>
+        <Row>
+          <Col xs={0} sm={0} md={8} lg={8} xl={8} style={{textAlign: 'left'}}>
+
+          <Button type="primary" onClick={this.filter}>PDF Graph</Button>
+
+
+
+
+          </Col>
+
+
+          <Col xs={0} sm={0} md={12} lg={12} xl={12} style={{textAlign: 'center'}}>
+            <p style={{fontSize: 17}}><b>Graph of Current Data in Sampling Log Table</b></p>
+
+          </Col>
+
+
+
+
+        </Row>
+        <div id="my-node">
+
+<div style={{display: this.state.graph}}>
+
+<ResponsiveContainer  width="100%" aspect={9/3.0} minHeight={300}>
+          <ComposedChart data={dataReverse1}
+    syncId="anyId">
+
+
+    <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+    <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+    <Tooltip />
+
+
+    <defs>
+      {data1.map(parameter => {
+        return (
+
+            <linearGradient id={parameter.Sample_Item} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={parameter.Sample_Color} stopOpacity={0.3}/>
+              <stop offset="95%" stopColor={parameter.Sample_Color} stopOpacity={0.1}/>
+            </linearGradient>
+
+
+        )
+      })}
+</defs>
+
+
+
+
+      {data1.map(parameter => {
+
+        if (parameter.Sample_GraphType == 'Bar') {
+          console.log('something 1')
+          const CustomTag = Bar;
+          return(
+            <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+          )
+        }
+        if (parameter.Sample_GraphType == 'Line') {
+          console.log('something 2')
+          const CustomTag = Line;
+          return(
+            <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+          )
+        }
+        if (parameter.Sample_GraphType == 'Area') {
+          console.log('something 3')
+          const CustomTag = Area;
+          return(
+            <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+          )
+        }
+
+        if (parameter.Sample_GraphType == 'Off') {
+          console.log('No graph')
+
+
+        }
+
+
+      })}
+
+
+
+
+
+
+
+    <Legend />
+
+  </ComposedChart>
+   </ResponsiveContainer>
+   </div>
+   <div style={{display: this.state.currentGraph}}>
+
+   <ResponsiveContainer  width="100%" aspect={9/3.0} minHeight={300}>
+             <ComposedChart data={this.state.currentData}
+       syncId="anyId">
+
+
+       <XAxis dataKey="date"><Label  offset={200} position="top" /></XAxis>
+
+       <YAxis hide= "true" type="number" domain={[dataMin => (0 - Math.abs(dataMin)), dataMax => (dataMax * 2)]} />
+       <Tooltip />
+
+
+       <defs>
+         {data1.map(parameter => {
+           return (
+
+               <linearGradient id={parameter.Sample_Item} x1="0" y1="0" x2="0" y2="1">
+                 <stop offset="5%" stopColor={parameter.Sample_Color} stopOpacity={0.3}/>
+                 <stop offset="95%" stopColor={parameter.Sample_Color} stopOpacity={0.1}/>
+               </linearGradient>
+
+
+           )
+         })}
+   </defs>
+
+
+
+
+         {data1.map(parameter => {
+
+           if (parameter.Sample_GraphType == 'Bar') {
+             console.log('something 1')
+             const CustomTag = Bar;
+             return(
+               <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+             )
+           }
+           if (parameter.Sample_GraphType == 'Line') {
+             console.log('something 2')
+             const CustomTag = Line;
+             return(
+               <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+             )
+           }
+           if (parameter.Sample_GraphType == 'Area') {
+             console.log('something 3')
+             const CustomTag = Area;
+             return(
+               <CustomTag type="monotone" dataKey={parameter.Sample_Item}  fillOpacity={1} strokeWidth={2} stroke={parameter.Sample_Color} fill={"url(#" + parameter.Sample_Item + ")"}><LabelList dataKey={parameter.Sample_Item} position="top" /></CustomTag>
+             )
+           }
+
+           if (parameter.Sample_GraphType == 'Off') {
+             console.log('No graph')
+
+
+           }
+
+
+         })}
+
+
+
+
+
+
+
+       <Legend />
+
+     </ComposedChart>
+      </ResponsiveContainer>
+      </div>
+      </div>
+      </Card>
+    </Col>
+
+
+  </Row>
+
+</TabPane>
+
+<TabPane  key="4">
 
   <Row type="flex" justify="center">
     <Col span={24} style={{textAlign: 'center'}}>
 
       <Row>
-      <PDFDownloadLink document={MyDoc} fileName={this.state.maintenanceDate}><Button type="primary" size="large">Export PDF</Button>
+      <PDFDownloadLink document={MyDoc} fileName={this.state.sampleDate}><Button type="primary" size="large">Export PDF</Button>
 
 </PDFDownloadLink>
 </Row>
@@ -2603,11 +2827,33 @@ const csvData1 = this.state.currentData;
 
 </TabPane>
 
+<TabPane  key="5">
+
+  <Row type="flex" justify="center">
+    <Col span={24} style={{textAlign: 'center'}}>
+
+      <Row>
+      <PDFDownloadLink document={MyGraph} fileName="Your Graph"><Button type="primary" size="large">Download Your Graph</Button>
+
+</PDFDownloadLink>
+</Row>
+
+  <Row style={{paddingTop: '20px'}}>
+    <Col span={24}>
+
+<PDFViewer style={{width: '100%', height: 800}}>
+  {MyGraph}
+</PDFViewer>
+
+</Col>
+
+      </Row>
+
+    </Col>
+  </Row>
 
 
-
-
-
+</TabPane>
 
 
 

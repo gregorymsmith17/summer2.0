@@ -856,7 +856,7 @@ height={750}
 <Row>
 
 <Col span={24}>
-<p style={{fontSize: 24}}><b>Experience an all new way to manage your water infrastructure and projects.</b></p>
+<p style={{fontSize: 24}}><b>Experience an all new way to manage your water infrastructure and water projects.</b></p>
 </Col>
 </Row>
 
@@ -1524,7 +1524,7 @@ height={700}
 
       <Row type="flex">
         <Col xs={24} sm={24} md={{span: 11, offset: 1}}lg={{span: 11, offset: 1}} xl={{span: 11, offset: 1}} style={{textAlign: 'left'}}>
-      <p>Procore is a leading provider of cloud-based applications for construction. Procore connects people, applications, and devices through a unified platform to help construction professionals manage risk and build quality projects—safely, on time, and within budget. Procore has a diversified business model with products for Project Management, Construction Financials, Quality & Safety, and Field Productivity. Headquartered in Carpinteria, California, with offices around the globe, Procore is used to manage billions of dollars in annual construction volume. Read More </p>
+      <p>AquaSource is a leading provider of cloud-based applications for water system Management. AquaSource provides full transparency of a clients water system through a diverse platform to manage risk maintain a healthy water system. Clients are able to log all of their water quality data, equipment maintenance data, equipment logs, chemical applications and much more with the AquaSource platform.  The cloud-based platform allows clients to access their data from anywhere they have an internet connection.  AquaSource aims to support and help all our clients to ensure that their water systems are maintained and managed the the highest standard.</p>
       </Col>
 
       <Col xs={0} sm={0} md={{span: 4, offset: 1}}lg={{span: 4, offset: 1}} xl={{span: 4, offset: 1}} style={{textAlign: 'left'}}>
@@ -1603,7 +1603,12 @@ height={700}
       </Row>
     </Footer>
     <Footer style={{ textAlign: 'left' }}>
-      AquaSource Technologies @ 2019
+      <Row>
+      <Col xs={24} sm={24} md={{span: 11, offset: 1}}lg={{span: 11, offset: 1}} xl={{span: 11, offset: 1}} style={{textAlign: 'left'}}>
+          AquaSource Technologies @ 2019
+      </Col>
+    </Row>
+
     </Footer>
     </Layout>
 
