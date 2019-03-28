@@ -10,29 +10,21 @@ import './SignInScreen.css';
 import './firebaseui-styling.global.css';
 
 import Dashboard from './dashboard';
-import monthlySamples from './monthlySamples';
 import sampling from './sampling';
 
-import testingPage from './testingPage';
-import testingPage2 from './testingPage2';
-
-
-import uploadDocument from './uploadDocument';
-import uploadDrawings from './uploadDrawings';
-import uploadManuals from './uploadManuals';
 import profilePage from './profilePage';
 
 import maintenanceReports from './assetManager/maintenanceReports';
 import vendorContacts from './assetManager/vendorContacts';
 import equipmentList from './assetManager/equipmentList';
 import chemicalApplications from './assetManager/chemicalApplications';
-import fishStocking from './assetManager/fishStocking';
-import testing from './assetManager/testing';
 
 import drawings from './documents/drawings';
 import reports from './documents/reports';
 import permits from './documents/permits';
 import manuals from './documents/manuals';
+
+
 
 import landingPage from './website/landingPage';
 import about from './website/about';
@@ -46,17 +38,16 @@ import productivity from './website/productivity';
 import projectManagement from './website/projectManagement';
 import maintenanceLog from './website/maintenanceLog';
 import demo from './website/demo';
-import demoTest from './website/demoTest';
 import tutorial from './website/tutorial';
 
-import dashForecast from './dashForecast';
 
-import Drop from './Index';
+
+
 
 
 import { Link } from 'react-router-dom';
 import { FormGroup, FormControl} from 'react-bootstrap';
-import { Row, Col, Tooltip,Cascader, Table, Drawer, Menu, Layout, Modal, Icon, Card, Form, Select, Input, Checkbox, AutoComplete, Button } from 'antd';
+import { Row, Col, Tooltip,Cascader, Table, Drawer, Menu, Layout, Modal, Icon, Card, Form, Select, Input, Checkbox, AutoComplete, Button, Popover  } from 'antd';
 
 import { BrowserRouter, Route } from 'react-router-dom';
 
@@ -291,6 +282,175 @@ class RegistrationForm extends React.Component {
 const WrappedRegistrationForm = Form.create({ name: 'register' })(RegistrationForm);
 
 
+class NewProjectForm extends React.Component {
+  state = {
+    confirmDirty: false,
+    autoCompleteResult: [],
+
+    formDisplay: 'none',
+    formDisplay1: null,
+    currentCompany: '',
+    projectName: '',
+    reportUpdated: 'none',
+    commentAdded: 'none',
+  };
+
+  componentDidMount() {
+    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
+        (user) => this.setState({isSignedIn: !!user})
+    );
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+
+    });
+
+
+
+});
+  }
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+
+      const projectsListRef = fire.database().ref(`${this.state.currentCompany}/Projects`);
+        this.props.form.validateFieldsAndScroll((err, values) => {
+          if (!err) {
+
+
+            console.log('Received values of form: ', values);
+            this.setState({
+              projectName: values.projectName,
+              commentAdded: null,
+              formDisplay: null,
+              formDisplay1: 'none',
+            })
+
+            const projectInfo = {
+              projectName: values.projectName,
+
+            }
+            projectsListRef.push(projectInfo);
+          }
+
+        });
+
+
+
+
+  }
+
+  handleConfirmBlur = (e) => {
+    const value = e.target.value;
+    this.setState({ confirmDirty: this.state.confirmDirty || !!value });
+  }
+
+  compareToFirstPassword = (rule, value, callback) => {
+    const form = this.props.form;
+    if (value && value !== form.getFieldValue('password')) {
+      callback('Two passwords that you enter is inconsistent!');
+    } else {
+      callback();
+    }
+  }
+
+  validateToNextPassword = (rule, value, callback) => {
+    const form = this.props.form;
+    if (value && this.state.confirmDirty) {
+      form.validateFields(['confirm'], { force: true });
+    }
+    callback();
+  }
+
+  updateChange = () => {
+    this.setState({
+      reportUpdated: 'none',
+      commentAdded: 'none',
+    })
+  }
+
+
+
+  render() {
+    const { getFieldDecorator } = this.props.form;
+    const { autoCompleteResult } = this.state;
+
+    const testLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+      },
+    };
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0,
+        },
+        sm: {
+          span: 16,
+          offset: 8,
+        },
+      },
+    };
+
+
+    const websiteOptions = autoCompleteResult.map(website => (
+      <AutoCompleteOption key={website}>{website}</AutoCompleteOption>
+    ));
+
+    return (
+      <div>
+
+      <Form  onSubmit={this.handleSubmit} style={{fontSize: 12}}>
+
+
+
+
+        <Form.Item {...testLayout}
+          label="Project Name"
+        >
+          {getFieldDecorator('projectName', {
+            rules: [{ required: true, message: 'Please input your project name!', whitespace: true }],
+          })(
+            <Input onChange={this.updateChange}/>
+          )}
+        </Form.Item>
+
+
+
+        <Form.Item {...testLayout}  style={{textAlign: 'right'}}>
+          <p style={{display: this.state.commentAdded}}>Project has been added!</p>
+          <Button type="primary" htmlType="submit">Add Project</Button>
+        </Form.Item>
+
+
+      </Form>
+
+
+
+
+      </div>
+    );
+  }
+}
+
+const WrappedNewProjectForm = Form.create({ name: 'register' })(NewProjectForm);
+
+
+
+
+
 
 
 
@@ -316,6 +476,7 @@ class SignInScreen extends React.Component {
       error: 'none',
       projectName: '',
       currentProject: '',
+      currentCompany: '',
       projectList: [],
       visibleMobile: false,
       visibleMobile1: false,
@@ -326,6 +487,87 @@ class SignInScreen extends React.Component {
 
     };
 
+  }
+
+  componentDidMount() {
+    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
+        (user) => this.setState({isSignedIn: !!user})
+    );
+    this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
+
+
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+      console.log(this.state.currentCompany);
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
+      currentProjectRef.on('value', (snapshot) => {
+      this.setState({
+        currentProject: snapshot.child('currentProject').val(),
+      });
+      console.log(this.state.currentProject)
+    });
+
+
+    const projectsListRef = fire.database().ref(`${this.state.currentCompany}/Projects`);
+    projectsListRef.on('value', (snapshot) => {
+      let snapArray = this.snapshotToArray(snapshot);
+      let val = snapshot.val();
+    this.setState({
+      projectList: snapArray,
+    })
+
+
+
+    });
+
+    const profileRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/profileInformation`);
+    profileRef.on('value', (snapshot) => {
+    this.setState({
+      lakeName: snapshot.child('lakeName').val(),
+      locationCity: snapshot.child('locationCity').val(),
+      locationState: snapshot.child('locationState').val(),
+      managementContact: snapshot.child('managementContact').val(),
+      hoaContact: snapshot.child('hoaContact').val(),
+      managementContactNumber: snapshot.child('managementContactNumber').val(),
+      hoaContactNumber: snapshot.child('hoaContactNumber').val(),
+      latitude: snapshot.child('latitude').val(),
+      longitude: snapshot.child('longitude').val(),
+      center: {
+        lat: snapshot.child('latitude').val(),
+        lng: snapshot.child('longitude').val()
+      },
+
+    });
+
+  });
+
+
+
+
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+});
   }
 
 
@@ -358,7 +600,7 @@ this.setState({ [name]: value });
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const projectsListRef = fire.database().ref(`${user.uid}/Projects`);
+    const projectsListRef = fire.database().ref(`${this.state.currentCompany}/Projects`);
 
     if (this.state.projectName.length == 0) {
       console.log("do nothing")
@@ -385,7 +627,7 @@ this.setState({ [name]: value });
   projectState(itemId) {
 
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const projectsListRef = fire.database().ref(`${user.uid}/Projects/${itemId}`);
+      const projectsListRef = fire.database().ref(`${this.state.currentCompany}/Projects/${itemId}`);
       projectsListRef.on('value', (snapshot) => {
 
 
@@ -396,7 +638,7 @@ this.setState({ [name]: value });
 
       });
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
 
       const currentProjectInfo = {
         currentProject: this.state.currentProject,
@@ -410,7 +652,7 @@ this.setState({ [name]: value });
 
 removeProject(itemId) {
 this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
- const projectRef = fire.database().ref(`${user.uid}/Projects/${itemId}`);
+ const projectRef = fire.database().ref(`${this.state.currentCompany}/Projects/${itemId}`);
  projectRef.remove();
 
 
@@ -457,64 +699,7 @@ this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
   }
 
   // Listen to the Firebase Auth state and set the local state.
-  componentDidMount() {
-    this.unregisterAuthObserver = firebase.auth().onAuthStateChanged(
-        (user) => this.setState({isSignedIn: !!user})
-    );
-this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const profileRef = fire.database().ref(`profileInformation/${user.uid}`);
-    profileRef.on('value', (snapshot) => {
-      var that = this;
 
-
-    this.setState({
-      lakeName: snapshot.child('lakeName').val(),
-      locationCity: snapshot.child('locationCity').val(),
-      locationState: snapshot.child('locationState').val(),
-      managementContact: snapshot.child('managementContact').val(),
-      hoaContact: snapshot.child('hoaContact').val(),
-      managementContactNumber: snapshot.child('managementContactNumber').val(),
-      hoaContactNumber: snapshot.child('hoaContactNumber').val(),
-      latitude: snapshot.child('latitude').val(),
-      longitude: snapshot.child('longitude').val(),
-      center: {
-        lat: snapshot.child('latitude').val(),
-        lng: snapshot.child('longitude').val()
-      },
-
-    });
-
-  });
-
-  const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
-
-  currentProjectRef.on('value', (snapshot) => {
-
-  this.setState({
-    currentProject: snapshot.child('currentProject').val(),
-  });
-
-
-});
-
-const projectsListRef = fire.database().ref(`${user.uid}/Projects`);
-projectsListRef.on('value', (snapshot) => {
-  let snapArray = this.snapshotToArray(snapshot);
-  let val = snapshot.val();
-console.log(snapArray)
-
-this.setState({
-  projectList: snapArray,
-})
-
-console.log(val)
-
-});
-
-
-
-});
-  }
 
   // Make sure we un-register Firebase observers when the component unmounts.
   componentWillUnmount() {
@@ -594,14 +779,29 @@ handleCancel = (e) => {
 
 deleteRow1 = (row, isSelected, e, id, key) =>
 {
+
+
+  const content = (
+  <div style={{textAlign: 'center'}}>
+  <p>Are you sure you want <br /> to delete this Project?</p>
+  <Button type="primary" onClick={() => this.removeProject(isSelected.key)}>Delete</Button>
+  </div>
+  );
+
+
   return (
     <div style={{textAlign: 'center'}}>
+      <Popover content={content} trigger="click">
     <Icon type="delete" style={{fontSize: '24px', color: '#101441'}}
-    onClick={() => this.removeProject(isSelected.key)}>
+    >
       Click me
     </Icon>
+  </Popover>
     </div>
   )
+
+
+
 }
 
 editRow1 = (row, isSelected, e, id, key) =>
@@ -1117,7 +1317,6 @@ height={700}
                 <Route path="/projectManagement" component={projectManagement} />
                 <Route path="/maintenanceLog" component={maintenanceLog} />
                 <Route path="/demo" component={demo} />
-                <Route path="/demoTest" component={demoTest} />
                 <Route path="/home" component={landingPage} />
                 <Route path="/sampleLog" component={sampleLog} />
                 <Route path="/tutorial" component={tutorial} />
@@ -1244,6 +1443,7 @@ height={700}
         </Col>
         <Col xs={10} sm={10} md={0} lg={0} xl={0} style={{textAlign: 'left'}}>
       <p style={{fontSize: '22px', color: 'white', paddingLeft: '5px', paddingTop: '10px'}}><b>Aqua</b>Source</p>
+
 
       </Col>
         <Col xs={14} sm={14} md={8} lg={8} xl={8} style={{textAlign: 'right'}}>
@@ -1429,30 +1629,10 @@ height={700}
           <Modal
           title="New Water Project"
           visible={this.state.visibleModal}
-          onOk={this.newProject}
+          onOk={this.handleCancel}
           onCancel={this.handleCancel}
         >
-        <form>
-      <FormGroup onSubmit={this.fillParameterInfo}>
-        <Row style={{paddingTop: '10px'}}>
-          <Col xs={24} sm={7} md={7} lg={7} xl={7}>
-            <span><b>Project Name</b></span>
-          </Col>
-          <Col xs={24} sm={1} md={1} lg={1} xl={1}>
-            <p style={{color: 'red'}}>*</p>
-          </Col>
-          <Col xs={24} sm={16} md={16} lg={16} xl={16}>
-              <FormControl required name="projectName" onChange={this.handleChange} type="text" placeholder="Project Name"  value={this.state.projectName} />
-          </Col>
-        </Row>
-      <Row>
-        <hr></hr>
-      </Row>
-      <div style={{display: this.state.error}}>
-      <p style={{color: 'red'}}>Double check that all required inputs are filled</p>
-   </div>
-    </FormGroup>
-      </form>
+        <WrappedNewProjectForm />
         </Modal>
 
 
@@ -1477,29 +1657,24 @@ height={700}
 
           <Route exact path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
-          <Route path="/monthlySamples" component={monthlySamples} />
+          <Route path="/sampling" component={sampling} />
+
 
           <Route path="/maintenanceReports" component={maintenanceReports} />
           <Route path="/vendorContacts" component={vendorContacts} />
-          <Route path="/uploadDocument" component={uploadDocument} />
-          <Route path="/profilePage" component={profilePage} />
-          <Route path="/equipmentList" component={equipmentList} />
           <Route path="/chemicalApplications" component={chemicalApplications} />
-          <Route path="/fishStocking" component={fishStocking} />
+          <Route path="/equipmentList" component={equipmentList} />
 
+          <Route path="/profilePage" component={profilePage} />
 
-          <Route path="/testingPage" component={testingPage} />
-          <Route path="/uploadDrawings" component={uploadDrawings} />
-          <Route path="/uploadManuals" component={uploadManuals} />
-          <Route path="/testingPage2" component={testingPage2} />
           <Route path="/manuals" component={manuals} />
           <Route path="/reports" component={reports} />
           <Route path="/drawings" component={drawings} />
           <Route path="/permits" component={permits} />
-          <Route path="/dashForecast" component={dashForecast} />
-          <Route path="/index" component={Drop} />
-          <Route path="/testing" component={testing} />
-          <Route path="/sampling" component={sampling} />
+
+
+
+
 
 
 

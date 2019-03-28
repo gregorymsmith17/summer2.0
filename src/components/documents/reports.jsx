@@ -59,6 +59,7 @@ export default class reports extends Component {
         border: '1px dashed gray',
         progressDisplay: 'none',
         currentProject: '',
+        currentCompany: '',
 
 
       }
@@ -84,7 +85,14 @@ this.handleChange = this.handleChange.bind(this);
 
     })
 
-    const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+
+    const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+    currentCompanyRef.on('value', (snapshot) => {
+    this.setState({
+      currentCompany: snapshot.child('currentCompany').val(),
+    });
+
+    const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
     currentProjectRef.on('value', (snapshot) => {
       let project = snapshot.child('currentProject').val();
       console.log(project);
@@ -92,7 +100,7 @@ this.handleChange = this.handleChange.bind(this);
         currentProject: project
       })
 
-      const samplesRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/Reports`);
+      const samplesRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/Reports`);
       samplesRef.on('value', (snapshot) => {
       let reports = snapshot.val();
       console.log(reports);
@@ -109,7 +117,8 @@ this.handleChange = this.handleChange.bind(this);
       });
     });
 
-    })
+  });
+});
 
 
 });
@@ -125,7 +134,7 @@ this.handleChange = this.handleChange.bind(this);
 
   removeReport(itemId) {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/Reports/${itemId}`);
+    const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/Reports/${itemId}`);
     sampleRef.remove();
   });
   }
@@ -208,7 +217,7 @@ this.handleChange = this.handleChange.bind(this);
           console.log('File available at', downloadURL);
           this.setState({ downloadURL: downloadURL, documentType: 'Reports', })
 
-           const samplesRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/Reports`);
+           const samplesRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/Reports`);
            const metaDataReport = {
              downloadLink: this.state.downloadURL,
              filename: this.state.file.name,
@@ -282,7 +291,7 @@ onChangeFile(event) {
         console.log('File available at', downloadURL);
         this.setState({ downloadURL: downloadURL, documentType: 'Reports', })
 
-         const samplesRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/Reports`);
+         const samplesRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/Reports`);
          const metaDataReport = {
            downloadLink: this.state.downloadURL,
            filename: this.state.file.name,
@@ -314,9 +323,9 @@ editRow(row, isSelected, e, id) {
 fillStates = (itemId) => {
   let area = '';
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const sampleRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/Reports/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/Reports/${itemId}`);
 
-  let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/Reports/${itemId}`).key;
+  let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/Reports/${itemId}`).key;
 
   sampleRef.on('value', (snapshot) => {
 
@@ -331,7 +340,7 @@ fillStates = (itemId) => {
     });
 
   let orders = snapshot.val();
-  let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/Reports/${itemId}`).key;
+  let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/Reports/${itemId}`).key;
 
   let newState = [];
   for (let order in orders) {
@@ -368,7 +377,7 @@ writeData = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const samplesRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/Reports/${this.state.id}`);
+  const samplesRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/Reports/${this.state.id}`);
 
 
 

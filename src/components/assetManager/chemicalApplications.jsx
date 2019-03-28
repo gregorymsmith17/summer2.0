@@ -123,6 +123,7 @@ class ApplicationForm extends React.Component {
     applicationCompany: '',
     applicationChemical: '',
     applicationAmount: '',
+    currentCompany: '',
   };
 
   snapshotToArray(snapshot) {
@@ -146,14 +147,21 @@ class ApplicationForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-        const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems`);
+        const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems`);
                        sampleList2Ref.on('value', (snapshot) => {
                          let maintenanceArray = this.snapshotToArray(snapshot);
                          console.log(maintenanceArray)
@@ -162,7 +170,8 @@ class ApplicationForm extends React.Component {
 
                          })
                        })
-      })
+      });
+    });
 
 
 
@@ -176,7 +185,7 @@ class ApplicationForm extends React.Component {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const reportRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications`);
+        const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications`);
 
         console.log('Received values of form: ', values);
         this.setState({
@@ -258,7 +267,7 @@ class ApplicationForm extends React.Component {
 
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`);
    sampleRef.remove();
  }
 
@@ -405,6 +414,7 @@ class ItemForm extends React.Component {
     currentProject: '',
     userID: '',
     itemAdded: 'none',
+    currentCompany: '',
   };
 
 
@@ -416,14 +426,22 @@ class ItemForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-      })
+      });
+    });
+
 })
 }
 
@@ -436,7 +454,7 @@ class ItemForm extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
 
       if (!err) {
-        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems`);
+        const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems`);
 
       const applicationInfo = {
         Application_Item: values.maintenanceItem,
@@ -585,6 +603,7 @@ class FillReportForm extends React.Component {
     applicationChemical: '',
     applicationAmount: '',
     applicationData: [],
+    currentCompany: '',
   };
 
   snapshotToArray(snapshot) {
@@ -608,14 +627,20 @@ class FillReportForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-        const activeMaintenanceID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeApplicationID`);
+        const activeMaintenanceID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeApplicationID`);
                             activeMaintenanceID.on('value', (snapshot) => {
                               let activeApplicationID = snapshot.val();
                               console.log(activeApplicationID);
@@ -623,7 +648,7 @@ class FillReportForm extends React.Component {
                                 activeApplicationID: activeApplicationID,
                               })
                             })
-            const activeApplicationReport = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
+            const activeApplicationReport = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
                            activeApplicationReport.on('value', (snapshot) => {
                              let activeApplicationReport = snapshot.val();
                              let otherItems = snapshot.val();
@@ -678,7 +703,8 @@ class FillReportForm extends React.Component {
 
 
                         })
-      })
+      });
+    });
 
 })
 }
@@ -690,7 +716,7 @@ handleSubmit = (e) => {
 
   this.props.form.validateFieldsAndScroll((err, values) => {
     if (!err) {
-      const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
+      const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
 
       console.log('Received values of form: ', values);
 
@@ -762,7 +788,7 @@ handleSubmit = (e) => {
 
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
+          const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}`);
 
           this.setState({
             commentAdded: null,
@@ -806,7 +832,7 @@ handleSubmit = (e) => {
 
     removeMaintenanceItem(itemId) {
 
-     const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}/${itemId}`);
+     const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications/${this.state.activeApplicationID}/${itemId}`);
      sampleRef.remove();
    }
 
@@ -1110,6 +1136,7 @@ export default class chemicalApplications extends Component {
           applicationCompany: '',
           applicationChemical: '',
           applicationAmount: '',
+          currentCompany: '',
 
 
         }
@@ -1160,7 +1187,13 @@ export default class chemicalApplications extends Component {
           userID: user.uid,
         })
 
-        const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+        const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+        currentCompanyRef.on('value', (snapshot) => {
+        this.setState({
+          currentCompany: snapshot.child('currentCompany').val(),
+        });
+
+        const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
         currentProjectRef.on('value', (snapshot) => {
           let project = snapshot.child('currentProject').val();
           console.log(project);
@@ -1168,7 +1201,7 @@ export default class chemicalApplications extends Component {
             currentProject: project
           })
 
-          const parameterList1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplications`);
+          const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications`);
           parameterList1Ref.on('value', (snapshot) => {
             let snapArray = this.snapshotToArray(snapshot);
 
@@ -1452,7 +1485,7 @@ export default class chemicalApplications extends Component {
 
              })
 
-             const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems`);
+             const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems`);
              sampleList2Ref.on('value', (snapshot) => {
                let maintenanceArray = this.snapshotToArray(snapshot);
                console.log(maintenanceArray)
@@ -1464,7 +1497,7 @@ export default class chemicalApplications extends Component {
 
 
 
-          const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+          const profileRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/profileInformation`);
           profileRef.on('value', (snapshot) => {
             var that = this;
 
@@ -1493,7 +1526,8 @@ export default class chemicalApplications extends Component {
 
 
 
-        })
+      });
+    });
 
 
 
@@ -1513,7 +1547,7 @@ export default class chemicalApplications extends Component {
 
 showDrawer = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplicationItems`);
+  const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1540,7 +1574,7 @@ showDrawer = () => {
 
 showDrawerMobile = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplicationItems`);
+  const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1694,7 +1728,7 @@ getColumnSearchProps = (dataIndex) => ({
   }
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications/${itemId}`);
    sampleRef.remove();
  }
 
@@ -1714,13 +1748,13 @@ getColumnSearchProps = (dataIndex) => ({
 
  removesample1(itemId) {
 
-  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`);
   sampleRef.remove();
 }
 
 removesample2(itemId) {
 
-  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${this.state.id}/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications/${this.state.id}/${itemId}`);
   sampleRef.remove();
   this.fillStates(this.state.id);
 
@@ -1755,7 +1789,7 @@ previewReport = (row, isSelected, e, id, key) =>
 fillPreview(itemId) {
 
 
-  const previewRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications/${itemId}`);
+  const previewRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications/${itemId}`);
 
   previewRef.on('value', (snapshot) => {
     let previewData = snapshot.val();
@@ -1868,8 +1902,8 @@ fillPreview(itemId) {
 
       })
 
-    const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`);
-    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
 
       this.setState({
@@ -1886,7 +1920,7 @@ parameterOverwrite = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/chemicalApplicationItems/${this.state.id}`);
+  const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplicationItems/${this.state.id}`);
 
 
 var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: '', id: this.state.id}
@@ -1907,8 +1941,8 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
-    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
+    const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
+    let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
 
     if (this.state.Maintenance_Item.length == 0) {
       console.log("do nothing")
@@ -1947,7 +1981,7 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
+    const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
 
 
 var arr = this.state.arrayData2;
@@ -2026,7 +2060,7 @@ else
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
+        const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
 
 
 
@@ -2048,7 +2082,7 @@ if (arr.length > 0){
           console.log(object);
           sampleListRef.push(object);
 
-          const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
+          const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
           sampleList2Ref.on('value', (snapshot) => {
             let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -2097,7 +2131,7 @@ if (arr.length > 0){
             fillReportKey: "2",
           })
 
-          const activeApplicationID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeApplicationID`);
+          const activeApplicationID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeApplicationID`);
           activeApplicationID.set(itemId);
             });
 
@@ -2121,7 +2155,7 @@ if (arr.length > 0){
           save1: null,
           fillReportKey: "2",
         });
-        const activeApplicationID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeApplicationID`);
+        const activeApplicationID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeApplicationID`);
         activeApplicationID.set(itemId);
           });
 
@@ -2135,7 +2169,7 @@ if (arr.length > 0){
       e.preventDefault();
       //fire.database().ref('samples') refers to the main title of the fire database.
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
+      const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
 
 
   var arr = this.state.arrayData2;
@@ -2237,7 +2271,7 @@ if (arr.length > 0){
 
   onChangeDate = (date, dateString) => {
 
-    const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications`);
+    const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications`);
     parameterList1Ref.on('value', (snapshot) => {
       let snapArray = this.snapshotToArray(snapshot);
       console.log(snapArray)
@@ -2279,7 +2313,7 @@ if (arr.length > 0){
   clearDates = () => {
 
 
-    const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/chemicalApplications`);
+    const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/chemicalApplications`);
    parameterList1Ref.on('value', (snapshot) => {
           let snapArray = this.snapshotToArray(snapshot);
           console.log(snapArray)
@@ -2362,27 +2396,29 @@ if (arr.length > 0){
                                 {line}
                                 </Text>
 
-
-                                <Text style={styles.author1}>
+                                {this.state.lakeName ? <Text style={styles.author1}>
                                   {this.state.lakeName}
-                                </Text>
-                                <Text  style={styles.author1}>
+                                </Text>: null}
+
+                                {this.state.locationCity ? <Text  style={styles.author1}>
                                   {this.state.locationCity}, {this.state.locationState}
-                                </Text>
-                              <Text  style={styles.author1}>
-                                   Application Date: {this.state.applicationDate}
-                                </Text>
-                                <Text  style={styles.author1}>
-                                    Company: {this.state.applicationCompany}
-                                  </Text>
-                                  <Text  style={styles.author1}>
-                                      Chemical: {this.state.applicationChemical}
-                                    </Text>
+                                </Text>: null}
 
-                                <Text style={styles.author1}>
-                                  Application Amount: {this.state.applicationAmount}
-                                </Text>
+                                {this.state.applicationDate ? <Text  style={styles.author1}>
+                                     Application Date: {this.state.applicationDate}
+                                  </Text>: null}
 
+                                  {this.state.applicationCompany ? <Text  style={styles.author1}>
+                                      Company: {this.state.applicationCompany}
+                                    </Text>: null}
+
+                                    {this.state.applicationChemical ? <Text  style={styles.author1}>
+                                        Chemical: {this.state.applicationChemical}
+                                      </Text>: null}
+
+                                      {this.state.applicationAmount ? <Text style={styles.author1}>
+                                        Application Amount: {this.state.applicationAmount}
+                                      </Text>: null}
 
 
 
@@ -2398,7 +2434,7 @@ if (arr.length > 0){
                             {line}
                             </Text>
 
-                            <View >
+                            {this.state.reportData ? <View >
                               {this.state.reportData.map((parameter, idx) => {
 
                                 return (
@@ -2409,7 +2445,9 @@ if (arr.length > 0){
 
                               })}
 
-                            </View>
+                            </View>: null}
+
+
 
                     </View>
                     <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (

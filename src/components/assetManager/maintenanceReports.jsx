@@ -116,6 +116,7 @@ class AddReportForm extends React.Component {
     dataKeys: [],
     dataValues: [],
     reportAdded: 'none',
+    currentCompany: '',
   };
 
   snapshotToArray(snapshot) {
@@ -139,14 +140,20 @@ class AddReportForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-        const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceItems`);
+        const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceItems`);
                        sampleList2Ref.on('value', (snapshot) => {
                          let maintenanceArray = this.snapshotToArray(snapshot);
                          console.log(maintenanceArray)
@@ -161,7 +168,8 @@ class AddReportForm extends React.Component {
 
 
 
-})
+});
+});
 }
 
   handleSubmit = (e) => {
@@ -169,7 +177,7 @@ class AddReportForm extends React.Component {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const reportRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
+        const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
 
         console.log('Received values of form: ', values);
         this.setState({
@@ -251,7 +259,7 @@ class AddReportForm extends React.Component {
 
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceItems/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceItems/${itemId}`);
    sampleRef.remove();
  }
 
@@ -401,6 +409,7 @@ class ItemForm extends React.Component {
     currentProject: '',
     userID: '',
     itemAdded: 'none',
+    currentCompany: '',
   };
 
 
@@ -412,14 +421,21 @@ class ItemForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-      })
+      });
+    });
 })
 }
 
@@ -432,7 +448,7 @@ class ItemForm extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
 
       if (!err) {
-        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceItems`);
+        const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceItems`);
         console.log({maintenanceItem: values.maintenanceItem,
       })
       const sampleInfo = {
@@ -574,6 +590,7 @@ class FillReportForm extends React.Component {
     commentInput: '',
     reportUpdated: 'none',
     commentAdded: 'none',
+    currentCompany: '',
   };
 
   snapshotToArray(snapshot) {
@@ -597,21 +614,27 @@ class FillReportForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-        const activeMaintenanceID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeMaintenanceID`);
+        const activeMaintenanceID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeMaintenanceID`);
                        activeMaintenanceID.on('value', (snapshot) => {
                          let activeMaintenanceID = snapshot.val();
                          this.setState({
                            activeMaintenanceID: activeMaintenanceID,
                          })
                        })
-         const activeMaintenanceReport = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
+         const activeMaintenanceReport = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
                         activeMaintenanceReport.on('value', (snapshot) => {
                           let activeMaintenanceReport = snapshot.val();
                           let otherItems = snapshot.val();
@@ -669,7 +692,8 @@ class FillReportForm extends React.Component {
 
 
                         })
-      })
+      });
+    });
 
 })
 }
@@ -685,7 +709,7 @@ handleSubmit = (e) => {
 
   this.props.form.validateFieldsAndScroll((err, values) => {
     if (!err) {
-      const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
+      const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
 
       console.log('Received values of form: ', values);
 
@@ -757,7 +781,7 @@ handleSubmit = (e) => {
 
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
+        const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}`);
 
         this.setState({
           commentAdded: null,
@@ -801,7 +825,7 @@ handleSubmit = (e) => {
 
   removeMaintenanceItem(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.activeMaintenanceID}/${itemId}`);
    sampleRef.remove();
  }
 
@@ -1097,6 +1121,7 @@ export default class maintenanceReports extends Component {
           maintenanceStatus: '',
           maintenanceCourt: '',
           maintenanceDate: '',
+          currentCompany: '',
 
 
         }
@@ -1147,7 +1172,13 @@ export default class maintenanceReports extends Component {
             userID: user.uid,
           })
 
-          const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+          const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+          currentCompanyRef.on('value', (snapshot) => {
+          this.setState({
+            currentCompany: snapshot.child('currentCompany').val(),
+          });
+
+          const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
           currentProjectRef.on('value', (snapshot) => {
             let project = snapshot.child('currentProject').val();
             console.log(project);
@@ -1155,7 +1186,7 @@ export default class maintenanceReports extends Component {
               currentProject: project
             })
 
-            const parameterList1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
+            const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
             parameterList1Ref.on('value', (snapshot) => {
               let snapArray = this.snapshotToArray(snapshot);
 
@@ -1421,7 +1452,7 @@ export default class maintenanceReports extends Component {
 
                })
 
-               const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
+               const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
                sampleList2Ref.on('value', (snapshot) => {
                  let maintenanceArray = this.snapshotToArray(snapshot);
                  console.log(maintenanceArray)
@@ -1433,7 +1464,7 @@ export default class maintenanceReports extends Component {
 
 
 
-            const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+            const profileRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/profileInformation`);
             profileRef.on('value', (snapshot) => {
               var that = this;
 
@@ -1462,7 +1493,8 @@ export default class maintenanceReports extends Component {
 
 
 
-          })
+        });
+      });
 
 
 
@@ -1482,7 +1514,7 @@ export default class maintenanceReports extends Component {
 
 showDrawer = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
+  const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1509,7 +1541,7 @@ showDrawer = () => {
 
 showDrawerMobile = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
+  const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1663,7 +1695,7 @@ getColumnSearchProps = (dataIndex) => ({
   }
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${itemId}`);
    sampleRef.remove();
  }
 
@@ -1683,13 +1715,13 @@ getColumnSearchProps = (dataIndex) => ({
 
  removesample1(itemId) {
 
-  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList/${itemId}`);
   sampleRef.remove();
 }
 
 removesample2(itemId) {
 
-  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${this.state.id}/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.id}/${itemId}`);
   sampleRef.remove();
   this.fillStates(this.state.id);
 
@@ -1724,7 +1756,7 @@ previewReport = (row, isSelected, e, id, key) =>
 fillPreview(itemId) {
 
 
-  const previewRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport/${itemId}`);
+  const previewRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${itemId}`);
 
   previewRef.on('value', (snapshot) => {
     let previewData = snapshot.val();
@@ -1836,8 +1868,8 @@ fillPreview(itemId) {
 
       })
 
-    const sample1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`);
-    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
 
       this.setState({
@@ -1854,7 +1886,7 @@ parameterOverwrite = (e) => {
   e.preventDefault();
   //fire.database().ref('samples') refers to the main title of the fire database.
   this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-  const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList/${this.state.id}`);
+  const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList/${this.state.id}`);
 
 
 var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: '', id: this.state.id}
@@ -1875,8 +1907,8 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
-    let id = fire.database().ref().child(`${user.uid}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
+    const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
+    let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList/${itemId}`).key;
 
     if (this.state.Maintenance_Item.length == 0) {
       console.log("do nothing")
@@ -1915,7 +1947,7 @@ var object = {Maintenance_Item: this.state.Maintenance_Item, Maintenance_Input: 
     e.preventDefault();
     //fire.database().ref('samples') refers to the main title of the fire database.
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-    const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
+    const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
 
 
 var arr = this.state.arrayData2;
@@ -1994,7 +2026,7 @@ else
         e.preventDefault();
         //fire.database().ref('samples') refers to the main title of the fire database.
         this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport`);
+        const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
 
 
 
@@ -2016,7 +2048,7 @@ if (arr.length > 0){
           console.log(object);
           sampleListRef.push(object);
 
-          const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceList`);
+          const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
           sampleList2Ref.on('value', (snapshot) => {
             let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -2065,7 +2097,7 @@ if (arr.length > 0){
             fillReportKey: "2",
           })
 
-        const activeMaintenanceID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeMaintenanceID`);
+        const activeMaintenanceID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeMaintenanceID`);
         activeMaintenanceID.set(itemId);
           });
 
@@ -2089,7 +2121,7 @@ if (arr.length > 0){
           save1: null,
           fillReportKey: "2",
         });
-        const activeMaintenanceID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeMaintenanceID`);
+        const activeMaintenanceID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeMaintenanceID`);
         activeMaintenanceID.set(itemId);
           });
 
@@ -2103,7 +2135,7 @@ if (arr.length > 0){
       e.preventDefault();
       //fire.database().ref('samples') refers to the main title of the fire database.
       this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-      const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
+      const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport/${this.state.id}`);
 
 
   var arr = this.state.arrayData2;
@@ -2205,7 +2237,7 @@ if (arr.length > 0){
 
   onChangeDate = (date, dateString) => {
 
-    const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport`);
+    const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
     parameterList1Ref.on('value', (snapshot) => {
       let snapArray = this.snapshotToArray(snapshot);
       console.log(snapArray)
@@ -2247,7 +2279,7 @@ if (arr.length > 0){
   clearDates = () => {
 
 
-        const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport`);
+        const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
         parameterList1Ref.on('value', (snapshot) => {
           let snapArray = this.snapshotToArray(snapshot);
           console.log(snapArray)
@@ -2330,30 +2362,33 @@ if (arr.length > 0){
                                 {line}
                                 </Text>
 
-                                <Text  style={{paddingTop: 10, fontSize: 13}}>
+                                {this.state.maintenanceID ? <Text  style={{paddingTop: 10, fontSize: 13}}>
                                   # {this.state.maintenanceID}
-                                </Text>
-                                <Text style={styles.author1}>
+                                </Text> : null}
+
+                                {this.state.lakeName ? <Text style={styles.author1}>
                                   {this.state.lakeName}
-                                </Text>
-                                <Text  style={styles.author1}>
+                                </Text> : null}
+
+                                {this.state.locationCity ? <Text  style={styles.author1}>
                                   {this.state.locationCity}, {this.state.locationState}
-                                </Text>
-                              <Text  style={styles.author1}>
-                                  Date: {this.state.maintenanceDate}
-                                </Text>
-                                <Text  style={styles.author1}>
-                                    Status: {this.state.maintenanceStatus}
-                                  </Text>
-                                  <Text  style={styles.author1}>
-                                      Ball in Court: {this.state.maintenanceCourt}
-                                    </Text>
+                                </Text> : null}
 
-                                <Text style={styles.author1}>
-                                  Maintenance Item: {this.state.maintenanceTitle}
-                                </Text>
+                                {this.state.maintenanceDate ? <Text  style={styles.author1}>
+                                    Date: {this.state.maintenanceDate}
+                                  </Text>: null}
 
+                                  {this.state.maintenanceStatus ? <Text  style={styles.author1}>
+                                      Status: {this.state.maintenanceStatus}
+                                    </Text> : null}
 
+                                    {this.state.maintenanceCourt ? <Text  style={styles.author1}>
+                                        Ball in Court: {this.state.maintenanceCourt}
+                                      </Text> : null}
+
+                                      {this.state.maintenanceCourt ? <Text style={styles.author1}>
+                                        Maintenance Item: {this.state.maintenanceTitle}
+                                      </Text>: null}
 
 
 
@@ -2368,7 +2403,7 @@ if (arr.length > 0){
                             {line}
                             </Text>
 
-                            <View >
+                            {this.state.reportData ? <View >
                               {this.state.reportData.map((parameter, idx) => {
 
                                 return (
@@ -2379,7 +2414,9 @@ if (arr.length > 0){
 
                               })}
 
-                            </View>
+                            </View>: null}
+
+
 
                     </View>
                     <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (

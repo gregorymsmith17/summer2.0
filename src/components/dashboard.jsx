@@ -210,6 +210,8 @@ export default class Dashboard extends Component {
 
         graphsType: Area,
 
+				currentCompany: '',
+
 
 
 
@@ -289,7 +291,13 @@ export default class Dashboard extends Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+			const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+			currentCompanyRef.on('value', (snapshot) => {
+			this.setState({
+				currentCompany: snapshot.child('currentCompany').val(),
+			});
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
@@ -297,7 +305,7 @@ export default class Dashboard extends Component {
           currentProject: project
         })
 
-        const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport`);
+        const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport`);
         parameterList1Ref.on('value', (snapshot) => {
           let snapArray = this.snapshotToArray(snapshot);
 
@@ -454,7 +462,7 @@ export default class Dashboard extends Component {
 
            })
 
-           const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
+           const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList`);
            sampleList2Ref.on('value', (snapshot) => {
              let maintenanceArray = this.snapshotToArray(snapshot);
              console.log(maintenanceArray)
@@ -527,7 +535,7 @@ syncId="anyId">
            })
 
 
-           const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+           const profileRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/profileInformation`);
            profileRef.on('value', (snapshot) => {
              var that = this;
 
@@ -593,7 +601,8 @@ syncId="anyId">
          });
 
 
-      })
+      });
+		});
 
 
   });
@@ -602,8 +611,8 @@ syncId="anyId">
   }
 
   changeData(itemId) {
-    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
-    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
       this.setState({
         Sample_Item: snapshot.child('Sample_Item').val(),
@@ -733,8 +742,8 @@ syncId="anyId">
     changeColor(itemId) {
 
 
-      const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
-      let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
+      const sample1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`);
+      let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`).key;
       sample1Ref.on('value', (snapshot) => {
 
         this.setState({
@@ -752,7 +761,7 @@ syncId="anyId">
 
     overwriteColor = (color) => {
 
-      const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+      const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${this.state.id}`);
 
        this.setState({ Sample_Color: color.hex });
 
@@ -803,82 +812,7 @@ syncId="anyId">
 
 
 
-        fillStates(itemId) {
 
-          this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
-
-            this.setState({
-              overwriteReport: null,
-              addReport: 'none',
-              inputOverwrite: null,
-              inputAdd: 'none',
-              visible: true,
-
-            })
-
-          const sample1Ref = fire.database().ref(`/sampleReport/${user.uid}/${itemId}`);
-          let id = fire.database().ref().child(`/sampleReport/${user.uid}/${itemId}`).key;
-          sample1Ref.on('value', (snapshot) => {
-
-            let maintenanceList = snapshot.val();
-
-
-
-
-            this.setState({
-              sampleDate: snapshot.child('date').val(),
-              sampleID: snapshot.child('ID').val(),
-              sampleTitle: snapshot.child('Title').val(),
-              sampleMisc: snapshot.child('Miscellaneous').val(),
-              id: id,
-            });
-
-            let arr = snapshot.val();
-            delete arr.date;
-            delete arr.ID;
-            delete arr.Title;
-            delete arr.Miscellaneous;
-
-            let arrayKeys = Object.keys(arr);
-            let arrayValues = Object.values(arr);
-            this.setState({
-              arrayKeys1: arrayKeys,
-              arrayValues1: arrayValues,
-
-            })
-
-    });
-
-    const sample2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
-    sample2Ref.on('value', (snapshot) => {
-    let maintenanceList = this.snapshotToArray(snapshot);
-
-
-    let keys = [maintenanceList.map((parameter) => {
-    return (
-    parameter.key
-    )
-    })]
-
-    this.setState({
-    arrayData1: keys,
-    })
-    })
-
-    let arrayData = [];
-    for (let i=0; i < this.state.arrayKeys1.length; i++) {
-    //push send this data to the back of the chartData variable above.
-    arrayData.push({Sample_Input: this.state.arrayValues1[i], Sample_Item: this.state.arrayKeys1[i], key: this.state.arrayData1[i]});
-
-    }
-
-    this.setState({
-    snapArray1: arrayData,
-    arrayData2: arrayData,
-    })
-
-        });
-      }
 
 
 
@@ -928,7 +862,7 @@ syncId="anyId">
 
   console.log(this.state.Sample_GraphType);
 
-  const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+  const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${this.state.id}`);
   this.setState({ Sample_GraphType: e.target.value });
 
   var object = {Sample_Item: this.state.Sample_Item, Sample_Units: this.state.Sample_Units, Sample_Color: this.state.Sample_Color, Sample_GraphType: e.target.value, Sample_Input: '', id: this.state.id};
@@ -1029,7 +963,7 @@ syncId="anyId">
    };
 
    visible3 = () => {
-     const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList`);
+     const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList`);
      sampleList2Ref.on('value', (snapshot) => {
        let maintenanceArray = this.snapshotToArray(snapshot);
 

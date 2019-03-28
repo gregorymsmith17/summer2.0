@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 12,
     bottom: 30,
-    left: 0,
+    left: 300,
     right: 0,
     textAlign: 'center',
     color: 'grey',
@@ -126,6 +126,8 @@ class AddSample extends React.Component {
 
     sampleGraphType: '',
     sampleColor: '#000000',
+
+    currentCompany: '',
   };
 
   snapshotToArray(snapshot) {
@@ -149,14 +151,20 @@ class AddSample extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-        const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
+        const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList`);
                        sampleList2Ref.on('value', (snapshot) => {
                          let sampleDataArray = this.snapshotToArray(snapshot);
 
@@ -165,7 +173,8 @@ class AddSample extends React.Component {
 
                          })
                        })
-      })
+      });
+    });
 
 
 
@@ -179,7 +188,7 @@ class AddSample extends React.Component {
     this.removeAuthListener = fire.auth().onAuthStateChanged(user=>{
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const reportRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
+        const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport`);
 
         console.log('Received values of form: ', values);
         this.setState({
@@ -265,7 +274,7 @@ class AddSample extends React.Component {
 
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`);
    sampleRef.remove();
  }
 
@@ -399,6 +408,8 @@ class ItemForm extends React.Component {
     currentProject: '',
     userID: '',
     itemAdded: 'none',
+    currentCompany: '',
+
   };
 
 
@@ -410,14 +421,21 @@ class ItemForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-      })
+      });
+    });
 })
 }
 
@@ -430,7 +448,7 @@ class ItemForm extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
 
       if (!err) {
-        const sampleListRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
+        const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList`);
 
       const sampleInfo = {
         Sample_Item: values.sampleItem,
@@ -637,6 +655,7 @@ class FillReportForm extends React.Component {
     sampleGraphType: '',
     sampleColor: '#000000',
     sampleData: [],
+    currentCompany: '',
   };
 
   snapshotToArray(snapshot) {
@@ -660,21 +679,27 @@ class FillReportForm extends React.Component {
         userID: user.uid,
       })
 
-      const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+      const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+      currentCompanyRef.on('value', (snapshot) => {
+      this.setState({
+        currentCompany: snapshot.child('currentCompany').val(),
+      });
+
+      const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
       currentProjectRef.on('value', (snapshot) => {
         let project = snapshot.child('currentProject').val();
         console.log(project);
         this.setState({
           currentProject: project
         })
-        const activeSampleID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeSampleID`);
+        const activeSampleID = fire.database().ref(`${this.state.currentCompany}${this.state.currentProject}/activeSampleID`);
                        activeSampleID.on('value', (snapshot) => {
                          let activeSampleID = snapshot.val();
                          this.setState({
                            activeSampleID: activeSampleID,
                          })
                        })
-         const activeSampleReport = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}`);
+         const activeSampleReport = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}`);
                         activeSampleReport.on('value', (snapshot) => {
 
                           let activeSampleReport = snapshot.val();
@@ -732,7 +757,8 @@ class FillReportForm extends React.Component {
 
 
                         })
-      })
+      });
+    });
 
 })
 }
@@ -748,7 +774,7 @@ handleSubmit = (e) => {
 
   this.props.form.validateFieldsAndScroll((err, values) => {
     if (!err) {
-      const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}`);
+      const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}`);
 
       console.log('Received values of form: ', values);
 
@@ -821,7 +847,7 @@ handleSubmit = (e) => {
 
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const reportRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}`);
+        const reportRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}`);
 
         this.setState({
           commentAdded: null,
@@ -865,7 +891,7 @@ handleSubmit = (e) => {
 
   removeSampleItem(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport/${this.state.activeSampleID}/${itemId}`);
    sampleRef.remove();
  }
 
@@ -1231,7 +1257,13 @@ export default class sampling extends Component {
             userID: user.uid,
           })
 
-          const currentProjectRef = fire.database().ref(`${user.uid}/currentProject`);
+          const currentCompanyRef = fire.database().ref(`users/${user.uid}`);
+          currentCompanyRef.on('value', (snapshot) => {
+          this.setState({
+            currentCompany: snapshot.child('currentCompany').val(),
+          });
+
+          const currentProjectRef = fire.database().ref(`${this.state.currentCompany}/currentProject`);
           currentProjectRef.on('value', (snapshot) => {
             let project = snapshot.child('currentProject').val();
             console.log(project);
@@ -1239,7 +1271,7 @@ export default class sampling extends Component {
               currentProject: project
             })
 
-            const parameterList1Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleReport`);
+            const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport`);
             parameterList1Ref.on('value', (snapshot) => {
               let snapArray = this.snapshotToArray(snapshot);
               let dataArray = this.snapshotToArray(snapshot);
@@ -1484,7 +1516,7 @@ export default class sampling extends Component {
 
                })
 
-               const sampleList2Ref = fire.database().ref(`${user.uid}/${this.state.currentProject}/sampleList`);
+               const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList`);
                sampleList2Ref.on('value', (snapshot) => {
                  let maintenanceArray = this.snapshotToArray(snapshot);
                  console.log(maintenanceArray)
@@ -1521,7 +1553,7 @@ export default class sampling extends Component {
 
 
 
-            const profileRef = fire.database().ref(`${user.uid}/${this.state.currentProject}/profileInformation`);
+            const profileRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/profileInformation`);
             profileRef.on('value', (snapshot) => {
 
 
@@ -1550,7 +1582,8 @@ export default class sampling extends Component {
 
 
 
-          })
+        });
+      });
 
 
 
@@ -1566,7 +1599,7 @@ export default class sampling extends Component {
 
   console.log(this.state.Sample_GraphType);
 
-  const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+  const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${this.state.id}`);
   this.setState({ Sample_GraphType: e.target.value });
 
   var object = {Sample_Item: this.state.Sample_Item, Sample_Units: this.state.Sample_Units, Sample_Color: this.state.Sample_Color, Sample_GraphType: e.target.value, Sample_Input: '', id: this.state.id};
@@ -1611,7 +1644,7 @@ showDrawer = () => {
 
 showDrawerMobile = () => {
 
-  const sampleList2Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceList`);
+  const sampleList2Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceList`);
   sampleList2Ref.on('value', (snapshot) => {
     let maintenanceArray = this.snapshotToArray(snapshot);
 
@@ -1765,7 +1798,7 @@ getColumnSearchProps = (dataIndex) => ({
   }
   removesample(itemId) {
 
-   const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
+   const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport/${itemId}`);
    sampleRef.remove();
  }
 
@@ -1796,13 +1829,13 @@ getColumnSearchProps = (dataIndex) => ({
 
  removesample1(itemId) {
 
-  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`);
   sampleRef.remove();
 }
 
 removesample2(itemId) {
 
-  const sampleRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${this.state.id}/${itemId}`);
+  const sampleRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport/${this.state.id}/${itemId}`);
   sampleRef.remove();
   this.fillStates(this.state.id);
 
@@ -1828,7 +1861,7 @@ previewReport = (row, isSelected, e, id, key) =>
 fillPreview(itemId) {
 
 
-  const previewRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleReport/${itemId}`);
+  const previewRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleReport/${itemId}`);
 
   previewRef.on('value', (snapshot) => {
     let previewData = snapshot.val();
@@ -1942,7 +1975,9 @@ fillPreview(itemId) {
             fillReportKey: "2",
           })
 
-        const activeSampleID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeSampleID`);
+
+
+        const activeSampleID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeSampleID`);
         activeSampleID.set(itemId);
           });
 
@@ -1966,7 +2001,7 @@ fillPreview(itemId) {
           save1: null,
           fillReportKey: "2",
         });
-        const activeSampleID = fire.database().ref(`${user.uid}/${this.state.currentProject}/activeSampleID`);
+        const activeSampleID = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/activeSampleID`);
         activeSampleID.set(itemId);
           });
 
@@ -2036,7 +2071,7 @@ fillPreview(itemId) {
 
   onChangeDate = (date, dateString) => {
 
-    const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport`);
+    const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
     parameterList1Ref.on('value', (snapshot) => {
       let snapArray = this.snapshotToArray(snapshot);
       console.log(snapArray)
@@ -2078,7 +2113,7 @@ fillPreview(itemId) {
   clearDates = () => {
 
 
-        const parameterList1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/maintenanceReport`);
+        const parameterList1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/maintenanceReport`);
         parameterList1Ref.on('value', (snapshot) => {
           let snapArray = this.snapshotToArray(snapshot);
           console.log(snapArray)
@@ -2115,8 +2150,8 @@ fillPreview(itemId) {
   }
 
   changeData(itemId) {
-    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
-    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
       this.setState({
         Sample_Item: snapshot.child('Sample_Item').val(),
@@ -2135,8 +2170,8 @@ fillPreview(itemId) {
   changeColor(itemId) {
 
 
-    const sample1Ref = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`);
-    let id = fire.database().ref().child(`${this.state.userID}/${this.state.currentProject}/sampleList/${itemId}`).key;
+    const sample1Ref = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`);
+    let id = fire.database().ref().child(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${itemId}`).key;
     sample1Ref.on('value', (snapshot) => {
 
       this.setState({
@@ -2154,7 +2189,7 @@ fillPreview(itemId) {
 
   overwriteColor = (color) => {
 
-    const sampleListRef = fire.database().ref(`${this.state.userID}/${this.state.currentProject}/sampleList/${this.state.id}`);
+    const sampleListRef = fire.database().ref(`${this.state.currentCompany}/${this.state.currentProject}/sampleList/${this.state.id}`);
 
      this.setState({ Sample_Color: color.hex });
 
@@ -2195,7 +2230,11 @@ fillPreview(itemId) {
         const MyDoc = (
           <Document>
             <Page size="A4" style={styles.body} >
+
+
               <View >
+
+
 
                 <Text  >
                       AquaSource
@@ -2214,22 +2253,32 @@ fillPreview(itemId) {
                                 {line}
                                 </Text>
 
-                                <Text  style={{paddingTop: 10, fontSize: 13}}>
+                                {this.state.sampleID ? <Text  style={{paddingTop: 10, fontSize: 13}}>
                                   # {this.state.sampleID}
-                                </Text>
-                                <Text style={styles.author1}>
-                                  {this.state.lakeName}
-                                </Text>
-                                <Text  style={styles.author1}>
-                                  {this.state.locationCity}, {this.state.locationState}
-                                </Text>
-                              <Text  style={styles.author1}>
-                                  Date: {this.state.sampleDate}
-                                </Text>
+                                </Text> : null}
 
-                                <Text style={styles.author1}>
-                                  Sample ID: {this.state.sampleID}
-                                </Text>
+                                {this.state.lakeName ? <Text style={styles.author1}>
+                                  {this.state.lakeName}
+                                </Text> : null}
+
+                                {this.state.locationCity ? <Text  style={styles.author1}>
+                                  {this.state.locationCity}, {this.state.locationState}
+                                </Text> : null}
+
+                                {this.state.sampleDate ? <Text  style={styles.author1}>
+                                    Date: {this.state.sampleDate}
+                                  </Text> : null}
+
+                                  {this.state.sampleID ? <Text style={styles.author1}>
+                                    Sample ID: {this.state.sampleID}
+                                  </Text>: null}
+
+
+
+
+
+
+
 
                                 <Text style={{fontSize: 6, paddingTop: 20}}>
                                       {line}
@@ -2241,7 +2290,7 @@ fillPreview(itemId) {
                             {line}
                             </Text>
 
-                            <View >
+                            {this.state.reportData ? <View >
                               {this.state.reportData.map((parameter, idx) => {
 
                                 return (
@@ -2252,7 +2301,9 @@ fillPreview(itemId) {
 
                               })}
 
-                            </View>
+                            </View>: null}
+
+
 
                     </View>
                     <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
